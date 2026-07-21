@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "goat-java": {
+    "indepth-coding": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -62,10 +62,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "goat-java:build:production"
+              "buildTarget": "indepth-coding:build:production"
             },
             "development": {
-              "buildTarget": "goat-java:build:development"
+              "buildTarget": "indepth-coding:build:development"
             }
           },
           "defaultConfiguration": "development"
