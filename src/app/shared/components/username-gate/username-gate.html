@@ -1,0 +1,31 @@
+@if (!session.hasName()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-md rounded-2xl p-8 shadow-2xl">
+      <div class="text-3xl">☕</div>
+      <h2 class="mt-3 text-xl font-bold text-[var(--color-text)]">Welcome to Indepth Coding</h2>
+      <p class="mt-2 text-sm text-[var(--color-text-muted)]">
+        What should we call you? This stays in your browser — there's no account, no backend, just you and the
+        material.
+      </p>
+
+      <form class="mt-6 flex flex-col gap-3" (ngSubmit)="confirm()">
+        <input
+          type="text"
+          name="name"
+          placeholder="Your name"
+          autocomplete="off"
+          [ngModel]="draftName()"
+          (ngModelChange)="draftName.set($event)"
+          class="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3 text-[var(--color-text)] outline-none focus:border-[var(--color-brand-400)]"
+        />
+        <button
+          type="submit"
+          class="w-full rounded-lg bg-[var(--color-brand-500)] px-4 py-3 font-semibold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)] disabled:opacity-40"
+          [disabled]="!draftName().trim()"
+        >
+          Start learning →
+        </button>
+      </form>
+    </div>
+  </div>
+}

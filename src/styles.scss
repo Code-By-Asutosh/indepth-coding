@@ -1,0 +1,116 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+  /* Brand palette: near-black charcoal background + premium indigo/violet accent, cyan secondary. */
+  --color-bg: #08090f;
+  --color-surface: rgba(255, 255, 255, 0.045);
+  --color-surface-alt: rgba(255, 255, 255, 0.07);
+  --color-border: rgba(255, 255, 255, 0.09);
+
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  --color-accent-400: #22d3ee;
+  --color-accent-500: #06b6d4;
+
+  --color-text: #e8e9f3;
+  --color-text-muted: #9393a8;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* Fixed ambient gradient mesh — sits behind every page so glass panels have something to blur/refract. */
+.app-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -50;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.app-backdrop span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  opacity: 0.28;
+}
+
+.app-backdrop .blob-1 {
+  top: -12%;
+  left: -6%;
+  height: 32rem;
+  width: 32rem;
+  background: var(--color-brand-500);
+}
+
+.app-backdrop .blob-2 {
+  top: 10%;
+  right: -10%;
+  height: 26rem;
+  width: 26rem;
+  background: var(--color-accent-500);
+  opacity: 0.18;
+}
+
+.app-backdrop .blob-3 {
+  bottom: -18%;
+  left: 30%;
+  height: 30rem;
+  width: 30rem;
+  background: var(--color-brand-700);
+  opacity: 0.2;
+}
+
+/* Reusable glassmorphism surface: translucent, blurred, soft top highlight. */
+.glass-panel {
+  background: var(--color-surface);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
+    0 20px 40px -28px rgba(0, 0, 0, 0.6);
+}
+
+::selection {
+  background: var(--color-brand-500);
+  color: #fff;
+}
+
+/* Thin, dark themed scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-alt);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-700);
+}

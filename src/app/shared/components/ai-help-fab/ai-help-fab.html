@@ -1,0 +1,81 @@
+<!-- Custom right-click menu, shown only when text is selected -->
+@if (menuVisible()) {
+  <div
+    class="glass-panel fixed z-[60] rounded-lg py-1 shadow-2xl"
+    [style.left.px]="menuPosition().x"
+    [style.top.px]="menuPosition().y"
+    (click)="$event.stopPropagation()"
+  >
+    <button
+      type="button"
+      (click)="openWithSelection()"
+      class="flex w-full items-center gap-2 whitespace-nowrap px-4 py-2 text-left text-sm text-[var(--color-text)] hover:bg-[var(--color-surface-alt)]"
+    >
+      🤖 Ask AI about this
+    </button>
+  </div>
+}
+
+<!-- Floating action button -->
+<button
+  type="button"
+  (click)="openPanel()"
+  class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[var(--color-brand-500)] text-2xl shadow-lg transition hover:scale-105 hover:bg-[var(--color-brand-400)]"
+  aria-label="Ask AI"
+>
+  🤖
+</button>
+
+<!-- Slide-over panel -->
+@if (panelOpen()) {
+  <div class="fixed inset-0 z-50 flex items-end justify-end bg-black/40 sm:items-stretch" (click)="closePanel()">
+    <div
+      class="glass-panel flex h-full w-full max-w-sm flex-col p-5 shadow-2xl"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-bold text-[var(--color-text)]">Ask about this page</h3>
+        <button type="button" (click)="closePanel()" class="text-[var(--color-text-muted)] hover:text-[var(--color-text)]">✕</button>
+      </div>
+
+      <div class="mt-4 flex-1 space-y-3 overflow-y-auto text-sm">
+        @for (message of messages(); track $index) {
+          <div
+            class="whitespace-pre-wrap rounded-lg px-3 py-2"
+            [class]="message.role === 'user' ? 'bg-[var(--color-brand-500)]/15 text-[var(--color-text)]' : 'bg-[var(--color-surface-alt)] text-[var(--color-text-muted)]'"
+          >
+            {{ message.text }}
+          </div>
+        } @empty {
+          <p class="text-[var(--color-text-muted)]">
+            Highlight any confusing part of a concept, right-click, and choose "Ask AI about this" — or just type a
+            question below.
+          </p>
+        }
+      </div>
+
+      @if (selectedText()) {
+        <div class="mt-3 rounded-lg border border-[var(--color-brand-500)]/40 bg-[var(--color-brand-500)]/10 px-3 py-2 text-xs text-[var(--color-brand-300)]">
+          Selected: "{{ selectedText() }}"
+        </div>
+      }
+
+      <form class="mt-3 flex gap-2" (ngSubmit)="send()">
+        <input
+          type="text"
+          [ngModel]="draftQuestion()"
+          (ngModelChange)="draftQuestion.set($event)"
+          name="question"
+          placeholder="Ask a question..."
+          class="flex-1 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-3 py-2 text-sm text-[var(--color-text)] outline-none focus:border-[var(--color-brand-400)]"
+        />
+        <button
+          type="submit"
+          class="rounded-lg bg-[var(--color-brand-500)] px-3 py-2 text-sm font-semibold text-[#0b0f19] hover:bg-[var(--color-brand-400)]"
+        >
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
+}

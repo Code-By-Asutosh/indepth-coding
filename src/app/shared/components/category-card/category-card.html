@@ -1,0 +1,46 @@
+<article
+  class="glass-panel group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--color-brand-500)]/60 hover:shadow-[0_20px_45px_-24px_rgba(99,102,241,0.5)]"
+>
+  <span
+    class="pointer-events-none absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[var(--color-brand-400)] to-[var(--color-accent-400)] transition-transform duration-300 group-hover:scale-x-100"
+  ></span>
+
+  <div>
+    <div class="flex items-center justify-between">
+      <span
+        class="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-surface-alt)] text-2xl ring-1 ring-inset ring-[var(--color-border)] transition group-hover:ring-[var(--color-brand-500)]/50"
+      >
+        {{ category().icon }}
+      </span>
+      @if (progress().percent > 0) {
+        <span class="rounded-full bg-[var(--color-brand-500)]/15 px-2.5 py-1 text-xs font-semibold text-[var(--color-brand-300)]">
+          {{ progress().percent }}%
+        </span>
+      }
+    </div>
+
+    <h3 class="mt-4 text-lg font-bold text-[var(--color-text)]">{{ category().title }}</h3>
+    <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ category().tagline }}</p>
+
+    <p class="mt-4 text-xs font-medium text-[var(--color-text-muted)]">
+      {{ topicCount() }} topics · {{ conceptCount() }} concepts
+    </p>
+  </div>
+
+  <div class="mt-6">
+    <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-alt)]">
+      <div
+        class="h-full rounded-full bg-gradient-to-r from-[var(--color-brand-400)] to-[var(--color-brand-600)] transition-all"
+        [style.width.%]="progress().percent"
+      ></div>
+    </div>
+
+    <a
+      [routerLink]="['/learn', category().id]"
+      class="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] transition group-hover:border-[var(--color-brand-500)] group-hover:bg-[var(--color-brand-500)]/10 group-hover:text-[var(--color-brand-300)]"
+    >
+      {{ progress().completed > 0 ? 'Continue learning' : 'Start learning' }}
+      <span class="transition-transform group-hover:translate-x-0.5">→</span>
+    </a>
+  </div>
+</article>

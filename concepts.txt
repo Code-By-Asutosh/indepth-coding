@@ -1,0 +1,22 @@
+The vision 
+
+Each catgory routing
+
+under each category there will be a new dashboard open with side navbar
+and under each navbar there is some main topic and under it there is concepts and when i click any concepts that conecpt page open and just down the page there is prev and next button then inside that page all the common steps for each concepts with diagram and image.
+
+and a common ai box area will be there it should know my content details and if someone wants any doubt related to any specific parts then can highlight the text area and directly right click and ask to ai with google gemini.
+
+and in each module there should be code snippet then that code snippet should be run inside any compiler online ide or any other thing i need to check.
+
+then after one dashboard there is one multiple choice question related to those module 
+
+and in each moudle there is dashboard that how many completed what are the important what are optional and all the things most asked in interview and etc
+
+
+
+and same like for each category and how all these category is interconnected that graph i want then after that i want a whole interview level question related to all the concepts
+
+dsa practice and stream and java related practice and angular related practice and aws structure diagram how it works in which case we will use what
+
+for system design i want all good diagram of system design and all good study material

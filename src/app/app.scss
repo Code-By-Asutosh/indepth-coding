@@ -1,0 +1,11 @@
+/*
+ * Angular renders <app-root> as a plain custom element, which defaults to
+ * `display: inline` in browsers unless told otherwise. That broke the
+ * header's `position: sticky` (an inline containing block confuses sticky's
+ * offset calculations). `display: contents` removes app-root's own box
+ * entirely so header/main/fab/gate behave as direct flow children of <body>.
+ */
+:host {
+  display: contents;
+}
+
