@@ -35,17 +35,50 @@ export interface Category {
   topics: Topic[];
 }
 
-/** One code sample shown in the "Show Me" stage. */
-export interface ConceptCodeSample {
+/** One code sample (language + snippet), used inside a bad/good comparison. */
+export interface ConceptCode {
   language: string;
   code: string;
-  caption?: string;
+  /** Why this snippet is bad or good — shown right under the code. */
+  explanation: string;
 }
 
-/** One competing approach shown in the "Alternatives" stage. */
+/** The "Show Me" stage is always a bad-approach vs good-approach pair, never a lone snippet. */
+export interface ConceptCodeComparison {
+  caption?: string;
+  bad: ConceptCode;
+  good: ConceptCode;
+}
+
+/** One competing approach shown in the "Alternatives" stage, rendered as a comparison table. */
 export interface ConceptAlternative {
   name: string;
   whenToUse: string;
+  whenNotToUse: string;
+}
+
+/** One structural entry in "The Trap" — a real mistake people make, not just a warning. */
+export interface ConceptMistake {
+  /** The mistake, told like a mini war story. */
+  mistake: string;
+  /** Why it happens / why it seems reasonable at the time. */
+  why: string;
+  /** The fix, in plain terms. */
+  fix: string;
+}
+
+/**
+ * A link to a related concept, used to weave the site into a connected web
+ * instead of 398 isolated pages. `note` explains WHY they're connected (e.g.
+ * "same race condition we saw in Wait vs Sleep vs Yield") so the reader gets
+ * the payoff of recognizing a pattern, not just a "see also" link.
+ */
+export interface ConceptConnection {
+  categoryId: string;
+  topicId: string;
+  conceptId: string;
+  title: string;
+  note: string;
 }
 
 /** The fixed 10-stage flow every concept page follows, no exceptions. */
@@ -61,22 +94,22 @@ export interface ConceptContent {
   problem: string;
   /** 3. The Aha (Core Idea) */
   aha: { statement: string; analogy: string };
-  /** 4. Under the Hood */
+  /** 4. Under the Hood — numbered steps, can be as deep as needed to survive cross-questions. */
   underTheHood: string[];
   /** 5. In the Wild */
   inTheWild: string[];
-  /** 6. Show Me */
-  showMe: ConceptCodeSample;
+  /** 6. Show Me — always bad approach vs good approach, each explained. */
+  showMe: ConceptCodeComparison;
   /** 7. The Impact */
   impact: { before: string; after: string; metric?: string };
-  /** 8. The Alternatives */
+  /** 8. The Alternatives — comparison table: when to use / when not to. */
   alternatives: ConceptAlternative[];
-  /** 9. The Trap */
-  trap: string;
+  /** 9. The Trap — one or more real mistakes, each as mistake/why/fix. */
+  commonMistakes: ConceptMistake[];
   /** 10. Prove It */
   proveIt: { question: string; answer?: string };
 
   /** Optional closer */
   oneLiner?: string;
-  goDeeper?: string[];
+  connections?: ConceptConnection[];
 }

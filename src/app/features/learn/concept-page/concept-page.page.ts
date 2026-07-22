@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { findCategory, findConcept, findTopic, flattenCategoryConcepts } from '../../../core/data/categories.data';
 import { findConceptContent } from '../../../core/data/concepts';
 import { ProgressService } from '../../../core/services/progress.service';
@@ -6,7 +7,7 @@ import { PrevNextNav, PrevNextTarget } from '../../../shared/components/prev-nex
 
 @Component({
   selector: 'app-concept-page',
-  imports: [PrevNextNav],
+  imports: [PrevNextNav, RouterLink],
   templateUrl: './concept-page.page.html',
   styleUrl: './concept-page.page.scss'
 })
@@ -30,7 +31,7 @@ export class ConceptPagePage {
     return { index: index + 1, total: concepts.length };
   });
 
-  protected readonly copied = signal(false);
+  protected readonly copied = signal<'bad' | 'good' | null>(null);
 
   private readonly orderedConcepts = computed(() => flattenCategoryConcepts(this.categoryId()));
 
@@ -54,13 +55,11 @@ export class ConceptPagePage {
     this.progressService.toggleComplete(this.categoryId(), this.topicId(), this.conceptId());
   }
 
-  protected async copyCode(): Promise<void> {
-    const code = this.content()?.showMe.code;
-    if (!code) return;
+  protected async copyCode(which: 'bad' | 'good', code: string): Promise<void> {
     try {
       await navigator.clipboard.writeText(code);
-      this.copied.set(true);
-      setTimeout(() => this.copied.set(false), 1800);
+      this.copied.set(which);
+      setTimeout(() => this.copied.set(null), 1800);
     } catch {
       /* clipboard unavailable — silently ignore */
     }
