@@ -39,7 +39,7 @@ export interface Category {
 export interface ConceptCode {
   language: string;
   code: string;
-  /** Why this snippet is bad or good — shown right under the code. */
+  /** Why this snippet is bad or good - shown right under the code. */
   explanation: string;
 }
 
@@ -57,7 +57,7 @@ export interface ConceptAlternative {
   whenNotToUse: string;
 }
 
-/** One structural entry in "The Trap" — a real mistake people make, not just a warning. */
+/** One structural entry in "The Trap" - a real mistake people make, not just a warning. */
 export interface ConceptMistake {
   /** The mistake, told like a mini war story. */
   mistake: string;
@@ -81,7 +81,20 @@ export interface ConceptConnection {
   note: string;
 }
 
-/** The fixed 10-stage flow every concept page follows, no exceptions. */
+/** A Mermaid diagram embedded inline where a visual genuinely clarifies faster than prose. */
+export interface ConceptDiagram {
+  /** Mermaid diagram definition text (flowchart, classDiagram, sequenceDiagram, ...). */
+  mermaid: string;
+  caption?: string;
+}
+
+/**
+ * The content of a concept page. Every concept covers the same underlying
+ * ground (a hook, the core idea, how it works, an example, trade-offs,
+ * common mistakes, a self-check) but the PAGE ITSELF never labels these as
+ * "stages" - it just reads as well-written, natural learning material.
+ * Depth and exact length are expected to vary concept to concept.
+ */
 export interface ConceptContent {
   categoryId: string;
   topicId: string;
@@ -94,17 +107,19 @@ export interface ConceptContent {
   problem: string;
   /** 3. The Aha (Core Idea) */
   aha: { statement: string; analogy: string };
-  /** 4. Under the Hood — numbered steps, can be as deep as needed to survive cross-questions. */
+  /** 4. Under the Hood - numbered steps, can be as deep as needed to survive cross-questions. */
   underTheHood: string[];
+  /** Optional diagram(s) shown alongside the mechanics explanation. */
+  diagrams?: ConceptDiagram[];
   /** 5. In the Wild */
   inTheWild: string[];
-  /** 6. Show Me — always bad approach vs good approach, each explained. */
+  /** 6. Show Me - always bad approach vs good approach, each explained. */
   showMe: ConceptCodeComparison;
   /** 7. The Impact */
   impact: { before: string; after: string; metric?: string };
-  /** 8. The Alternatives — comparison table: when to use / when not to. */
+  /** 8. The Alternatives - comparison table: when to use / when not to. */
   alternatives: ConceptAlternative[];
-  /** 9. The Trap — one or more real mistakes, each as mistake/why/fix. */
+  /** 9. The Trap - one or more real mistakes, each as mistake/why/fix. */
   commonMistakes: ConceptMistake[];
   /** 10. Prove It */
   proveIt: { question: string; answer?: string };

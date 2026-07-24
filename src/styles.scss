@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @use 'tailwindcss';
+@use 'prismjs/themes/prism-tomorrow.css';
 
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
@@ -41,7 +42,7 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Fixed ambient gradient mesh — sits behind every page so glass panels have something to blur/refract. */
+/* Fixed ambient gradient mesh - sits behind every page so glass panels have something to blur/refract. */
 .app-backdrop {
   position: fixed;
   inset: 0;
@@ -114,3 +115,190 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-700);
 }
+
+/*
+ * AI chat message markdown + code block styling.
+ *
+ * This is global (not component-scoped SCSS) on purpose: `renderChatMarkdown()`
+ * injects raw HTML into `ai-help-fab` via [innerHTML] at runtime, and Angular's
+ * emulated style encapsulation only scopes elements present in a component's
+ * template at COMPILE time - it never touches DOM inserted later via innerHTML.
+ * Global styles are the only way these rules reliably apply.
+ */
+.chat-markdown {
+  line-height: 1.6;
+
+  p {
+    margin: 0 0 0.65em;
+  }
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  .chat-md-heading {
+    margin: 0.9em 0 0.4em;
+    font-weight: 700;
+    color: var(--color-text);
+    line-height: 1.3;
+  }
+  .chat-md-heading:first-child {
+    margin-top: 0;
+  }
+  h3.chat-md-heading {
+    font-size: 1rem;
+  }
+  h4.chat-md-heading {
+    font-size: 0.95rem;
+  }
+  h5.chat-md-heading,
+  h6.chat-md-heading {
+    font-size: 0.875rem;
+    color: var(--color-brand-300);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .chat-md-list {
+    margin: 0 0 0.65em;
+    padding-left: 1.25em;
+  }
+  .chat-md-list li {
+    margin: 0.2em 0;
+  }
+  ul.chat-md-list {
+    list-style: disc;
+  }
+  ol.chat-md-list {
+    list-style: decimal;
+  }
+
+  strong {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  em {
+    color: var(--color-text);
+    font-style: italic;
+  }
+
+  a {
+    color: var(--color-accent-400);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  a:hover {
+    color: var(--color-accent-500);
+  }
+
+  /* Inline `code` (not fenced blocks, those are .chat-code-block below). */
+  > p code,
+  .chat-md-list code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    color: var(--color-accent-400);
+  }
+}
+
+.chat-code-block {
+  margin: 0.75em 0;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: #0d0e16;
+}
+
+.chat-code-block__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--color-border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+}
+
+.chat-code-block__copy {
+  font-family: var(--font-sans);
+  text-transform: none;
+  letter-spacing: normal;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+}
+.chat-code-block__copy:hover {
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.chat-code-block pre {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  overflow-x: auto;
+}
+.chat-code-block code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/*
+ * Prism syntax highlighting theme, re-tinted to the site's indigo/cyan
+ * palette. Global (not scoped to CodeBlock) so it also colors code blocks
+ * the AI chat panel injects via [innerHTML] at runtime.
+ */
+code[class*='language-'],
+pre[class*='language-'] {
+  font-family: var(--font-mono);
+  background: transparent;
+  text-shadow: none;
+}
+
+.token.keyword,
+.token.builtin {
+  color: var(--color-brand-300);
+}
+
+.token.string,
+.token.char {
+  color: #86efac; // soft green, reads clearly against dark glass
+}
+
+.token.function {
+  color: var(--color-accent-400);
+}
+
+.token.comment {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.token.number,
+.token.boolean {
+  color: #fbbf24; // warm amber accent for literals, distinct from brand color
+}
+
+.token.class-name {
+  color: var(--color-accent-400);
+}
+
+.token.annotation,
+.token.decorator {
+  color: var(--color-brand-400);
+}
+
+

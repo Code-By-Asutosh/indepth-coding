@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-/** Thin wrapper around document.cookie — no backend, so this is the source of truth for identity. */
+/** Thin wrapper around document.cookie - no backend, so this is the source of truth for identity. */
 @Injectable({ providedIn: 'root' })
 export class CookieService {
   get(name: string): string | null {

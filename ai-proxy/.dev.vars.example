@@ -1,0 +1,3 @@
+# Never commit real secrets. Copy this file to `.dev.vars` (already
+# gitignored) for local `wrangler dev` testing, and put your real key there.
+GEMINI_API_KEY=paste-your-google-ai-studio-key-here-for-local-dev-only

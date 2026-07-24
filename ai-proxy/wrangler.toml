@@ -1,0 +1,17 @@
+name = "indepth-coding-ai-proxy"
+main = "src/worker.ts"
+compatibility_date = "2026-07-23"
+
+# Comma-separated list of origins allowed to call this worker.
+# Add your deployed GitHub Pages URL once you know it, e.g.
+# "http://localhost:4300,https://yourusername.github.io"
+[vars]
+ALLOWED_ORIGINS = "http://localhost:4300,https://code-by-asutosh.github.io"
+RATE_LIMIT_PER_HOUR = "20"
+GEMINI_MODEL = "gemini-2.5-flash"
+
+# Created via `npx wrangler kv namespace create RATE_LIMIT_KV`, then paste
+# the printed id below.
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "b1b8ca5e0ceb45ccaaae7c263da4497f"

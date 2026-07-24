@@ -2,7 +2,7 @@
  * `display: contents` removes this wrapper's own box so <header> becomes an
  * effective direct child of <body> (via app-root, also `display: contents`).
  * Without this, the wrapper auto-sizes to exactly the header's height, which
- * becomes the sticky header's containing block — meaning it "runs out of
+ * becomes the sticky header's containing block - meaning it "runs out of
  * room" and stops sticking after just a few pixels of scroll.
  */
 :host {

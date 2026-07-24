@@ -1,4 +1,27 @@
 @if (category(); as cat) {
+  <!-- Mobile/tablet topbar: only shown below the lg breakpoint, where the sidebar is hidden -->
+  <div class="sticky top-[65px] z-30 flex items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 px-4 py-3 backdrop-blur-lg lg:hidden">
+    <button
+      type="button"
+      (click)="toggleMobileNav()"
+      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] text-[var(--color-text)]"
+      aria-label="Open topic navigation"
+    >
+      ☰
+    </button>
+    <span class="truncate text-sm font-semibold text-[var(--color-text)]">{{ cat.icon }} {{ cat.title }}</span>
+  </div>
+
+  <!-- Mobile/tablet drawer -->
+  @if (mobileNavOpen()) {
+    <div class="fixed inset-0 z-40 lg:hidden">
+      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeMobileNav()"></div>
+      <aside class="glass-panel absolute inset-y-0 left-0 w-[85%] max-w-xs overflow-y-auto">
+        <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" />
+      </aside>
+    </div>
+  }
+
   <div class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8 lg:grid-cols-[280px_1fr]">
     <aside class="glass-panel hidden max-h-[calc(100vh-6rem)] rounded-2xl lg:sticky lg:top-24 lg:block">
       <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" />

@@ -16,7 +16,7 @@ export class SideNav {
   /** Topic id that should be (auto-)expanded, e.g. the one containing the active concept. */
   readonly activeTopicId = input<string | null>(null);
 
-  /** Topics the user has expanded. Manual toggles persist across navigation — never force-collapsed. */
+  /** Topics the user has expanded. Manual toggles persist across navigation - never force-collapsed. */
   protected readonly expandedTopics = signal<Set<string>>(new Set());
 
   constructor() {

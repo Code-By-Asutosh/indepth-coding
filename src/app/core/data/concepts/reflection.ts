@@ -13,11 +13,11 @@ export const REFLECTION: ConceptContent = {
   problem:
     'Normally, your code has to know the exact shape of a class at compile time to use it (call its methods, read its ' +
     'fields). But frameworks like Jackson, Spring, and Hibernate work with classes they have NEVER seen before, written by ' +
-    'you, years after the framework itself was compiled. Reflection is how that is possible — and understanding it explains ' +
+    'you, years after the framework itself was compiled. Reflection is how that is possible - and understanding it explains ' +
     'a huge amount of "framework magic" that otherwise looks unexplainable.',
 
   aha: {
-    statement: 'Reflection lets code inspect and manipulate classes, fields, and methods AT RUNTIME, as data — instead of the compiler needing to know about them ahead of time.',
+    statement: 'Reflection lets code inspect and manipulate classes, fields, and methods AT RUNTIME, as data - instead of the compiler needing to know about them ahead of time.',
     analogy:
       "Normal code is like calling someone by name because you already know them personally. Reflection is like being " +
       "handed a stranger's ID card at runtime and being able to read their full profile (name, address, capabilities) and " +
@@ -25,18 +25,18 @@ export const REFLECTION: ConceptContent = {
   },
 
   underTheHood: [
-    'Every loaded class has a corresponding `Class<T>` object at runtime — `obj.getClass()` or `MyClass.class` gives you a handle to inspect that class\'s structure.',
-    'From a `Class` object, you can enumerate its fields (`getDeclaredFields()`), methods (`getDeclaredMethods()`), constructors, and annotations — all as data you can inspect and iterate at runtime.',
-    'You can read/write a field\'s value via `Field.get(obj)`/`Field.set(obj, value)`, and invoke a method via `Method.invoke(obj, args)` — even on private members, by first calling `setAccessible(true)` to bypass normal access checks.',
+    'Every loaded class has a corresponding `Class<T>` object at runtime - `obj.getClass()` or `MyClass.class` gives you a handle to inspect that class\'s structure.',
+    'From a `Class` object, you can enumerate its fields (`getDeclaredFields()`), methods (`getDeclaredMethods()`), constructors, and annotations - all as data you can inspect and iterate at runtime.',
+    'You can read/write a field\'s value via `Field.get(obj)`/`Field.set(obj, value)`, and invoke a method via `Method.invoke(obj, args)` - even on private members, by first calling `setAccessible(true)` to bypass normal access checks.',
     'This is exactly how a JSON library like Jackson works: given an object instance, it reflects over its fields/getters to figure out what to serialize, without the library author ever having seen your specific class.',
-    'It is also how Spring finds and wires up your `@Component`/`@Service` classes, and how JUnit finds and runs your `@Test`-annotated methods — annotations are readable at runtime specifically so frameworks can act on them via reflection.',
+    'It is also how Spring finds and wires up your `@Component`/`@Service` classes, and how JUnit finds and runs your `@Test`-annotated methods - annotations are readable at runtime specifically so frameworks can act on them via reflection.',
     'The cost: reflective calls are meaningfully slower than direct calls (no JIT inlining, extra security checks, boxing for primitive args), and reflection defeats some compile-time safety since typos in field/method names only fail at runtime, not compile time.'
   ],
 
   inTheWild: [
     'Any JSON/XML serialization library (Jackson, Gson) reading your class\'s fields to convert an object to/from JSON without you writing custom serialization code.',
     'Spring\'s dependency injection scanning your classpath for `@Component`-annotated classes and wiring their constructors, all discovered and invoked via reflection.',
-    'Interview question: "How does a framework call methods on a class it was compiled before you even wrote?" — reflection, discovered via annotations, is almost always the correct answer.'
+    'Interview question: "How does a framework call methods on a class it was compiled before you even wrote?" - reflection, discovered via annotations, is almost always the correct answer.'
   ],
 
   showMe: {
@@ -44,7 +44,7 @@ export const REFLECTION: ConceptContent = {
     bad: {
       language: 'java',
       code:
-        '// Works, but only for Order — needs a near-identical copy for every other class\n' +
+        '// Works, but only for Order - needs a near-identical copy for every other class\n' +
         'Map<String, Object> toMap(Order order) {\n' +
         '    Map<String, Object> map = new HashMap<>();\n' +
         '    map.put("id", order.getId());\n' +
@@ -52,7 +52,7 @@ export const REFLECTION: ConceptContent = {
         '    return map;\n' +
         '}',
       explanation:
-        'This is correct, but it only works for Order — a User, Product, or any other class needs its own hand-written, ' +
+        'This is correct, but it only works for Order - a User, Product, or any other class needs its own hand-written, ' +
         'near-duplicate version of this exact same logic.'
     },
     good: {
@@ -68,7 +68,7 @@ export const REFLECTION: ConceptContent = {
         '    return map;\n' +
         '}',
       explanation:
-        'This single method works for any class handed to it — this generic-ness, at the cost of some speed and ' +
+        'This single method works for any class handed to it - this generic-ness, at the cost of some speed and ' +
         'compile-time safety, is exactly why serialization libraries are built this way instead of hand-writing per-class code.'
     }
   },
@@ -83,12 +83,12 @@ export const REFLECTION: ConceptContent = {
     {
       name: 'Reflection',
       whenToUse: 'Framework/library code that must work generically with types it has never seen before (serialization, dependency injection, testing frameworks).',
-      whenNotToUse: 'Regular application/business code — direct method calls are faster, type-safe at compile time, and far easier to refactor with IDE tooling.'
+      whenNotToUse: 'Regular application/business code - direct method calls are faster, type-safe at compile time, and far easier to refactor with IDE tooling.'
     },
     {
       name: 'Annotation processors (compile-time code generation, e.g. Lombok, MapStruct)',
       whenToUse: 'You want reflection-like generic behavior but resolved at COMPILE time instead of runtime, for better performance and earlier error detection.',
-      whenNotToUse: "You need truly dynamic behavior based on data only known at runtime (e.g. class names loaded from a config file) — that genuinely needs real reflection."
+      whenNotToUse: "You need truly dynamic behavior based on data only known at runtime (e.g. class names loaded from a config file) - that genuinely needs real reflection."
     }
   ],
 
@@ -106,13 +106,13 @@ export const REFLECTION: ConceptContent = {
   proveIt: {
     question:
       'A field is declared `private`. Using plain Java code, you cannot access it from outside the class. Using ' +
-      'reflection, can you read its value anyway — and if so, what specific call makes that possible?',
+      'reflection, can you read its value anyway - and if so, what specific call makes that possible?',
     answer:
-      'Yes — calling `field.setAccessible(true)` before `field.get(obj)` bypasses the normal private-access compiler check, ' +
+      'Yes - calling `field.setAccessible(true)` before `field.get(obj)` bypasses the normal private-access compiler check, ' +
       'which is exactly how many serialization/mocking libraries read private fields without needing a public getter.'
   },
 
-  oneLiner: 'Reflection turns "code" into "data you can inspect and act on" — the price is speed and compile-time safety, the payoff is writing something once that works for types you have never seen.',
+  oneLiner: 'Reflection turns "code" into "data you can inspect and act on" - the price is speed and compile-time safety, the payoff is writing something once that works for types you have never seen.',
 
   connections: [
     {
@@ -120,7 +120,7 @@ export const REFLECTION: ConceptContent = {
       topicId: 'java-core',
       conceptId: 'generics',
       title: 'Generics',
-      note: 'Generics are erased at compile time (type erasure) — reflection is one of the few places you can observe the practical consequences of that erasure at runtime.'
+      note: 'Generics are erased at compile time (type erasure) - reflection is one of the few places you can observe the practical consequences of that erasure at runtime.'
     },
     {
       categoryId: 'middleware',
@@ -134,7 +134,7 @@ export const REFLECTION: ConceptContent = {
       topicId: 'spring-ecosystem',
       conceptId: 'spring-core-beanfactory-vs-applicationcontext',
       title: 'Spring Core: BeanFactory vs ApplicationContext',
-      note: "Spring's entire dependency injection mechanism is built on reflection — this concept explains the low-level tool Spring uses to discover and wire your classes."
+      note: "Spring's entire dependency injection mechanism is built on reflection - this concept explains the low-level tool Spring uses to discover and wire your classes."
     }
   ]
 };

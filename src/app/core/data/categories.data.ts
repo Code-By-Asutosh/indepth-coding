@@ -11,7 +11,7 @@ function c(title: string, importance: Importance = 'important', frequency: Frequ
  *
  * NOTE: this is navigation/tracking metadata only (titles + importance +
  * interview frequency). The actual 10-stage written content for a concept is
- * added separately in `core/data/concepts/*` and looked up by id — most
+ * added separately in `core/data/concepts/*` and looked up by id - most
  * concepts below intentionally have no written page yet ("coming soon").
  * `importance`/`frequency` are placeholder defaults to be curated later.
  */
@@ -26,44 +26,55 @@ export const CATEGORIES: Category[] = [
         id: 'java-core',
         title: 'Java Core',
         concepts: [
-          c('JVM Internals', 'core', 'high'),
-          c('Memory Management', 'core', 'high'),
-          c('Java Memory Model (JMM)', 'core', 'high'),
-          c('Garbage Collection (Serial, Parallel, CMS, G1, ZGC, Shenandoah, Epsilon)', 'core', 'high'),
+          // Core language foundations
           c('OOP', 'core', 'high'),
           c('SOLID', 'core', 'high'),
           c('Java Collections', 'core', 'high'),
-          c('Exception Handling', 'core', 'high'),
-          c('Multithreading', 'core', 'high'),
-          c('Concurrency (CountDownLatch, CyclicBarrier, Semaphore, ThreadLocal, ForkJoinPool, CompletableFuture)', 'core', 'high'),
-          c('Java 8+'),
-          c('Streams', 'core', 'high'),
-          c('Functional Programming'),
-          c('Reflection'),
           c('Generics', 'core', 'high'),
-          c('Serialization'),
+          c('Exception Handling', 'core', 'high'),
+          c('String Pool & Interning'),
+          c('Autoboxing Pitfalls'),
+          c('Nested / Inner / Anonymous / Local Classes'),
+
+          // Modern Java (8+)
+          c('Java 8+'),
+          c('Functional Programming'),
+          c('Streams', 'core', 'high'),
+          c('Optional'),
           c('Records'),
           c('Sealed Classes'),
           c('Pattern Matching (instanceof, switch expressions)'),
-          c('Virtual Threads', 'core', 'high'),
-          c('Structured Concurrency'),
-          c('Method Handles / VarHandles / Unsafe', 'optional', 'low'),
-          c('Module System (JPMS)'),
-          c('Optional'),
           c('java.time (Date/Time API)'),
           c('Text Blocks'),
-          c('Nested / Inner / Anonymous / Local Classes'),
-          c('String Pool & Interning'),
-          c('Autoboxing Pitfalls'),
-          c('Performance Optimization'),
+
+          // Concurrency
+          c('Multithreading', 'core', 'high'),
+          c('Java Memory Model (JMM)', 'core', 'high'),
+          c('Concurrency (CountDownLatch, CyclicBarrier, Semaphore, ThreadLocal, ForkJoinPool, CompletableFuture)', 'core', 'high'),
+          c('Virtual Threads', 'core', 'high'),
+          c('Structured Concurrency'),
+
+          // JVM internals & performance
+          c('JVM Internals', 'core', 'high'),
+          c('ClassLoader'),
+          c('Memory Management', 'core', 'high'),
+          c('Garbage Collection (Serial, Parallel, CMS, G1, ZGC, Shenandoah, Epsilon)', 'core', 'high'),
           c('JIT Compiler'),
           c('Escape Analysis'),
-          c('ClassLoader'),
           c('Bytecode Basics / javap'),
+          c('Performance Optimization'),
           c('JMH (Microbenchmarking)'),
+
+          // Advanced / systems-level
+          c('Reflection'),
+          c('Method Handles / VarHandles / Unsafe', 'optional', 'low'),
+          c('Module System (JPMS)'),
+          c('Serialization'),
           c('Java NIO'),
           c('Networking'),
           c('Security'),
+
+          // Future / preview
           c('Project Panama (FFM API)', 'optional', 'low'),
           c('Project Valhalla (Value Types)', 'optional', 'low')
         ]
@@ -72,33 +83,46 @@ export const CATEGORIES: Category[] = [
         id: 'enterprise-java',
         title: 'Enterprise Java (Advanced Java)',
         concepts: [
+          // Data access foundations
           c('JDBC', 'core', 'high'),
           c('Connection Pooling', 'core', 'high'),
           c('HikariCP Tuning'),
           c('JPA', 'core', 'high'),
-          c('Hibernate N+1 Problem', 'core', 'high'),
-          c('Hibernate Lazy vs Eager Loading', 'core', 'high'),
+
+          // Hibernate in depth
           c('Hibernate Entity Lifecycle'),
+          c('Hibernate Lazy vs Eager Loading', 'core', 'high'),
+          c('Hibernate N+1 Problem', 'core', 'high'),
           c('Hibernate Second-Level Cache'),
           c('Hibernate Multi-Tenancy Patterns', 'optional', 'low'),
+
+          // Data integrity and access patterns
+          c('Transactions', 'core', 'high'),
           c('Spring Data', 'core', 'high'),
           c('Bean Validation'),
-          c('Transactions', 'core', 'high'),
           c('Caching', 'core', 'high'),
+          c('DB Migrations (Flyway, Liquibase)'),
+
+          // Concurrency and reactive styles
           c('Scheduling'),
           c('Async Programming'),
           c('Reactive Programming'),
-          c('File Processing: XML'),
+
+          // File processing
           c('File Processing: JSON'),
-          c('File Processing: Email'),
+          c('File Processing: XML'),
           c('File Processing: PDF'),
           c('File Processing: Excel'),
+          c('File Processing: Email'),
+
+          // Security
           c('Encryption'),
-          c('OAuth', 'core', 'high'),
           c('JWT', 'core', 'high'),
-          c('Backend Development'),
-          c('DB Migrations (Flyway, Liquibase)'),
-          c('Logging Frameworks (SLF4J, Logback, Log4j2)')
+          c('OAuth', 'core', 'high'),
+
+          // Operations and wrap-up
+          c('Logging Frameworks (SLF4J, Logback, Log4j2)'),
+          c('Backend Development')
         ]
       },
       {

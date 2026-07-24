@@ -43,6 +43,34 @@ import { SECURITY } from './security';
 import { PROJECT_PANAMA } from './project-panama';
 import { PROJECT_VALHALLA } from './project-valhalla';
 
+// Enterprise Java
+import { JDBC } from './jdbc';
+import { CONNECTION_POOLING } from './connection-pooling';
+import { HIKARICP_TUNING } from './hikaricp-tuning';
+import { JPA } from './jpa';
+import { HIBERNATE_ENTITY_LIFECYCLE } from './hibernate-entity-lifecycle';
+import { HIBERNATE_LAZY_VS_EAGER_LOADING } from './hibernate-lazy-vs-eager-loading';
+import { HIBERNATE_SECOND_LEVEL_CACHE } from './hibernate-second-level-cache';
+import { HIBERNATE_MULTI_TENANCY_PATTERNS } from './hibernate-multi-tenancy-patterns';
+import { TRANSACTIONS } from './transactions';
+import { SPRING_DATA } from './spring-data';
+import { BEAN_VALIDATION } from './bean-validation';
+import { CACHING } from './caching';
+import { DB_MIGRATIONS_FLYWAY_LIQUIBASE } from './db-migrations-flyway-liquibase';
+import { SCHEDULING } from './scheduling';
+import { ASYNC_PROGRAMMING } from './async-programming';
+import { REACTIVE_PROGRAMMING } from './reactive-programming';
+import { FILE_PROCESSING_JSON } from './file-processing-json';
+import { FILE_PROCESSING_XML } from './file-processing-xml';
+import { FILE_PROCESSING_PDF } from './file-processing-pdf';
+import { FILE_PROCESSING_EXCEL } from './file-processing-excel';
+import { FILE_PROCESSING_EMAIL } from './file-processing-email';
+import { ENCRYPTION } from './encryption';
+import { JWT } from './jwt';
+import { OAUTH } from './oauth';
+import { LOGGING_FRAMEWORKS_SLF4J_LOGBACK_LOG4J2 } from './logging-frameworks-slf4j-logback-log4j2';
+import { BACKEND_DEVELOPMENT } from './backend-development';
+
 /** Every concept that has real 10-stage written content so far. */
 const WRITTEN_CONCEPTS: ConceptContent[] = [
   N_PLUS_ONE_PROBLEM,
@@ -87,7 +115,35 @@ const WRITTEN_CONCEPTS: ConceptContent[] = [
   NETWORKING,
   SECURITY,
   PROJECT_PANAMA,
-  PROJECT_VALHALLA
+  PROJECT_VALHALLA,
+
+  // Enterprise Java
+  JDBC,
+  CONNECTION_POOLING,
+  HIKARICP_TUNING,
+  JPA,
+  HIBERNATE_ENTITY_LIFECYCLE,
+  HIBERNATE_LAZY_VS_EAGER_LOADING,
+  HIBERNATE_SECOND_LEVEL_CACHE,
+  HIBERNATE_MULTI_TENANCY_PATTERNS,
+  TRANSACTIONS,
+  SPRING_DATA,
+  BEAN_VALIDATION,
+  CACHING,
+  DB_MIGRATIONS_FLYWAY_LIQUIBASE,
+  SCHEDULING,
+  ASYNC_PROGRAMMING,
+  REACTIVE_PROGRAMMING,
+  FILE_PROCESSING_JSON,
+  FILE_PROCESSING_XML,
+  FILE_PROCESSING_PDF,
+  FILE_PROCESSING_EXCEL,
+  FILE_PROCESSING_EMAIL,
+  ENCRYPTION,
+  JWT,
+  OAUTH,
+  LOGGING_FRAMEWORKS_SLF4J_LOGBACK_LOG4J2,
+  BACKEND_DEVELOPMENT
 ];
 
 function contentKey(categoryId: string, topicId: string, conceptId: string): string {

@@ -1,9 +1,9 @@
 @if (conceptSummary(); as summary) {
   <article class="pb-16">
     <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
-      <span>{{ category()?.title }}</span>
+      <a [routerLink]="['/learn', categoryId()]" class="transition hover:text-[var(--color-brand-300)]">{{ category()?.title }}</a>
       <span class="text-[var(--color-border)]">/</span>
-      <span>{{ topic()?.title }}</span>
+      <a [routerLink]="['/learn', categoryId()]" class="transition hover:text-[var(--color-brand-300)]">{{ topic()?.title }}</a>
       <span class="text-[var(--color-border)]">/</span>
       <span class="text-[var(--color-brand-400)]">{{ topicPosition().index }} of {{ topicPosition().total }}</span>
     </div>
@@ -33,203 +33,160 @@
     </div>
 
     @if (content(); as page) {
-      <div class="stage-flow mt-10 space-y-8 border-l border-[var(--color-border)] pl-6 sm:pl-8">
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">🎯</span>
-          <p class="stage-label text-[var(--color-text-muted)]">1 · The Hook</p>
-          <p class="mt-2 text-lg leading-relaxed text-[var(--color-text)]">{{ page.hook }}</p>
-        </section>
+      <div class="prose-content mt-10">
+        <!-- Opening: hook + problem flow as one natural introduction, no labels -->
+        <p class="text-lg leading-relaxed text-[var(--color-text)]">{{ page.hook }}</p>
+        <p class="mt-4 leading-relaxed text-[var(--color-text-muted)]">{{ page.problem }}</p>
 
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">⚠️</span>
-          <p class="stage-label text-[var(--color-text-muted)]">2 · The Problem</p>
-          <p class="mt-2 leading-relaxed text-[var(--color-text-muted)]">{{ page.problem }}</p>
-        </section>
+        <!-- Core idea: visually distinct but unlabeled - the analogy speaks for itself -->
+        <div class="mt-8 rounded-2xl border border-[var(--color-brand-500)]/30 bg-[var(--color-brand-500)]/5 p-5 backdrop-blur-md">
+          <p class="text-lg font-semibold leading-relaxed text-[var(--color-text)]">{{ page.aha.statement }}</p>
+          <p class="mt-2 leading-relaxed text-[var(--color-text-muted)]">{{ page.aha.analogy }}</p>
+        </div>
 
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-brand-500)]/20 text-[var(--color-brand-300)]">💡</span>
-          <div class="rounded-2xl border border-[var(--color-brand-500)]/30 bg-[var(--color-brand-500)]/5 p-5 backdrop-blur-md">
-            <p class="stage-label text-[var(--color-brand-400)]">3 · The Aha (Core Idea)</p>
-            <p class="mt-2 text-lg font-semibold leading-relaxed text-[var(--color-text)]">{{ page.aha.statement }}</p>
-            <p class="mt-2 italic leading-relaxed text-[var(--color-text-muted)]">{{ page.aha.analogy }}</p>
-          </div>
-        </section>
-
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">⚙️</span>
-          <p class="stage-label text-[var(--color-text-muted)]">4 · Under the Hood</p>
-          <ol class="mt-3 list-decimal space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:font-semibold marker:text-[var(--color-brand-400)]">
-            @for (step of page.underTheHood; track $index) {
-              <li>{{ step }}</li>
-            }
-          </ol>
-        </section>
-
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">🌍</span>
-          <p class="stage-label text-[var(--color-text-muted)]">5 · In the Wild</p>
-          <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
-            @for (scenario of page.inTheWild; track $index) {
-              <li>{{ scenario }}</li>
-            }
-          </ul>
-        </section>
-
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">💻</span>
-          <p class="stage-label text-[var(--color-text-muted)]">6 · Show Me</p>
-          @if (page.showMe.caption) {
-            <p class="mt-2 text-sm text-[var(--color-text-muted)]">{{ page.showMe.caption }}</p>
+        <!-- How it works -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">How it works</h2>
+        <ol class="mt-3 list-decimal space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:font-semibold marker:text-[var(--color-brand-400)]">
+          @for (step of page.underTheHood; track $index) {
+            <li>{{ step }}</li>
           }
+        </ol>
 
-          <div class="mt-3 space-y-4">
-            <div>
-              <p class="mb-1.5 text-xs font-bold uppercase tracking-wide text-red-400">❌ Bad</p>
-              <div class="overflow-hidden rounded-xl glass-panel">
-                <div class="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
-                  <span class="font-mono text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">{{ page.showMe.bad.language }}</span>
-                  <button
-                    type="button"
-                    (click)="copyCode('bad', page.showMe.bad.code)"
-                    class="text-xs font-semibold text-[var(--color-text-muted)] transition hover:text-[var(--color-brand-300)]"
-                  >
-                    {{ copied() === 'bad' ? '✓ Copied' : 'Copy' }}
-                  </button>
-                </div>
-                <pre class="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-[var(--color-text)]"><code>{{ page.showMe.bad.code }}</code></pre>
-              </div>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.bad.explanation }}</p>
-            </div>
-
-            <div>
-              <p class="mb-1.5 text-xs font-bold uppercase tracking-wide text-[var(--color-brand-300)]">✅ Good</p>
-              <div class="overflow-hidden rounded-xl glass-panel">
-                <div class="flex items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2">
-                  <span class="font-mono text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">{{ page.showMe.good.language }}</span>
-                  <button
-                    type="button"
-                    (click)="copyCode('good', page.showMe.good.code)"
-                    class="text-xs font-semibold text-[var(--color-text-muted)] transition hover:text-[var(--color-brand-300)]"
-                  >
-                    {{ copied() === 'good' ? '✓ Copied' : 'Copy' }}
-                  </button>
-                </div>
-                <pre class="overflow-x-auto p-4 font-mono text-sm leading-relaxed text-[var(--color-text)]"><code>{{ page.showMe.good.code }}</code></pre>
-              </div>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.good.explanation }}</p>
-            </div>
-          </div>
-
-          <a
-            href="https://www.jdoodle.com/online-java-compiler"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand-400)] hover:text-[var(--color-brand-300)]"
-          >
-            Open an online compiler to try it →
-          </a>
-        </section>
-
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">📊</span>
-          <div class="rounded-2xl glass-panel p-5">
-            <p class="stage-label text-[var(--color-text-muted)]">7 · The Impact</p>
-            <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <div class="rounded-lg bg-[var(--color-surface-alt)] p-3">
-                <p class="text-xs font-semibold uppercase text-[var(--color-text-muted)]">❌ Before</p>
-                <p class="mt-1 text-[var(--color-text)]">{{ page.impact.before }}</p>
-              </div>
-              <div class="rounded-lg bg-[var(--color-brand-500)]/15 p-3">
-                <p class="text-xs font-semibold uppercase text-[var(--color-brand-300)]">✅ After</p>
-                <p class="mt-1 text-[var(--color-text)]">{{ page.impact.after }}</p>
-              </div>
-            </div>
-            @if (page.impact.metric) {
-              <p class="mt-3 text-sm font-semibold text-[var(--color-brand-300)]">📈 {{ page.impact.metric }}</p>
+        @if (page.diagrams && page.diagrams.length > 0) {
+          <div class="mt-6 space-y-6">
+            @for (diagram of page.diagrams; track $index) {
+              <app-diagram [definition]="diagram.mermaid" [caption]="diagram.caption ?? null" />
             }
           </div>
-        </section>
+        }
 
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">🔀</span>
-          <p class="stage-label text-[var(--color-text-muted)]">8 · The Alternatives</p>
-          <div class="mt-3 overflow-x-auto rounded-xl glass-panel">
-            <table class="w-full min-w-[560px] border-collapse text-left text-sm">
-              <thead>
-                <tr class="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)]">
-                  <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">Approach</th>
-                  <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When to use</th>
-                  <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When NOT to use</th>
+        <!-- Where you'll see this -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Where you'll run into this</h2>
+        <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
+          @for (scenario of page.inTheWild; track $index) {
+            <li>{{ scenario }}</li>
+          }
+        </ul>
+
+        <!-- Example -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Example</h2>
+        @if (page.showMe.caption) {
+          <p class="mt-2 text-sm text-[var(--color-text-muted)]">{{ page.showMe.caption }}</p>
+        }
+        <div class="mt-3 space-y-4">
+          <div>
+            <app-code-block
+              [language]="page.showMe.bad.language"
+              [code]="page.showMe.bad.code"
+              label="Avoid"
+              labelTone="bad"
+            />
+            <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.bad.explanation }}</p>
+          </div>
+          <div>
+            <app-code-block
+              [language]="page.showMe.good.language"
+              [code]="page.showMe.good.code"
+              label="Prefer"
+              labelTone="good"
+            />
+            <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.good.explanation }}</p>
+          </div>
+        </div>
+        <a
+          href="https://www.jdoodle.com/online-java-compiler"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand-400)] hover:text-[var(--color-brand-300)]"
+        >
+          Open an online compiler to try it →
+        </a>
+
+        <!-- Impact -->
+        <div class="mt-10 rounded-2xl glass-panel p-5">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div class="rounded-lg bg-[var(--color-surface-alt)] p-3">
+              <p class="text-xs font-semibold uppercase text-[var(--color-text-muted)]">Before</p>
+              <p class="mt-1 text-[var(--color-text)]">{{ page.impact.before }}</p>
+            </div>
+            <div class="rounded-lg bg-[var(--color-brand-500)]/15 p-3">
+              <p class="text-xs font-semibold uppercase text-[var(--color-brand-300)]">After</p>
+              <p class="mt-1 text-[var(--color-text)]">{{ page.impact.after }}</p>
+            </div>
+          </div>
+          @if (page.impact.metric) {
+            <p class="mt-3 text-sm font-semibold text-[var(--color-brand-300)]">{{ page.impact.metric }}</p>
+          }
+        </div>
+
+        <!-- Alternatives -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Alternatives</h2>
+        <div class="mt-3 overflow-x-auto rounded-xl glass-panel">
+          <table class="w-full min-w-[560px] border-collapse text-left text-sm">
+            <thead>
+              <tr class="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)]">
+                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">Approach</th>
+                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When to use</th>
+                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When NOT to use</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (alt of page.alternatives; track alt.name) {
+                <tr class="border-b border-[var(--color-border)] last:border-0">
+                  <td class="px-4 py-3 align-top font-semibold text-[var(--color-text)]">{{ alt.name }}</td>
+                  <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenToUse }}</td>
+                  <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenNotToUse }}</td>
                 </tr>
-              </thead>
-              <tbody>
-                @for (alt of page.alternatives; track alt.name) {
-                  <tr class="border-b border-[var(--color-border)] last:border-0">
-                    <td class="px-4 py-3 align-top font-semibold text-[var(--color-text)]">{{ alt.name }}</td>
-                    <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenToUse }}</td>
-                    <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenNotToUse }}</td>
-                  </tr>
-                }
-              </tbody>
-            </table>
-          </div>
-        </section>
+              }
+            </tbody>
+          </table>
+        </div>
 
-        <section class="stage">
-          <span class="stage-badge bg-red-500/20 text-red-400">🪤</span>
-          <p class="stage-label text-red-400">9 · The Trap</p>
-          <div class="mt-2 space-y-3">
-            @for (item of page.commonMistakes; track $index) {
-              <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 backdrop-blur-md">
-                <p class="font-semibold leading-relaxed text-[var(--color-text)]">{{ item.mistake }}</p>
-                <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-red-400">Why it happens:</span> {{ item.why }}</p>
-                <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-[var(--color-brand-300)]">The fix:</span> {{ item.fix }}</p>
-              </div>
-            }
-          </div>
-        </section>
+        <!-- Common mistakes -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Common mistakes</h2>
+        <div class="mt-3 space-y-3">
+          @for (item of page.commonMistakes; track $index) {
+            <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 backdrop-blur-md">
+              <p class="font-semibold leading-relaxed text-[var(--color-text)]">{{ item.mistake }}</p>
+              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-red-400">Why it happens:</span> {{ item.why }}</p>
+              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-[var(--color-brand-300)]">The fix:</span> {{ item.fix }}</p>
+            </div>
+          }
+        </div>
 
-        <section class="stage">
-          <span class="stage-badge bg-[var(--color-accent-500)]/20 text-[var(--color-accent-400)]">🧠</span>
-          <div class="rounded-2xl border border-[var(--color-accent-500)]/30 bg-[var(--color-accent-500)]/5 p-5 backdrop-blur-md">
-            <p class="stage-label text-[var(--color-accent-400)]">10 · Prove It</p>
-            <p class="mt-2 font-semibold leading-relaxed text-[var(--color-text)]">{{ page.proveIt.question }}</p>
-            @if (page.proveIt.answer) {
-              <details class="group mt-3">
-                <summary
-                  class="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg border border-[var(--color-accent-500)]/40 px-3 py-1.5 text-sm font-semibold text-[var(--color-accent-400)] transition hover:bg-[var(--color-accent-500)]/10"
-                >
-                  Reveal answer
-                </summary>
-                <p class="mt-3 rounded-lg bg-[var(--color-surface-alt)] p-3 text-sm text-[var(--color-text-muted)]">{{ page.proveIt.answer }}</p>
-              </details>
-            }
-          </div>
-        </section>
+        <!-- Test yourself -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Test yourself</h2>
+        <div class="mt-3 rounded-2xl border border-[var(--color-accent-500)]/30 bg-[var(--color-accent-500)]/5 p-5 backdrop-blur-md">
+          <p class="font-semibold leading-relaxed text-[var(--color-text)]">{{ page.proveIt.question }}</p>
+          @if (page.proveIt.answer) {
+            <details class="group mt-3">
+              <summary
+                class="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg border border-[var(--color-accent-500)]/40 px-3 py-1.5 text-sm font-semibold text-[var(--color-accent-400)] transition hover:bg-[var(--color-accent-500)]/10"
+              >
+                Reveal answer
+              </summary>
+              <p class="mt-3 rounded-lg bg-[var(--color-surface-alt)] p-3 text-sm text-[var(--color-text-muted)]">{{ page.proveIt.answer }}</p>
+            </details>
+          }
+        </div>
 
         @if (page.oneLiner) {
-          <section class="stage">
-            <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">✨</span>
-            <p class="text-center text-sm italic text-[var(--color-text-muted)]">"{{ page.oneLiner }}"</p>
-          </section>
+          <p class="mt-10 text-center text-sm italic text-[var(--color-text-muted)]">"{{ page.oneLiner }}"</p>
         }
 
         @if (page.connections && page.connections.length > 0) {
-          <section class="stage">
-            <span class="stage-badge bg-[var(--color-surface-alt)] text-[var(--color-text)]">🕸️</span>
-            <p class="stage-label text-[var(--color-text-muted)]">Go Deeper</p>
-            <div class="mt-3 space-y-2">
-              @for (connection of page.connections; track connection.conceptId) {
-                <a
-                  [routerLink]="['/learn', connection.categoryId, connection.topicId, connection.conceptId]"
-                  class="group block rounded-lg border border-[var(--color-border)] p-3 transition hover:border-[var(--color-brand-500)]/40 hover:bg-[var(--color-surface-alt)]"
-                >
-                  <p class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-brand-300)]">{{ connection.title }} →</p>
-                  <p class="mt-1 text-sm text-[var(--color-text-muted)]">{{ connection.note }}</p>
-                </a>
-              }
-            </div>
-          </section>
+          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Go deeper</h2>
+          <div class="mt-3 space-y-2">
+            @for (connection of page.connections; track connection.conceptId) {
+              <a
+                [routerLink]="['/learn', connection.categoryId, connection.topicId, connection.conceptId]"
+                class="group block rounded-lg border border-[var(--color-border)] p-3 transition hover:border-[var(--color-brand-500)]/40 hover:bg-[var(--color-surface-alt)]"
+              >
+                <p class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-brand-300)]">{{ connection.title }} →</p>
+                <p class="mt-1 text-sm text-[var(--color-text-muted)]">{{ connection.note }}</p>
+              </a>
+            }
+          </div>
         }
       </div>
     } @else {
@@ -237,7 +194,7 @@
         <p class="text-4xl">🚧</p>
         <p class="mt-3 font-semibold text-[var(--color-text)]">This concept page hasn't been written yet.</p>
         <p class="mt-1 text-sm text-[var(--color-text-muted)]">
-          "{{ summary.title }}" is in the roadmap — the 10-stage template, navigation, and progress tracking are
+          "{{ summary.title }}" is in the roadmap - the page template, navigation, and progress tracking are
           already wired up and ready for its content.
         </p>
       </div>

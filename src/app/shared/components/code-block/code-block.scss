@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+// Prism theme + token colors now live globally (src/styles.scss), because
+// the AI chat panel also needs to syntax-highlight code blocks it injects
+// via [innerHTML] at runtime - scoped :host styles here would never reach
+// that dynamically-inserted DOM.
+

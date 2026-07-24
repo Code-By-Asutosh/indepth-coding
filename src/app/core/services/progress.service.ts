@@ -13,7 +13,7 @@ export interface CategoryProgress {
 }
 
 /**
- * Tracks concept completion in the browser only (localStorage) — no backend.
+ * Tracks concept completion in the browser only (localStorage) - no backend.
  * Powers the "X completed / Y pending" numbers on each dashboard.
  */
 @Injectable({ providedIn: 'root' })
@@ -34,7 +34,7 @@ export class ProgressService {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
-      /* storage unavailable (e.g. private browsing) — progress just won't persist */
+      /* storage unavailable (e.g. private browsing) - progress just won't persist */
     }
   }
 
