@@ -1,13 +1,7 @@
 import { Component, ElementRef, HostListener, Injector, ViewChild, afterNextRender, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-sql';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-typescript';
+import Prism from '../../utils/prism';
 import { AiAssistantService, AiAssistantError } from '../../../core/services/ai-assistant.service';
 import { ActivePageContextService } from '../../../core/services/active-page-context.service';
 import { renderChatMarkdown } from '../../utils/markdown';

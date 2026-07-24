@@ -1,11 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnChanges, ViewChild, input, signal } from '@angular/core';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-clike';
-import 'prismjs/components/prism-java';
-import 'prismjs/components/prism-bash';
-import 'prismjs/components/prism-sql';
-import 'prismjs/components/prism-json';
-import 'prismjs/components/prism-typescript';
+import Prism from '../../utils/prism';
 
 /**
  * A single, self-contained syntax-highlighted code block with a header
