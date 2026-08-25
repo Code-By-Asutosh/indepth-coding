@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/learn/learn.routes').then((m) => m.LEARN_ROUTES)
   },
   {
+    path: 'practice',
+    loadChildren: () => import('./features/practice/practice.routes').then((m) => m.PRACTICE_ROUTES)
+  },
+  {
     path: '**',
     redirectTo: ''
   }

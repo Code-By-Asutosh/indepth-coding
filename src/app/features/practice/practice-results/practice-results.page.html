@@ -1,0 +1,100 @@
+@if (state.assessment(); as assessment) {
+  <div class="mx-auto max-w-3xl px-6 py-12">
+    <p class="text-sm font-semibold uppercase tracking-widest text-[var(--color-brand-400)]">Assessment Complete</p>
+    <h1 class="mt-2 text-4xl font-black text-[var(--color-text)]">{{ scorePercent() }}%</h1>
+    <p class="mt-1 text-[var(--color-text-muted)]">{{ assessment.title }} - {{ assessment.difficulty }}</p>
+
+    @if (state.result(); as result) {
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        @if (result.overallStrongAreas.length > 0) {
+          <div class="rounded-2xl border border-[var(--color-brand-500)]/30 bg-[var(--color-brand-500)]/5 p-5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-brand-300)]">Strong areas</p>
+            <ul class="mt-2 space-y-1 text-sm leading-relaxed text-[var(--color-text)]">
+              @for (item of result.overallStrongAreas; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (result.overallWeakAreas.length > 0) {
+          <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5">
+            <p class="text-xs font-semibold uppercase tracking-wide text-red-300">Needs more practice</p>
+            <ul class="mt-2 space-y-1 text-sm leading-relaxed text-[var(--color-text)]">
+              @for (item of result.overallWeakAreas; track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+
+      <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Question by question</h2>
+      <div class="mt-4 space-y-4">
+        @for (q of assessment.questions; track q.id; let i = $index) {
+          @if (evaluationFor(q.id); as evaluation) {
+            <div class="rounded-2xl glass-panel p-5">
+              <div class="flex items-start justify-between gap-3">
+                <p class="text-sm font-semibold text-[var(--color-text-muted)]">Question {{ i + 1 }} - {{ q.type }}</p>
+                <span
+                  class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold uppercase"
+                  [class]="evaluation.result === 'correct'
+                    ? 'bg-[var(--color-brand-500)]/15 text-[var(--color-brand-300)]'
+                    : evaluation.result === 'partially_correct'
+                      ? 'bg-amber-500/15 text-amber-400'
+                      : 'bg-red-500/15 text-red-400'"
+                >
+                  {{ evaluation.result === 'correct' ? '✅ Correct' : evaluation.result === 'partially_correct' ? '⚠️ Partial' : '❌ Incorrect' }}
+                </span>
+              </div>
+
+              <p class="mt-3 whitespace-pre-line leading-relaxed text-[var(--color-text)]">{{ q.prompt }}</p>
+
+              @if (q.type !== 'mcq') {
+                <p class="mt-3 rounded-lg bg-[var(--color-surface-alt)] p-3 font-mono text-sm text-[var(--color-text-muted)]">
+                  {{ answerTextFor(q.id) }}
+                </p>
+              }
+
+              <p class="mt-3 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ evaluation.summary }}</p>
+
+              @if (evaluation.idealReasoning && evaluation.idealReasoning.length > 0) {
+                <div class="mt-3 rounded-lg border border-[var(--color-border)] p-3">
+                  <p class="text-xs font-semibold uppercase text-[var(--color-text-muted)]">Better reasoning</p>
+                  <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-[var(--color-text-muted)]">
+                    @for (point of evaluation.idealReasoning; track point) {
+                      <li>{{ point }}</li>
+                    }
+                  </ul>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      @if (state.errorMessage()) {
+        <div class="mt-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {{ state.errorMessage() }}
+        </div>
+      }
+
+      <div class="mt-8 flex flex-wrap gap-3">
+        <button
+          type="button"
+          (click)="generateAnother()"
+          [disabled]="regenerating()"
+          class="rounded-lg bg-[var(--color-brand-500)] px-5 py-2.5 text-sm font-bold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ regenerating() ? 'Generating...' : 'Generate Another Mock' }}
+        </button>
+        <button
+          type="button"
+          (click)="startNewTopic()"
+          class="rounded-lg border border-[var(--color-border)] px-5 py-2.5 text-sm font-semibold text-[var(--color-text-muted)] transition hover:text-[var(--color-text)]"
+        >
+          Try a Different Topic
+        </button>
+      </div>
+    }
+  </div>
+}

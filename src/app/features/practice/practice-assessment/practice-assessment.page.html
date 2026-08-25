@@ -1,0 +1,152 @@
+@if (state.assessment(); as assessment) {
+  <div class="mx-auto max-w-3xl px-6 py-10">
+    @if (!reviewMode()) {
+      <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
+        <span>{{ assessment.title }}</span>
+        <span class="text-[var(--color-brand-400)]">{{ state.currentIndex() + 1 }} of {{ state.totalCount() }}</span>
+      </div>
+
+      <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-alt)]">
+        <div
+          class="h-full rounded-full bg-[var(--color-brand-500)] transition-all"
+          [style.width.%]="((state.currentIndex() + 1) / state.totalCount()) * 100"
+        ></div>
+      </div>
+
+      @if (state.currentQuestion(); as q) {
+        <div class="mt-8 rounded-2xl glass-panel p-6">
+          <div class="flex flex-wrap gap-2">
+            <span class="rounded-full bg-[var(--color-surface-alt)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              {{ q.type }}
+            </span>
+            <span class="rounded-full bg-[var(--color-surface-alt)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">
+              {{ q.difficulty }}
+            </span>
+          </div>
+
+          <p class="mt-4 whitespace-pre-line text-lg leading-relaxed text-[var(--color-text)]">{{ q.prompt }}</p>
+
+          @if (q.code) {
+            <div class="mt-4">
+              <app-code-block language="java" [code]="q.code" />
+            </div>
+          }
+
+          @if (q.type === 'mcq') {
+            <div class="mt-5 space-y-2">
+              @for (option of q.options; track $index) {
+                <button
+                  type="button"
+                  (click)="selectOption($index)"
+                  class="flex w-full items-center gap-3 rounded-xl border px-4 py-3 text-left text-sm transition"
+                  [class]="currentAnswerOption() === $index
+                    ? 'border-[var(--color-brand-500)] bg-[var(--color-brand-500)]/10 text-[var(--color-text)]'
+                    : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-brand-500)]/40 hover:text-[var(--color-text)]'"
+                >
+                  <span
+                    class="flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-bold"
+                    [class]="currentAnswerOption() === $index ? 'border-[var(--color-brand-500)] bg-[var(--color-brand-500)] text-[#0b0f19]' : 'border-[var(--color-border)] text-[var(--color-text-muted)]'"
+                  >
+                    {{ ['A', 'B', 'C', 'D'][$index] }}
+                  </span>
+                  {{ option }}
+                </button>
+              }
+            </div>
+          } @else {
+            <div class="mt-5">
+              @if (q.starterCode) {
+                <div class="mb-3">
+                  <app-code-block language="java" [code]="q.starterCode" />
+                </div>
+              }
+              <textarea
+                [ngModel]="currentAnswerText()"
+                (ngModelChange)="onTextChange($event)"
+                rows="8"
+                placeholder="Your answer..."
+                class="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3 font-mono text-sm leading-relaxed text-[var(--color-text)] outline-none focus:border-[var(--color-brand-400)]"
+              ></textarea>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="mt-6 flex items-center justify-between">
+        <button
+          type="button"
+          (click)="state.previous()"
+          [disabled]="state.currentIndex() === 0"
+          class="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text-muted)] transition hover:text-[var(--color-text)] disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Previous
+        </button>
+
+        @if (isLastQuestion()) {
+          <button
+            type="button"
+            (click)="goToReview()"
+            class="rounded-lg bg-[var(--color-brand-500)] px-5 py-2 text-sm font-bold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)]"
+          >
+            Review & Submit
+          </button>
+        } @else {
+          <button
+            type="button"
+            (click)="state.next()"
+            class="rounded-lg bg-[var(--color-brand-500)] px-5 py-2 text-sm font-bold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)]"
+          >
+            Next
+          </button>
+        }
+      </div>
+    } @else {
+      <h2 class="text-xl font-bold text-[var(--color-text)]">Review your answers</h2>
+      <p class="mt-2 text-sm text-[var(--color-text-muted)]">
+        {{ state.answeredCount() }} of {{ state.totalCount() }} answered.
+        @if (unansweredCount() > 0) {
+          <span class="text-red-400">{{ unansweredCount() }} unanswered.</span>
+        }
+      </p>
+
+      <div class="mt-5 grid grid-cols-6 gap-2 sm:grid-cols-8">
+        @for (q of assessment.questions; track q.id; let i = $index) {
+          <button
+            type="button"
+            (click)="state.goTo(i); reviewMode.set(false)"
+            class="flex h-10 items-center justify-center rounded-lg border text-sm font-semibold transition"
+            [class]="isAnswered(i)
+              ? 'border-[var(--color-brand-500)]/50 bg-[var(--color-brand-500)]/10 text-[var(--color-brand-300)]'
+              : 'border-red-500/30 bg-red-500/5 text-red-300'"
+          >
+            {{ i + 1 }}
+          </button>
+        }
+      </div>
+
+      @if (errorMessage()) {
+        <div class="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <div class="mt-6 flex items-center justify-between">
+        <button
+          type="button"
+          (click)="reviewMode.set(false)"
+          class="rounded-lg border border-[var(--color-border)] px-4 py-2 text-sm font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+        >
+          Back to questions
+        </button>
+        <button
+          type="button"
+          (click)="submit()"
+          [disabled]="submitting()"
+          class="rounded-lg bg-[var(--color-brand-500)] px-5 py-2 text-sm font-bold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ submitting() ? 'Evaluating your answers...' : 'Submit Assessment' }}
+        </button>
+      </div>
+    }
+  </div>
+}

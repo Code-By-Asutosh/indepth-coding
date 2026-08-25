@@ -8,7 +8,12 @@ compatibility_date = "2026-07-23"
 [vars]
 ALLOWED_ORIGINS = "http://localhost:4300,https://code-by-asutosh.github.io"
 RATE_LIMIT_PER_HOUR = "20"
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-flash-latest"
+# Assessment generation/evaluation is quality-sensitive and can afford to be
+# slower, so it uses a stronger model than the quick page-help chat above.
+# NOTE: pro-tier models need Cloud Billing enabled on this key's project -
+# using flash until that's set up.
+GEMINI_ASSESSMENT_MODEL = "gemini-flash-latest"
 
 # Created via `npx wrangler kv namespace create RATE_LIMIT_KV`, then paste
 # the printed id below.

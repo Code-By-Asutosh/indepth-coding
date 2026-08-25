@@ -34,20 +34,39 @@
 
     @if (content(); as page) {
       <div class="prose-content mt-10">
-        <!-- Opening: hook + problem flow as one natural introduction, no labels -->
-        <p class="text-lg leading-relaxed text-[var(--color-text)]">{{ page.hook }}</p>
-        <p class="mt-4 leading-relaxed text-[var(--color-text-muted)]">{{ page.problem }}</p>
+        @if (page.prerequisites && page.prerequisites.length > 0) {
+          <div class="mb-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-4">
+            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Learn first</p>
+            <div class="mt-2 flex flex-wrap gap-2">
+              @for (prereq of page.prerequisites; track prereq.conceptId) {
+                <a
+                  [routerLink]="['/learn', prereq.categoryId, prereq.topicId, prereq.conceptId]"
+                  class="rounded-full border border-[var(--color-brand-500)]/40 bg-[var(--color-brand-500)]/10 px-3 py-1 text-sm font-semibold text-[var(--color-brand-300)] transition hover:bg-[var(--color-brand-500)]/20"
+                  [title]="prereq.note ?? ''"
+                >
+                  {{ prereq.title }}
+                </a>
+              }
+            </div>
+          </div>
+        }
 
-        <!-- Core idea: visually distinct but unlabeled - the analogy speaks for itself -->
+        <!-- 1. Simple intuition -->
+        <p class="text-lg leading-relaxed text-[var(--color-text)]">{{ page.simpleIntuition }}</p>
+
+        <!-- 2. Formal meaning - visually distinct callout -->
         <div class="mt-8 rounded-2xl border border-[var(--color-brand-500)]/30 bg-[var(--color-brand-500)]/5 p-5 backdrop-blur-md">
-          <p class="text-lg font-semibold leading-relaxed text-[var(--color-text)]">{{ page.aha.statement }}</p>
-          <p class="mt-2 leading-relaxed text-[var(--color-text-muted)]">{{ page.aha.analogy }}</p>
+          <p class="text-lg font-semibold leading-relaxed text-[var(--color-text)]">{{ page.formalMeaning }}</p>
         </div>
 
-        <!-- How it works -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">How it works</h2>
+        <!-- 3. Why it exists -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Why it exists</h2>
+        <p class="mt-3 leading-relaxed text-[var(--color-text-muted)]">{{ page.whyItExists }}</p>
+
+        <!-- 4. How it works internally -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">How it works internally</h2>
         <ol class="mt-3 list-decimal space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:font-semibold marker:text-[var(--color-brand-400)]">
-          @for (step of page.underTheHood; track $index) {
+          @for (step of page.howItWorksInternally; track $index) {
             <li>{{ step }}</li>
           }
         </ol>
@@ -60,130 +79,113 @@
           </div>
         }
 
-        <!-- Where you'll see this -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Where you'll run into this</h2>
+        @if (page.codeExamples && page.codeExamples.length > 0) {
+          <div class="mt-6 space-y-4">
+            @for (example of page.codeExamples; track $index) {
+              <div>
+                <app-code-block [language]="example.language" [code]="example.code" />
+                <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ example.explanation }}</p>
+              </div>
+            }
+          </div>
+        }
+
+        <!-- 5. Main components or rules -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Main components / rules</h2>
         <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
-          @for (scenario of page.inTheWild; track $index) {
+          @for (item of page.mainComponents; track $index) {
+            <li>{{ item }}</li>
+          }
+        </ul>
+
+        <!-- 6. Real-world examples -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Real-world examples</h2>
+        <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
+          @for (scenario of page.realWorldExamples; track $index) {
             <li>{{ scenario }}</li>
           }
         </ul>
 
-        <!-- Example -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Example</h2>
-        @if (page.showMe.caption) {
-          <p class="mt-2 text-sm text-[var(--color-text-muted)]">{{ page.showMe.caption }}</p>
-        }
-        <div class="mt-3 space-y-4">
-          <div>
-            <app-code-block
-              [language]="page.showMe.bad.language"
-              [code]="page.showMe.bad.code"
-              label="Avoid"
-              labelTone="bad"
-            />
-            <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.bad.explanation }}</p>
-          </div>
-          <div>
-            <app-code-block
-              [language]="page.showMe.good.language"
-              [code]="page.showMe.good.code"
-              label="Prefer"
-              labelTone="good"
-            />
-            <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ page.showMe.good.explanation }}</p>
-          </div>
-        </div>
-        <a
-          href="https://www.jdoodle.com/online-java-compiler"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-[var(--color-brand-400)] hover:text-[var(--color-brand-300)]"
-        >
-          Open an online compiler to try it →
-        </a>
-
-        <!-- Impact -->
-        <div class="mt-10 rounded-2xl glass-panel p-5">
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div class="rounded-lg bg-[var(--color-surface-alt)] p-3">
-              <p class="text-xs font-semibold uppercase text-[var(--color-text-muted)]">Before</p>
-              <p class="mt-1 text-[var(--color-text)]">{{ page.impact.before }}</p>
-            </div>
-            <div class="rounded-lg bg-[var(--color-brand-500)]/15 p-3">
-              <p class="text-xs font-semibold uppercase text-[var(--color-brand-300)]">After</p>
-              <p class="mt-1 text-[var(--color-text)]">{{ page.impact.after }}</p>
-            </div>
-          </div>
-          @if (page.impact.metric) {
-            <p class="mt-3 text-sm font-semibold text-[var(--color-brand-300)]">{{ page.impact.metric }}</p>
-          }
+        <!-- 7. Complexity / tradeoffs -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Complexity / tradeoffs</h2>
+        <div class="mt-3 rounded-2xl glass-panel p-5">
+          <ul class="list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
+            @for (item of page.complexityAndTradeoffs; track $index) {
+              <li>{{ item }}</li>
+            }
+          </ul>
         </div>
 
-        <!-- Alternatives -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Alternatives</h2>
-        <div class="mt-3 overflow-x-auto rounded-xl glass-panel">
-          <table class="w-full min-w-[560px] border-collapse text-left text-sm">
-            <thead>
-              <tr class="border-b border-[var(--color-border)] bg-[var(--color-surface-alt)]">
-                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">Approach</th>
-                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When to use</th>
-                <th class="px-4 py-2.5 font-semibold text-[var(--color-text)]">When NOT to use</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (alt of page.alternatives; track alt.name) {
-                <tr class="border-b border-[var(--color-border)] last:border-0">
-                  <td class="px-4 py-3 align-top font-semibold text-[var(--color-text)]">{{ alt.name }}</td>
-                  <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenToUse }}</td>
-                  <td class="px-4 py-3 align-top text-[var(--color-text-muted)]">{{ alt.whenNotToUse }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Common mistakes -->
+        <!-- 8. Common mistakes -->
         <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Common mistakes</h2>
         <div class="mt-3 space-y-3">
           @for (item of page.commonMistakes; track $index) {
-            <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 backdrop-blur-md">
-              <p class="font-semibold leading-relaxed text-[var(--color-text)]">{{ item.mistake }}</p>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-red-400">Why it happens:</span> {{ item.why }}</p>
-              <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]"><span class="font-semibold text-[var(--color-brand-300)]">The fix:</span> {{ item.fix }}</p>
+            <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 leading-relaxed text-[var(--color-text)] backdrop-blur-md">
+              {{ item }}
             </div>
           }
         </div>
 
-        <!-- Test yourself -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Test yourself</h2>
-        <div class="mt-3 rounded-2xl border border-[var(--color-accent-500)]/30 bg-[var(--color-accent-500)]/5 p-5 backdrop-blur-md">
-          <p class="font-semibold leading-relaxed text-[var(--color-text)]">{{ page.proveIt.question }}</p>
-          @if (page.proveIt.answer) {
-            <details class="group mt-3">
-              <summary
-                class="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg border border-[var(--color-accent-500)]/40 px-3 py-1.5 text-sm font-semibold text-[var(--color-accent-400)] transition hover:bg-[var(--color-accent-500)]/10"
-              >
-                Reveal answer
-              </summary>
-              <p class="mt-3 rounded-lg bg-[var(--color-surface-alt)] p-3 text-sm text-[var(--color-text-muted)]">{{ page.proveIt.answer }}</p>
-            </details>
-          }
-        </div>
-
-        @if (page.oneLiner) {
-          <p class="mt-10 text-center text-sm italic text-[var(--color-text-muted)]">"{{ page.oneLiner }}"</p>
+        <!-- Interview-prep war-room: scenario drills with hidden model answers for self-quizzing -->
+        @if (page.scenarioDrills && page.scenarioDrills.length > 0) {
+          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Scenario drills</h2>
+          <p class="mt-1 text-sm text-[var(--color-text-muted)]">Read the situation, answer out loud first, then open the model answer.</p>
+          <div class="mt-3 space-y-3">
+            @for (drill of page.scenarioDrills; track $index) {
+              <div class="rounded-2xl border border-[var(--color-accent-500)]/25 bg-[var(--color-surface-alt)] p-5">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Situation</p>
+                <p class="mt-1 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ drill.situation }}</p>
+                <p class="mt-4 font-semibold leading-relaxed text-[var(--color-text)]">{{ drill.question }}</p>
+                <details class="mt-2 rounded-lg border border-[var(--color-brand-500)]/20 bg-[var(--color-brand-500)]/5 px-4 py-3">
+                  <summary class="cursor-pointer select-none text-sm font-semibold text-[var(--color-brand-300)] transition hover:text-[var(--color-brand-200)]">
+                    Model answer
+                  </summary>
+                  <p class="mt-3 border-t border-[var(--color-border)] pt-3 leading-relaxed text-[var(--color-text-muted)]">{{ drill.answer }}</p>
+                </details>
+              </div>
+            }
+          </div>
         }
 
-        @if (page.connections && page.connections.length > 0) {
+        <!-- Bot-round armor: rapid-fire definitional Q&As to recite aloud -->
+        @if (page.rapidFire && page.rapidFire.length > 0) {
+          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Rapid fire</h2>
+          <p class="mt-1 text-sm text-[var(--color-text-muted)]">Screening bots and round-one panels love these. Answer each in one breath, then check.</p>
+          <div class="mt-3 space-y-2">
+            @for (item of page.rapidFire; track $index) {
+              <details class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
+                <summary class="cursor-pointer select-none font-semibold text-[var(--color-text)] transition hover:text-[var(--color-brand-300)]">
+                  {{ item.question }}
+                </summary>
+                <p class="mt-2 leading-relaxed text-[var(--color-text-muted)]">{{ item.answer }}</p>
+              </details>
+            }
+          </div>
+        }
+
+        <!-- 9. Interview perspective -->
+        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Interview perspective</h2>
+        <div class="mt-3 rounded-2xl border border-[var(--color-accent-500)]/30 bg-[var(--color-accent-500)]/5 p-5 leading-relaxed text-[var(--color-text)] backdrop-blur-md">
+          {{ page.interviewPerspective }}
+        </div>
+
+        <!-- 10. Trigger sentence -->
+        @if (page.triggerSentence) {
+          <p class="mt-10 text-center text-sm italic text-[var(--color-text-muted)]">"{{ page.triggerSentence }}"</p>
+        }
+
+        @if (page.relatedConcepts && page.relatedConcepts.length > 0) {
           <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Go deeper</h2>
           <div class="mt-3 space-y-2">
-            @for (connection of page.connections; track connection.conceptId) {
+            @for (related of page.relatedConcepts; track related.conceptId) {
               <a
-                [routerLink]="['/learn', connection.categoryId, connection.topicId, connection.conceptId]"
+                [routerLink]="['/learn', related.categoryId, related.topicId, related.conceptId]"
                 class="group block rounded-lg border border-[var(--color-border)] p-3 transition hover:border-[var(--color-brand-500)]/40 hover:bg-[var(--color-surface-alt)]"
               >
-                <p class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-brand-300)]">{{ connection.title }} →</p>
-                <p class="mt-1 text-sm text-[var(--color-text-muted)]">{{ connection.note }}</p>
+                <p class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-brand-300)]">{{ related.title }} →</p>
+                @if (related.note) {
+                  <p class="mt-1 text-sm text-[var(--color-text-muted)]">{{ related.note }}</p>
+                }
               </a>
             }
           </div>

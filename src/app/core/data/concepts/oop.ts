@@ -1,62 +1,48 @@
 import { ConceptContent } from '../../models/content.model';
 
 export const OOP: ConceptContent = {
-  categoryId: 'middleware',
+  categoryId: 'java-core',
   topicId: 'java-core',
   conceptId: 'oop',
   title: 'OOP',
+  topicType: 'concept',
 
-  hook:
-    'You can recite "encapsulation, inheritance, polymorphism, abstraction" in an interview without hesitation - and still ' +
-    'write a class with 40 public fields and a 300-line method. Knowing the four words is not the same as knowing why they exist.',
+  prerequisites: [],
 
-  problem:
-    'Object-Oriented Programming is usually taught as four vocabulary words to memorize, not four problems to actually ' +
-    'feel. Without feeling the pain each one solves, you end up "using" OOP syntactically (classes, public fields, extends) ' +
-    "while still writing code that has all the maintenance problems OOP was invented to prevent.",
+  simpleIntuition:
+    'Imagine describing a car to someone who has never seen one. You would not start by explaining the wiring diagram, ' +
+    'you would say "it has a steering wheel that turns the front tires, pedals that speed it up or stop it, and a ' +
+    'dashboard that shows you what matters." Object-Oriented Programming is that same idea applied to code: instead of ' +
+    'a pile of loose functions and data floating around independently, you group related data and the actions that ' +
+    'make sense on that data into one self-contained "thing", an object, that exposes a simple interface and hides the ' +
+    'messy details behind it.',
 
-  aha: {
-    statement: 'Each OOP pillar exists to solve one specific, real maintenance pain - they are not abstract virtues, they are bug-prevention tools.',
-    analogy:
-      "Think of a car. You don't need to understand the engine to drive it (encapsulation - the dashboard hides the mess). " +
-      "A hybrid and a gas car both respond to the same pedals (polymorphism - same interface, different internals). Every " +
-      "car model builds on a shared chassis platform instead of starting from scratch (inheritance - reuse a base, specialize " +
-      "the rest). And you think in terms of \"car\" and \"steering wheel,\" not silicon and torque curves (abstraction - hide " +
-      "irrelevant detail behind a simpler mental model)."
-  },
+  formalMeaning:
+    'Object-Oriented Programming is a programming paradigm organized around objects, bundles of state (fields) and ' +
+    'behavior (methods), built from four foundational ideas: encapsulation (hiding internal state behind a controlled ' +
+    'interface), inheritance (a class reusing and specializing another class), polymorphism (the same call behaving ' +
+    'differently depending on the actual runtime type), and abstraction (exposing only what a caller needs, hiding ' +
+    'the rest). A fifth idea, composition, is not one of the four pillars but is the tool most real designs actually ' +
+    'lean on to avoid inheritance\'s pitfalls.',
 
-  underTheHood: [
-    'Encapsulation: bundling data with the methods that operate on it, and hiding the data behind a controlled interface (private fields + public methods) so the object can enforce its own invariants - a BankAccount can guarantee balance never goes negative only if nothing outside can set balance directly.',
-    'Inheritance: a subclass reuses a superclass\'s fields/methods and can override behavior. The compiler enforces "is-a" at compile time - a Dog IS-A Animal everywhere an Animal is expected (this is the Liskov Substitution Principle, formalized).',
-    'Polymorphism (the mechanism, not just the word): at runtime, the JVM looks up the ACTUAL object\'s class to decide which overridden method to call (dynamic dispatch) - the same line of calling code behaves differently depending on what object is actually behind the reference.',
-    'Abstraction: exposing only what a caller needs (an interface/abstract class) and hiding implementation detail - callers depend on "PaymentGateway" the concept, not "StripeGatewayImpl" the concrete class, so the implementation can change without touching every caller.',
-    "Composition (technically not one of the four, but the tool that fixes inheritance's biggest failure mode): building behavior by HOLDING a reference to another object instead of extending it, avoiding rigid, fragile class hierarchies."
+  whyItExists:
+    'Before OOP became dominant, large programs were often organized as functions operating on loosely related data ' +
+    'structures passed around everywhere. As programs grew, it became difficult to know which function was allowed to ' +
+    'touch which data, so any function anywhere could accidentally leave shared data in an invalid state, and adding a ' +
+    'new variant of something (a new payment type, a new shape) meant hunting down and editing every place that ' +
+    'switched behavior based on type. OOP exists specifically to solve those two problems: it gives data an owner that ' +
+    'can guard its own validity, and it gives you a way to add new behavior by writing new code instead of editing old code.',
+
+  howItWorksInternally: [
+    'Encapsulation: a class bundles fields with the methods that operate on them, and marks fields private so nothing outside the class can set them directly. The class\'s own methods become the only gatekeeper, letting it enforce invariants like "balance can never go negative" simply by refusing to write an invalid value.',
+    'Inheritance: a subclass automatically gets a superclass\'s fields and methods, and can override specific methods to specialize behavior. The compiler enforces the "is-a" relationship at compile time, a Dog reference can be used anywhere an Animal is expected, because the compiler has verified Dog really does provide everything Animal promises.',
+    'Polymorphism, specifically dynamic dispatch: when you call a method on a reference typed as a supertype, the JVM does not decide which method body to run based on the reference\'s declared compile-time type. It looks up the ACTUAL object\'s runtime class in a per-class virtual method table (vtable) built at class-loading time, and calls whichever override that specific object\'s class provides. This is why `Animal a = new Dog(); a.makeSound();` runs Dog\'s makeSound, not Animal\'s.',
+    'Abstraction: an interface or abstract class defines WHAT a caller can do without saying HOW it is done. Callers write code against `PaymentGateway`, never against `StripeGatewayImpl` directly, so the concrete implementation behind that interface can be swapped or added to without ever touching the calling code.',
+    'Composition: instead of a class extending another to reuse its code, it simply holds a reference to an instance of it as a field, and delegates to it. This avoids permanently locking two classes into a rigid, compile-time "is-a" relationship, letting behavior be swapped or combined far more flexibly at runtime.'
   ],
 
-  inTheWild: [
-    'A payment system where `PaymentGateway` is an interface, and Stripe/PayPal/internal-wallet are three interchangeable implementations - the checkout code never changes when you add a fourth provider.',
-    'A `Shape` hierarchy in a graphics engine where `Circle`, `Square`, and `Triangle` all implement `area()` differently, but the rendering loop just calls `shape.area()` without an if/else per type.',
-    'Interview question: "What is the difference between overloading and overriding, and which one is polymorphism?" - overriding is runtime polymorphism; overloading is resolved at compile time and is a different mechanism entirely.'
-  ],
-
-  showMe: {
-    caption: "Type-checking if/else chains (procedural code wearing an OOP costume) vs actual polymorphism.",
-    bad: {
-      language: 'java',
-      code:
-        'double calculateArea(Object shape) {\n' +
-        '    if (shape instanceof Circle c) {\n' +
-        '        return Math.PI * c.radius() * c.radius();\n' +
-        '    } else if (shape instanceof Square s) {\n' +
-        '        return s.side() * s.side();\n' +
-        '    }\n' +
-        '    throw new IllegalArgumentException("Unknown shape");\n' +
-        '}',
-      explanation:
-        'Every time a new shape type is added, this method must be found and edited - the logic for "what is a shape\'s ' +
-        'area" is scattered across call-sites instead of living with each shape, and the compiler cannot help you catch a missed case.'
-    },
-    good: {
+  codeExamples: [
+    {
       language: 'java',
       code:
         'interface Shape {\n' +
@@ -68,70 +54,66 @@ export const OOP: ConceptContent = {
         'record Square(double side) implements Shape {\n' +
         '    public double area() { return side * side; }\n' +
         '}\n\n' +
-        '// Caller never branches on type - dynamic dispatch does the work\n' +
-        'double totalArea = shapes.stream().mapToDouble(Shape::area).sum();',
+        '// Caller never branches on type - dynamic dispatch does the work.\n' +
+        'double total = shapes.stream().mapToDouble(Shape::area).sum();',
       explanation:
-        'Adding a new shape means writing one new class that implements area() - no existing code changes, and the ' +
+        'Adding a new shape means writing one new class that implements area(). No existing call-site changes, and the ' +
         'compiler forces every Shape to provide the method, so a missing implementation is caught at compile time, not runtime.'
     }
-  },
+  ],
 
-  impact: {
-    before: 'Adding a new type requires hunting down and editing every if/else chain that switches on type across the codebase.',
-    after: 'Adding a new type means writing one new class - every existing call-site works unchanged.',
-    metric: 'In large codebases, this difference is the entire reason a new feature takes an hour versus a week of "find every place that needs updating."'
-  },
+  mainComponents: [
+    'Encapsulation - private fields, public methods, self-enforced invariants.',
+    'Inheritance - a subclass reuses and specializes a superclass, enforced as "is-a" by the compiler.',
+    'Polymorphism - the same call, different behavior, resolved by the object\'s actual runtime class via dynamic dispatch.',
+    'Abstraction - callers depend on an interface/contract, never on a concrete implementation.',
+    'Composition (the practical fifth pillar) - reuse behavior by holding a reference to another object instead of extending it.'
+  ],
 
-  alternatives: [
-    {
-      name: 'Inheritance (extends)',
-      whenToUse: 'A true, stable "is-a" relationship where the subclass really is a more specific version of the parent, and that relationship will not need to change at runtime.',
-      whenNotToUse: 'You just want to reuse some code - use composition instead, or you will end up with deep, fragile hierarchies (the classic "Square extends Rectangle" trap).'
-    },
-    {
-      name: 'Composition (has-a, delegate to a held object)',
-      whenToUse: 'You want to reuse behavior without committing to a rigid hierarchy, or you need to swap behavior at runtime.',
-      whenNotToUse: "You genuinely need polymorphic substitution (callers treating many types uniformly through a common supertype) - that still needs an interface/abstract class."
-    },
-    {
-      name: 'Interfaces (pure abstraction, no shared state)',
-      whenToUse: 'Defining a contract multiple unrelated classes can implement, especially across module/package boundaries.',
-      whenNotToUse: 'You need to share actual field state or a common implementation across the family - an abstract class fits better there.'
-    }
+  realWorldExamples: [
+    'A payment system defining a `PaymentGateway` interface, with Stripe, PayPal, and an internal wallet as three interchangeable implementations, so the checkout code never has to change when a fourth provider is added.',
+    'A `Shape` hierarchy in a graphics engine where `Circle`, `Square`, and `Triangle` each implement `area()` differently, but the rendering loop simply calls `shape.area()` on every shape, with no per-type if/else branch anywhere.',
+    'A logging framework exposing a single `Logger` interface, while the actual implementation writing to console, a file, or a remote server is swapped purely through configuration, with zero changes to any code that calls `log.info(...)`.'
+  ],
+
+  complexityAndTradeoffs: [
+    'Encapsulation costs a small amount of ceremony (getters/setters, constructors) in exchange for guaranteed object validity, worth it almost everywhere except pure data-transfer objects.',
+    'Inheritance: use it only for a genuinely stable "is-a" relationship that will not need to change shape later; a Dog will always be an Animal. Avoid it purely for code reuse, since deep hierarchies (`Manager extends Employee extends Person`) become rigid and break the moment a new requirement, like a Contractor that is 90% Employee but not really one, does not cleanly fit the existing shape.',
+    'Composition: use it when you want to reuse behavior without locking into a rigid hierarchy, or need to swap behavior at runtime (a `PaymentCalculator` field instead of `extends BasePaymentEmployee`). It costs a small amount of extra delegation boilerplate in exchange for far more flexibility.',
+    'Interfaces: use them to define a contract multiple unrelated classes can implement across module boundaries. They cannot share actual field state or a default implementation the way an abstract class can, so reach for an abstract class when real shared implementation, not just a shared contract, is needed.',
+    'Dynamic dispatch itself has a tiny, usually irrelevant runtime cost (a vtable lookup instead of a direct call), which is overwhelmingly worth paying for the maintainability it buys, and modern JIT compilers frequently eliminate it entirely through inlining when the actual type is predictable at a call site.'
   ],
 
   commonMistakes: [
-    {
-      mistake: 'Using inheritance purely to reuse code, resulting in deep hierarchies like "Manager extends Employee extends Person" that eventually need a "Contractor" that is 90% Employee but not really an Employee.',
-      why:
-        "Inheritance looks like the obvious tool for reuse early on, when the hierarchy is shallow and clean. The problem " +
-        "only appears months later when a new requirement doesn't fit the existing 'is-a' shape, and by then dozens of places depend on the exact hierarchy.",
-      fix:
-        'Default to composition for code reuse ("has-a PaymentCalculator" instead of "extends BasePaymentEmployee"), and reserve inheritance for genuinely stable, narrow is-a relationships.'
-    }
+    'Using inheritance purely to reuse code rather than to model a genuine "is-a" relationship. It looks perfectly reasonable early on, when the hierarchy is shallow, `Manager extends Employee` feels natural. The problem only shows up months later when a new requirement, like a Contractor that shares 90% of Employee\'s code but is not really an Employee, does not fit the existing shape, and by then dozens of call sites already depend on that exact hierarchy. Fix: default to composition for code reuse ("has-a PaymentCalculator" instead of "extends BasePaymentEmployee"), and reserve inheritance strictly for stable, narrow is-a relationships.',
+    'Treating encapsulation as "just add getters and setters for every field." Auto-generating a public getter and setter for every private field recreates the exact same problem encapsulation was meant to solve, any outside code can still set the field to any value, the class just added ceremony without adding any actual protection. Fix: only expose what callers genuinely need, and put real validation inside setters (or better, avoid setters entirely and validate fully in the constructor) rather than treating them as a rubber stamp.',
+    'Confusing method overloading with method overriding, and assuming both are "polymorphism." Overloading (multiple methods with the same name but different parameters) is resolved entirely at compile time based on the declared argument types, it has nothing to do with runtime object types. Only overriding, where a subclass replaces a superclass method with the same signature, is resolved at runtime via dynamic dispatch, which is what people actually mean by polymorphism.'
   ],
 
-  proveIt: {
-    question:
-      'A method takes a parameter of type `Animal` and calls `animal.makeSound()`. At runtime, it is actually passed a ' +
-      '`Dog` object. Which makeSound() implementation runs, and what mechanism decides that?',
-    answer:
-      "Dog's makeSound() runs, decided by dynamic dispatch - the JVM looks at the object's ACTUAL runtime class (Dog), not " +
-      "the reference's declared compile-time type (Animal), to choose which overridden method to invoke."
-  },
+  interviewPerspective:
+    'OOP questions rarely ask you to define the four pillars from memory, interviewers assume you already know the words. ' +
+    'What they actually probe is whether you understand the MECHANISM underneath each one. A very common question: ' +
+    '"A method takes a parameter of type Animal and calls animal.makeSound(). At runtime it is actually passed a Dog ' +
+    'object. Which makeSound() runs, and what mechanism decides that?" The expected answer is that Dog\'s makeSound() ' +
+    'runs, decided by dynamic dispatch, the JVM looks at the object\'s actual runtime class, not the reference\'s ' +
+    'declared compile-time type, to choose which overridden method to invoke via that class\'s vtable. A second common ' +
+    'angle is asking you to critique a deep inheritance hierarchy and explain why composition would have aged better, ' +
+    'which tests whether you have actually felt the pain of a rigid hierarchy, not just memorized that "composition ' +
+    'over inheritance" is a good sound bite.',
 
-  oneLiner: 'The four pillars are not vocabulary to memorize - they are four specific answers to "how do I stop this codebase from becoming unmaintainable."',
+  triggerSentence:
+    'The four pillars are not vocabulary to memorize, they are four specific answers to "how do I stop this codebase from becoming unmaintainable."',
 
-  connections: [
+  relatedConcepts: [
     {
-      categoryId: 'middleware',
+      categoryId: 'java-core',
       topicId: 'java-core',
       conceptId: 'solid',
       title: 'SOLID',
       note: 'SOLID is essentially "OOP done well" - five concrete rules for how to actually structure the classes OOP gives you the tools to build.'
     },
     {
-      categoryId: 'middleware',
+      categoryId: 'java-core',
       topicId: 'java-core',
       conceptId: 'generics',
       title: 'Generics',
@@ -139,3 +121,4 @@ export const OOP: ConceptContent = {
     }
   ]
 };
+

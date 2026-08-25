@@ -17,9 +17,174 @@ function c(title: string, importance: Importance = 'important', frequency: Frequ
  */
 export const CATEGORIES: Category[] = [
   {
-    id: 'middleware',
-    title: 'Middleware',
-    tagline: 'Java Core, Enterprise Java, Spring, API design & microservices.',
+    id: 'interview-prep',
+    title: 'Interview Prep',
+    tagline: 'The guided war-room: one story-driven path from Core Java to AWS, tuned for real interview rounds.',
+    icon: '🎯',
+    topics: [
+      {
+        id: 'strategy',
+        title: 'Start Here',
+        concepts: [
+          c('Prep Strategy', 'core', 'high'),
+          c('ShopSphere Case Study', 'core', 'medium'),
+          c('Project War Stories', 'core', 'high')
+        ]
+      },
+      {
+        id: 'collections-mastery',
+        title: 'Collections Mastery',
+        concepts: [
+          c('Collections Big Picture', 'core', 'high'),
+          c('ArrayList & LinkedList Internals', 'core', 'high'),
+          c('HashMap Internals', 'core', 'high'),
+          c('equals & hashCode in Practice', 'core', 'high'),
+          c('HashSet, LinkedHashSet & TreeSet', 'important', 'high'),
+          c('ConcurrentHashMap & Fail-Fast', 'core', 'high'),
+          c('LinkedHashMap LRU, TreeMap & PriorityQueue', 'important', 'medium'),
+          c('Collections Scenario Drill', 'core', 'high')
+        ]
+      },
+      {
+        id: 'core-java-rapid',
+        title: 'Core Java Rapid Fire',
+        concepts: [
+          c('OOP & SOLID Rapid Fire', 'core', 'high'),
+          c('String Immutability & Pool', 'important', 'high'),
+          c('Immutability Everywhere: Objects, Collections, Records', 'important', 'medium'),
+          c('Exception Handling Drill', 'core', 'high'),
+          c('Generics & Wildcards Drill', 'important', 'medium'),
+          c('Java 8+ Essentials: Lambdas, Functional Interfaces, Streams, Optional', 'core', 'high'),
+          c('Java for DSA Essentials', 'optional', 'medium')
+        ]
+      },
+      {
+        id: 'concurrency-drill',
+        title: 'Concurrency Drill',
+        concepts: [
+          c('Threads to ThreadPoolExecutor', 'core', 'high'),
+          c('CompletableFuture & Parallel Streams', 'core', 'high'),
+          c('synchronized, volatile, Atomics & Locks', 'core', 'high'),
+          c('Race Conditions & Deadlocks', 'core', 'high'),
+          c('Concurrency Scenario Drill', 'core', 'high')
+        ]
+      },
+      {
+        id: 'spring-boot-drill',
+        title: 'Spring Boot Drill',
+        concepts: [
+          c('Spring DI & Bean Lifecycle Rapid Fire', 'core', 'high'),
+          c('Auto-Configuration Demystified', 'important', 'medium'),
+          c('Profiles, External Config & Actuator', 'important', 'medium'),
+          c('REST Principles & Resource Design', 'core', 'high'),
+          c('Production REST: Validation, Pagination, Versioning, Idempotency & Error Design', 'core', 'high'),
+          c('@Transactional Deep Dive', 'core', 'high')
+        ]
+      },
+      {
+        id: 'security-drill',
+        title: 'Security Drill',
+        concepts: [
+          c('Spring Security Spine: FilterChain, Authentication vs Authorization', 'core', 'high'),
+          c('JWT End-to-End Drill', 'core', 'high'),
+          c('OAuth2 Basics, CORS, CSRF & Method Security', 'important', 'high')
+        ]
+      },
+      {
+        id: 'jpa-hibernate-drill',
+        title: 'JPA & Hibernate Drill',
+        concepts: [
+          c('JPA/Hibernate Interview Spine', 'core', 'high'),
+          c('JPQL, Native Queries & Pagination', 'important', 'high'),
+          c('N+1, Lazy vs Eager, Fetch Joins & EntityGraph', 'core', 'high'),
+          c('Optimistic vs Pessimistic Locking', 'important', 'high')
+        ]
+      },
+      {
+        id: 'sql-databases-drill',
+        title: 'SQL & Databases Drill',
+        concepts: [
+          c('SQL Joins & Aggregations Drill', 'core', 'high'),
+          c('Subqueries, CTEs & Window Functions', 'important', 'high'),
+          c('Indexes, EXPLAIN & Query Optimization', 'core', 'high'),
+          c('Normalization & Schema Design', 'important', 'high'),
+          c('Database Transactions, Locks & Deadlocks', 'important', 'high'),
+          c('Connection Pooling & HikariCP', 'important', 'medium')
+        ]
+      },
+      {
+        id: 'microservices-drill',
+        title: 'Microservices Drill',
+        concepts: [
+          c('Microservices Interview Spine', 'core', 'high'),
+          c('Sync vs Async Communication & Messaging Patterns', 'core', 'high'),
+          c('Service Discovery, API Gateway & Config Management', 'core', 'high'),
+          c('Resilience: Timeouts, Retry, Circuit Breaker, Bulkhead & Rate Limiting', 'core', 'high'),
+          c('Saga Pattern & Data Consistency', 'core', 'high'),
+          c('Distributed Tracing & Centralized Logging', 'important', 'high')
+        ]
+      },
+      {
+        id: 'system-design-studio',
+        title: 'System Design Studio',
+        concepts: [
+          c('System Design Framework: Requirements to Trade-offs', 'core', 'high'),
+          c('Design: Order Management System', 'core', 'high'),
+          c('Design: Payment System', 'core', 'high'),
+          c('Design: Notification System', 'important', 'high'),
+          c('Design: Inventory System', 'important', 'high'),
+          c('Design: Shipment Tracking System', 'core', 'high')
+        ]
+      },
+      {
+        id: 'aws-drill',
+        title: 'AWS for Java Devs',
+        concepts: [
+          c('IAM, Regions, VPC & Networking Spine', 'core', 'high'),
+          c('EC2, Auto Scaling & the Compute Choice Drill', 'core', 'high'),
+          c('Docker + ECS Deployment Story', 'core', 'high'),
+          c('ALB, API Gateway, Route 53, CloudFront & S3', 'core', 'high'),
+          c('RDS Deep Dive: Multi-AZ, Read Replicas & Backups', 'core', 'high'),
+          c('DynamoDB Fundamentals', 'important', 'medium'),
+          c('Secrets Manager, Parameter Store, Cognito & Least Privilege', 'core', 'high'),
+          c('CloudWatch Observability & Alarms', 'core', 'high'),
+          c('Draw the Architecture Drill', 'core', 'high')
+        ]
+      },
+      {
+        id: 'delivery-drill',
+        title: 'Docker, CI/CD & Delivery',
+        concepts: [
+          c('Docker for Java Developers', 'core', 'high'),
+          c('CI/CD Pipeline End-to-End: GitHub Actions to ECS Deployment Strategies', 'core', 'high'),
+          c('Kubernetes/EKS Concepts', 'important', 'medium'),
+          c('Observability & Production Debugging', 'core', 'high')
+        ]
+      },
+      {
+        id: 'extras-messaging-cache',
+        title: 'Messaging & Caching Extras',
+        concepts: [
+          c('Kafka Essentials Drill', 'core', 'medium'),
+          c('Redis & Caching Patterns', 'important', 'medium'),
+          c('SQS, SNS & Event-Driven Architecture', 'important', 'medium')
+        ]
+      },
+      {
+        id: 'capstone',
+        title: 'Capstone & Mock Rounds',
+        concepts: [
+          c('Agile & Collaboration Drill', 'core', 'high'),
+          c('Deloitte Scenario Rehearsal', 'core', 'high'),
+          c('Final Readiness Check & Mock Plan', 'core', 'high')
+        ]
+      }
+    ]
+  },
+  {
+    id: 'java-core',
+    title: 'Java Core',
+    tagline: 'The language itself, from OOP foundations to JVM internals.',
     icon: '☕',
     topics: [
       {
@@ -78,7 +243,15 @@ export const CATEGORIES: Category[] = [
           c('Project Panama (FFM API)', 'optional', 'low'),
           c('Project Valhalla (Value Types)', 'optional', 'low')
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'enterprise-java',
+    title: 'Enterprise Java',
+    tagline: 'Data access, persistence, and production-safe backend patterns.',
+    icon: '🏢',
+    topics: [
       {
         id: 'enterprise-java',
         title: 'Enterprise Java (Advanced Java)',
@@ -124,7 +297,15 @@ export const CATEGORIES: Category[] = [
           c('Logging Frameworks (SLF4J, Logback, Log4j2)'),
           c('Backend Development')
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'spring-ecosystem',
+    title: 'Spring Ecosystem',
+    tagline: 'Dependency injection, auto-configuration, and the Spring stack.',
+    icon: '🌱',
+    topics: [
       {
         id: 'spring-ecosystem',
         title: 'Spring Ecosystem',
@@ -134,20 +315,22 @@ export const CATEGORIES: Category[] = [
           c('Spring Boot: Auto-Configuration Internals', 'core', 'high'),
           c('Spring Boot: Actuator'),
           c('Spring Boot: Profiles'),
-          c('Spring Boot: Custom Starters'),
           c('Spring MVC', 'core', 'high'),
           c('Spring Security', 'core', 'high'),
-          c('Spring Data'),
           c('Spring Cloud'),
-          c('Spring Batch'),
-          c('Spring Integration', 'optional', 'low'),
           c('Spring AOP', 'core', 'high'),
           c('Spring WebFlux'),
-          c('Spring Testing'),
-          c('Spring Native / GraalVM', 'optional', 'low'),
-          c('Spring AI', 'optional', 'low')
+          c('Spring Testing')
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'api-design',
+    title: 'API Design',
+    tagline: 'Contracts, versioning, and client compatibility.',
+    icon: '🔌',
+    topics: [
       {
         id: 'api-design',
         title: 'API Design',
@@ -157,10 +340,7 @@ export const CATEGORIES: Category[] = [
           c('gRPC'),
           c('API Versioning', 'core', 'high'),
           c('OpenAPI'),
-          c('Swagger'),
           c('Pagination', 'core', 'high'),
-          c('Filtering'),
-          c('HATEOAS', 'optional', 'low'),
           c('Rate Limiting', 'core', 'high'),
           c('Authentication', 'core', 'high'),
           c('Authorization', 'core', 'high'),
@@ -169,16 +349,22 @@ export const CATEGORIES: Category[] = [
           c('Error Handling', 'core', 'high'),
           c('Webhooks'),
           c('SSE (Server-Sent Events) / Long Polling'),
-          c('CORS', 'core', 'high'),
-          c('API-First / Design-First Workflow')
+          c('CORS', 'core', 'high')
         ]
-      },
+      }
+    ]
+  },
+  {
+    id: 'microservices-architecture',
+    title: 'Microservices Architecture',
+    tagline: 'Service boundaries, resilience, and distributed data consistency.',
+    icon: '🧬',
+    topics: [
       {
         id: 'microservices-architecture',
         title: 'Microservices Architecture',
         concepts: [
           c('Service Discovery', 'core', 'high'),
-          c('Eureka'),
           c('Config Server'),
           c('API Gateway', 'core', 'high'),
           c('Circuit Breaker', 'core', 'high'),
@@ -188,12 +374,7 @@ export const CATEGORIES: Category[] = [
           c('CQRS', 'core', 'high'),
           c('Event Sourcing', 'core', 'high'),
           c('Service Mesh'),
-          c('Observability'),
-          c('Distributed Tracing'),
           c('Strangler Fig Pattern'),
-          c('Anti-Corruption Layer'),
-          c('Bulkhead Pattern'),
-          c('Sidecar Pattern'),
           c('Outbox Pattern', 'core', 'high')
         ]
       }
@@ -220,13 +401,11 @@ export const CATEGORIES: Category[] = [
           c('SSR'),
           c('Authentication', 'core', 'high'),
           c('Testing'),
-          c('PWA', 'optional', 'low'),
           c('Change Detection (Zone.js, OnPush)', 'core', 'high'),
           c('Directives'),
           c('Pipes'),
           c('Component Communication (@Input/@Output)', 'core', 'high'),
-          c('Standalone Components', 'core', 'high'),
-          c('Micro-Frontends / Module Federation', 'optional', 'low')
+          c('Standalone Components', 'core', 'high')
         ]
       },
       {
@@ -238,8 +417,7 @@ export const CATEGORIES: Category[] = [
           c('Decorators'),
           c('Type Narrowing'),
           c('Utility Types'),
-          c('Interfaces vs Types', 'core', 'high'),
-          c('Modules & Namespaces')
+          c('Interfaces vs Types', 'core', 'high')
         ]
       }
     ]
@@ -256,7 +434,6 @@ export const CATEGORIES: Category[] = [
         concepts: [
           c('MySQL'),
           c('PostgreSQL'),
-          c('SQL Server', 'optional', 'low'),
           c('Normalization', 'core', 'high'),
           c('Indexing', 'core', 'high'),
           c('Query Optimization', 'core', 'high'),
@@ -268,9 +445,7 @@ export const CATEGORIES: Category[] = [
           c('Partitioning'),
           c('Sharding', 'core', 'high'),
           c('ACID Properties', 'core', 'high'),
-          c('Views'),
           c('Stored Procedures'),
-          c('Triggers'),
           c('Window Functions', 'core', 'high'),
           c('CTEs', 'core', 'high'),
           c('Backup & Recovery')
@@ -285,14 +460,8 @@ export const CATEGORIES: Category[] = [
           c('Cassandra'),
           c('Elasticsearch'),
           c('DynamoDB'),
-          c('Graph Databases (Neo4j)', 'optional', 'low'),
           c('CAP Theorem', 'core', 'high'),
           c('Consistency', 'core', 'high'),
-          c('Partitioning'),
-          c('TTL'),
-          c('Document Database'),
-          c('Key Value'),
-          c('Search Engine'),
           c('BASE vs ACID', 'core', 'high')
         ]
       }
@@ -320,14 +489,11 @@ export const CATEGORIES: Category[] = [
           c('VPC', 'core', 'high'),
           c('CloudWatch', 'core', 'high'),
           c('CloudFormation'),
-          c('Route53'),
           c('ELB', 'core', 'high'),
           c('Auto Scaling', 'core', 'high'),
-          c('API Gateway'),
           c('Secrets Manager'),
           c('SQS', 'core', 'high'),
           c('SNS', 'core', 'high'),
-          c('EventBridge'),
           c('Well-Architected Framework', 'core', 'high'),
           c('Cost Optimization')
         ]
@@ -345,16 +511,12 @@ export const CATEGORIES: Category[] = [
         title: 'DevOps',
         concepts: [
           c('Git', 'core', 'high'),
-          c('GitHub', 'core', 'high'),
           c('CI/CD', 'core', 'high'),
           c('Jenkins'),
           c('GitHub Actions', 'core', 'high'),
-          c('SonarQube'),
-          c('Nexus'),
           c('Maven', 'core', 'high'),
           c('Gradle', 'core', 'high'),
           c('GitOps'),
-          c('ArgoCD'),
           c('Blue-Green / Canary Deployments', 'core', 'high'),
           c('Feature Flags', 'core', 'high')
         ]
@@ -363,10 +525,7 @@ export const CATEGORIES: Category[] = [
         id: 'build-tools-version-control',
         title: 'Build Tools & Version Control',
         concepts: [
-          c('Maven Lifecycle', 'core', 'high'),
-          c('Gradle Build Scripts'),
           c('Dependency Management', 'core', 'high'),
-          c('BOM (Bill of Materials)'),
           c('Git Internals (objects, refs, rebase vs merge)', 'core', 'high'),
           c('Branching Strategies (GitFlow, Trunk-Based Development)', 'core', 'high')
         ]
@@ -384,9 +543,7 @@ export const CATEGORIES: Category[] = [
           c('Rolling Updates', 'core', 'high'),
           c('Kubernetes Networking'),
           c('Docker Compose', 'core', 'high'),
-          c('Multi-Stage Builds'),
-          c('Service Mesh (Istio)', 'optional', 'low'),
-          c('CRDs / Operators', 'optional', 'low')
+          c('Multi-Stage Builds')
         ]
       }
     ]
@@ -403,7 +560,6 @@ export const CATEGORIES: Category[] = [
         concepts: [
           c('Kafka', 'core', 'high'),
           c('RabbitMQ', 'core', 'high'),
-          c('ActiveMQ', 'optional', 'low'),
           c('SQS'),
           c('SNS'),
           c('EventBridge'),
@@ -427,17 +583,13 @@ export const CATEGORIES: Category[] = [
         id: 'design-patterns-clean-architecture',
         title: 'Design Patterns & Clean Architecture',
         concepts: [
-          c('SOLID', 'core', 'high'),
           c('GOF Patterns: Creational', 'core', 'high'),
           c('GOF Patterns: Structural', 'core', 'high'),
           c('GOF Patterns: Behavioral', 'core', 'high'),
           c('DDD', 'core', 'high'),
           c('Clean Architecture', 'core', 'high'),
           c('Hexagonal Architecture', 'core', 'high'),
-          c('Onion Architecture'),
-          c('Vertical Slice Architecture'),
           c('Repository Pattern', 'core', 'high'),
-          c('Specification Pattern', 'optional', 'low'),
           c('Anti-Patterns', 'core', 'high')
         ]
       }
@@ -467,14 +619,8 @@ export const CATEGORIES: Category[] = [
           c('Rate Limiter', 'core', 'high'),
           c('URL Shortener', 'core', 'high'),
           c('Notification System'),
-          c('Search System'),
-          c('Logging'),
-          c('Monitoring'),
-          c('Security'),
           c('Back-of-Envelope Estimation / Capacity Planning', 'core', 'high'),
-          c('Consensus Algorithms (Raft, Paxos)', 'optional', 'low'),
-          c('Distributed Locks', 'core', 'high'),
-          c('Leader Election', 'core', 'high')
+          c('Distributed Locks', 'core', 'high')
         ]
       },
       {
@@ -485,7 +631,6 @@ export const CATEGORIES: Category[] = [
           c('JWT', 'core', 'high'),
           c('OAuth2', 'core', 'high'),
           c('OpenID Connect'),
-          c('SSL'),
           c('TLS', 'core', 'high'),
           c('HTTPS', 'core', 'high'),
           c('CSRF', 'core', 'high'),
@@ -494,8 +639,6 @@ export const CATEGORIES: Category[] = [
           c('Encryption', 'core', 'high'),
           c('Hashing', 'core', 'high'),
           c('Secrets Management'),
-          c('mTLS', 'optional', 'low'),
-          c('Zero Trust Architecture', 'optional', 'low'),
           c('Security Headers'),
           c('Rate Limiting / DDoS Mitigation')
         ]
@@ -517,13 +660,8 @@ export const CATEGORIES: Category[] = [
           c('Integration Testing', 'core', 'high'),
           c('Testcontainers', 'core', 'high'),
           c('Performance Testing'),
-          c('Load Testing'),
           c('Contract Testing'),
-          c('WireMock'),
           c('TDD', 'core', 'high'),
-          c('BDD (Cucumber)', 'optional', 'low'),
-          c('JaCoCo (Coverage)'),
-          c('Mutation Testing', 'optional', 'low'),
           c('Test Pyramid', 'core', 'high')
         ]
       }
@@ -543,13 +681,9 @@ export const CATEGORIES: Category[] = [
           c('Grafana', 'core', 'high'),
           c('ELK Stack', 'core', 'high'),
           c('OpenTelemetry', 'core', 'high'),
-          c('Jaeger'),
-          c('Zipkin'),
           c('Micrometer'),
-          c('Distributed Logging'),
           c('SLI / SLO / SLA', 'core', 'high'),
-          c('APM Tools (Datadog, New Relic, AppDynamics)'),
-          c('Chaos Engineering', 'optional', 'low')
+          c('APM Tools (Datadog, New Relic, AppDynamics)')
         ]
       }
     ]
@@ -569,12 +703,9 @@ export const CATEGORIES: Category[] = [
           c('HTTP', 'core', 'high'),
           c('HTTPS', 'core', 'high'),
           c('HTTP/2', 'core', 'high'),
-          c('HTTP/3'),
           c('DNS', 'core', 'high'),
           c('Load Balancer'),
           c('Reverse Proxy', 'core', 'high'),
-          c('VPN'),
-          c('NAT'),
           c('CDN'),
           c('WebSocket', 'core', 'high')
         ]
@@ -598,10 +729,8 @@ export const CATEGORIES: Category[] = [
           c('Memory', 'core', 'high'),
           c('File System'),
           c('Permissions', 'core', 'high'),
-          c('Bash'),
           c('Shell Scripting'),
           c('Cron'),
-          c('systemd'),
           c('System Calls')
         ]
       }
@@ -614,6 +743,20 @@ export const CATEGORIES: Category[] = [
     icon: '📐',
     topics: [
       {
+        id: 'software-engineering-practices',
+        title: 'Software Engineering Practices',
+        concepts: [
+          c('Clean Code', 'core', 'high'),
+          c('Refactoring', 'core', 'high'),
+          c('Code Reviews', 'core', 'high'),
+          c('Documentation'),
+          c('Agile'),
+          c('Estimation'),
+          c('Technical Debt', 'core', 'high'),
+          c('Postmortems / Incident Management', 'core', 'high')
+        ]
+      },
+      {
         id: 'enterprise-architecture',
         title: 'Enterprise Architecture',
         concepts: [
@@ -621,35 +764,13 @@ export const CATEGORIES: Category[] = [
           c('Modular Monolith', 'core', 'high'),
           c('Microservices', 'core', 'high'),
           c('Event Driven Architecture', 'core', 'high'),
-          c('SOA'),
           c('CQRS'),
           c('DDD Deep Dive: Bounded Context', 'core', 'high'),
           c('DDD Deep Dive: Aggregates', 'core', 'high'),
-          c('DDD Deep Dive: Value Objects'),
-          c('DDD Deep Dive: Ubiquitous Language'),
           c('BFF', 'core', 'high'),
-          c('API First'),
           c('Twelve-Factor App', 'core', 'high'),
-          c('Cloud Native'),
           c('Multi-Tenant Architecture'),
           c('C4 Model (Architecture Diagramming)', 'core', 'high')
-        ]
-      },
-      {
-        id: 'software-engineering-practices',
-        title: 'Software Engineering Practices',
-        concepts: [
-          c('Clean Code', 'core', 'high'),
-          c('Refactoring', 'core', 'high'),
-          c('Code Reviews', 'core', 'high'),
-          c('Coding Standards'),
-          c('Documentation'),
-          c('Agile'),
-          c('Scrum'),
-          c('Estimation'),
-          c('Technical Debt', 'core', 'high'),
-          c('Postmortems / Incident Management', 'core', 'high'),
-          c('RFC Process for Design Proposals')
         ]
       }
     ]
@@ -665,14 +786,23 @@ export const CATEGORIES: Category[] = [
         title: 'DSA Patterns',
         concepts: [
           c('Arrays', 'core', 'high'),
-          c('Trees', 'core', 'high'),
-          c('Graphs', 'core', 'high'),
+          c('HashMap / HashSet', 'core', 'high'),
+          c('Stack', 'core', 'high'),
+          c('Queue / Deque', 'core', 'high'),
+          c('Linked List', 'core', 'high'),
+          c('Sliding Window', 'core', 'high'),
+          c('Tree', 'core', 'high'),
+          c('Heap / Priority Queue', 'core', 'high'),
+          c('Graph', 'core', 'high'),
+          c('Trie'),
+          c('Union-Find', 'core', 'high'),
+          c('Segment Tree / Fenwick Tree', 'optional', 'low'),
+          c('Sorting', 'core', 'high'),
+          c('Binary Search', 'core', 'high'),
           c('Dynamic Programming', 'core', 'high'),
           c('Greedy', 'core', 'high'),
           c('Backtracking', 'core', 'high'),
-          c('Trie'),
-          c('Heap', 'core', 'high'),
-          c('Sliding Window', 'core', 'high')
+          c('Bit Manipulation')
         ]
       }
     ]

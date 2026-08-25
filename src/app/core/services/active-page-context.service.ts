@@ -29,16 +29,27 @@ export class ActivePageContextService {
     const c = this.content();
     if (!c) return null;
 
-    const lines: string[] = [`Concept: ${c.title}`, '', c.hook, '', c.problem, '', `Core idea: ${c.aha.statement}`, `Analogy: ${c.aha.analogy}`, '', 'How it works:'];
-    c.underTheHood.forEach((step, i) => lines.push(`${i + 1}. ${step}`));
+    const lines: string[] = [
+      `Concept: ${c.title}`,
+      '',
+      c.simpleIntuition,
+      '',
+      c.formalMeaning,
+      '',
+      `Why it exists: ${c.whyItExists}`,
+      '',
+      'How it works internally:'
+    ];
+    c.howItWorksInternally.forEach((step, i) => lines.push(`${i + 1}. ${step}`));
 
-    lines.push('', 'Where this shows up:');
-    c.inTheWild.forEach((item) => lines.push(`- ${item}`));
+    lines.push('', 'Real-world examples:');
+    c.realWorldExamples.forEach((item) => lines.push(`- ${item}`));
 
-    lines.push('', `Common mistake: ${c.commonMistakes[0]?.mistake ?? ''}`, `Why it happens: ${c.commonMistakes[0]?.why ?? ''}`, `Fix: ${c.commonMistakes[0]?.fix ?? ''}`);
+    lines.push('', `Common mistake: ${c.commonMistakes[0] ?? ''}`);
 
-    if (c.oneLiner) lines.push('', `One-liner: ${c.oneLiner}`);
+    if (c.triggerSentence) lines.push('', `One-liner: ${c.triggerSentence}`);
 
     return lines.join('\n');
   }
 }
+

@@ -35,52 +35,6 @@ export interface Category {
   topics: Topic[];
 }
 
-/** One code sample (language + snippet), used inside a bad/good comparison. */
-export interface ConceptCode {
-  language: string;
-  code: string;
-  /** Why this snippet is bad or good - shown right under the code. */
-  explanation: string;
-}
-
-/** The "Show Me" stage is always a bad-approach vs good-approach pair, never a lone snippet. */
-export interface ConceptCodeComparison {
-  caption?: string;
-  bad: ConceptCode;
-  good: ConceptCode;
-}
-
-/** One competing approach shown in the "Alternatives" stage, rendered as a comparison table. */
-export interface ConceptAlternative {
-  name: string;
-  whenToUse: string;
-  whenNotToUse: string;
-}
-
-/** One structural entry in "The Trap" - a real mistake people make, not just a warning. */
-export interface ConceptMistake {
-  /** The mistake, told like a mini war story. */
-  mistake: string;
-  /** Why it happens / why it seems reasonable at the time. */
-  why: string;
-  /** The fix, in plain terms. */
-  fix: string;
-}
-
-/**
- * A link to a related concept, used to weave the site into a connected web
- * instead of 398 isolated pages. `note` explains WHY they're connected (e.g.
- * "same race condition we saw in Wait vs Sleep vs Yield") so the reader gets
- * the payoff of recognizing a pattern, not just a "see also" link.
- */
-export interface ConceptConnection {
-  categoryId: string;
-  topicId: string;
-  conceptId: string;
-  title: string;
-  note: string;
-}
-
 /** A Mermaid diagram embedded inline where a visual genuinely clarifies faster than prose. */
 export interface ConceptDiagram {
   /** Mermaid diagram definition text (flowchart, classDiagram, sequenceDiagram, ...). */
@@ -88,43 +42,104 @@ export interface ConceptDiagram {
   caption?: string;
 }
 
+/** A real, runnable code sample illustrating the concept. */
+export interface ConceptCodeExample {
+  language: string;
+  code: string;
+  /** What this snippet actually shows / why it looks this way. */
+  explanation: string;
+}
+
 /**
- * The content of a concept page. Every concept covers the same underlying
- * ground (a hook, the core idea, how it works, an example, trade-offs,
- * common mistakes, a self-check) but the PAGE ITSELF never labels these as
- * "stages" - it just reads as well-written, natural learning material.
- * Depth and exact length are expected to vary concept to concept.
+ * A link to another concept in the tree - used for BOTH prerequisites (what
+ * to learn first) and related concepts (what to explore next), so no
+ * concept is ever an isolated page. `note` explains WHY they're linked.
+ */
+export interface ConceptLink {
+  categoryId: string;
+  topicId: string;
+  conceptId: string;
+  title: string;
+  note?: string;
+}
+
+/**
+ * Which of the 6 explanation shapes a topic uses - decided BEFORE writing,
+ * because a Concept, a Framework, a Data Structure, an Algorithm, a Runtime
+ * Internal, and a System/Architecture topic each need a different lens.
+ */
+export type TopicType = 'concept' | 'framework' | 'data-structure' | 'algorithm' | 'runtime-internals' | 'system-architecture';
+
+/**
+ * A guided interview war-game: a realistic situation a candidate is dropped
+ * into, the question the interviewer actually asks about it, and a model
+ * answer spoken the way a strong senior candidate would deliver it
+ * (approach first, specifics second). Used by the interview-prep track.
+ */
+export interface ScenarioDrill {
+  /** The concrete setup - project, constraint, what already went wrong. */
+  situation: string;
+  /** What the interviewer asks, verbatim style. */
+  question: string;
+  /** The strong answer - reasoning out loud, not a definition. */
+  answer: string;
+}
+
+/** One-line definitional Q&A - armor for AI/bot screening rounds that fire rapid basic questions. */
+export interface RapidFireItem {
+  question: string;
+  /** A crisp, speakable 1-3 sentence answer - short enough to memorize as a sentence, not a paragraph. */
+  answer: string;
+}
+
+/**
+ * The content of a concept page, following the Learning Framework v2
+ * article template (10 fixed sections, always in this order) PLUS the
+ * connected-knowledge-tree metadata (prerequisites, code, related
+ * concepts) that turns isolated pages into a real knowledge graph. The
+ * page itself never labels these as "stages" - it reads as natural
+ * learning material - but the underlying data always has this exact shape.
  */
 export interface ConceptContent {
   categoryId: string;
   topicId: string;
   conceptId: string;
   title: string;
+  topicType: TopicType;
 
-  /** 1. The Hook */
-  hook: string;
-  /** 2. The Problem */
-  problem: string;
-  /** 3. The Aha (Core Idea) */
-  aha: { statement: string; analogy: string };
-  /** 4. Under the Hood - numbered steps, can be as deep as needed to survive cross-questions. */
-  underTheHood: string[];
-  /** Optional diagram(s) shown alongside the mechanics explanation. */
+  /** Topics that should be understood BEFORE this one - the tree's edges going backward. */
+  prerequisites?: ConceptLink[];
+
+  /** 1. Simple intuition - explained like to someone brand new to it. */
+  simpleIntuition: string;
+  /** 2. Formal meaning - the proper, textbook definition. */
+  formalMeaning: string;
+  /** 3. Why it exists - the problem it solves. */
+  whyItExists: string;
+  /** 4. How it works internally - the actual mechanism, numbered steps. */
+  howItWorksInternally: string[];
+  /** Optional diagram(s) illustrating the internal mechanism. */
   diagrams?: ConceptDiagram[];
-  /** 5. In the Wild */
-  inTheWild: string[];
-  /** 6. Show Me - always bad approach vs good approach, each explained. */
-  showMe: ConceptCodeComparison;
-  /** 7. The Impact */
-  impact: { before: string; after: string; metric?: string };
-  /** 8. The Alternatives - comparison table: when to use / when not to. */
-  alternatives: ConceptAlternative[];
-  /** 9. The Trap - one or more real mistakes, each as mistake/why/fix. */
-  commonMistakes: ConceptMistake[];
-  /** 10. Prove It */
-  proveIt: { question: string; answer?: string };
+  /** Real, runnable code illustrating the mechanism - every concept should have this where applicable. */
+  codeExamples?: ConceptCodeExample[];
+  /** 5. Main components or rules - the topic broken into its key parts. */
+  mainComponents: string[];
+  /** 6. Real-world examples - where this actually shows up. */
+  realWorldExamples: string[];
+  /** 7. Complexity / tradeoffs - speed, memory, reliability, or cost. */
+  complexityAndTradeoffs: string[];
+  /** 8. Common mistakes - what people get wrong, and why it happens. */
+  commonMistakes: string[];
+  /** Interview war-room: realistic scenario questions with model answers (interview-prep track). */
+  scenarioDrills?: ScenarioDrill[];
+  /** Bot-round armor: rapid-fire definitional Q&As to recite aloud (interview-prep track). */
+  rapidFire?: RapidFireItem[];
+  /** 9. Interview perspective - how this is typically asked about / framed. */
+  interviewPerspective: string;
+  /** 10. Trigger sentence - one short line to recognize it again in future. */
+  triggerSentence: string;
 
-  /** Optional closer */
-  oneLiner?: string;
-  connections?: ConceptConnection[];
+  /** Related concepts to explore next - the tree's edges going forward, keeps the site a connected web. */
+  relatedConcepts?: ConceptLink[];
 }
+

@@ -1,0 +1,81 @@
+<div class="mx-auto max-w-3xl px-6 py-16">
+  @if (!generating()) {
+    <div class="text-center">
+      <p class="text-sm font-semibold uppercase tracking-widest text-[var(--color-brand-400)]">Mock Assessment</p>
+      <h1 class="mt-3 text-3xl font-black tracking-tight text-[var(--color-text)] sm:text-4xl">
+        Test what you actually understand.
+      </h1>
+      <p class="mx-auto mt-4 max-w-xl leading-relaxed text-[var(--color-text-muted)]">
+        Enter a technical concept you just studied. Get a focused, AI-generated assessment that mixes concepts, code,
+        debugging, real-world scenarios, and practical decisions, not just trivia.
+      </p>
+    </div>
+
+    <div class="mt-10 rounded-2xl glass-panel p-6">
+      <label class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Topic</label>
+      <input
+        type="text"
+        [ngModel]="topic()"
+        (ngModelChange)="topic.set($event)"
+        (keydown.enter)="generate()"
+        placeholder="e.g. ArrayList, Spring @Transactional, MySQL indexes..."
+        class="mt-2 w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3 text-[var(--color-text)] outline-none focus:border-[var(--color-brand-400)]"
+      />
+
+      <div class="mt-4 flex flex-wrap gap-2">
+        @for (chip of chips; track chip) {
+          <button
+            type="button"
+            (click)="pickChip(chip)"
+            class="rounded-full border border-[var(--color-border)] px-3 py-1.5 text-xs font-medium text-[var(--color-text-muted)] transition hover:border-[var(--color-brand-500)]/50 hover:text-[var(--color-text)]"
+          >
+            {{ chip }}
+          </button>
+        }
+      </div>
+
+      <div class="mt-6">
+        <label class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Difficulty</label>
+        <div class="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          @for (level of difficulties; track level) {
+            <button
+              type="button"
+              (click)="difficulty.set(level)"
+              class="rounded-lg border px-3 py-2 text-sm font-semibold capitalize transition"
+              [class]="difficulty() === level
+                ? 'border-[var(--color-brand-500)] bg-[var(--color-brand-500)]/15 text-[var(--color-brand-300)]'
+                : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'"
+            >
+              {{ level === 'interview-hard' ? 'Interview hard' : level }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <p class="mt-3 text-xs text-[var(--color-text-muted)]">
+        Question count is decided automatically, usually 10-40, based on how much the topic actually warrants.
+      </p>
+
+      @if (errorMessage()) {
+        <div class="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      <button
+        type="button"
+        (click)="generate()"
+        [disabled]="!topic().trim()"
+        class="mt-6 w-full rounded-xl bg-[var(--color-brand-500)] px-4 py-3 text-sm font-bold text-[#0b0f19] transition hover:bg-[var(--color-brand-400)] disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        Generate Assessment
+      </button>
+    </div>
+  } @else {
+    <div class="flex flex-col items-center justify-center py-24 text-center">
+      <div class="h-12 w-12 animate-spin rounded-full border-4 border-[var(--color-brand-500)]/30 border-t-[var(--color-brand-500)]"></div>
+      <p class="mt-6 text-lg font-semibold text-[var(--color-text)]">{{ loadingMessage() }}</p>
+      <p class="mt-2 text-sm text-[var(--color-text-muted)]">Quality questions take a little longer to build, hang tight.</p>
+    </div>
+  }
+</div>

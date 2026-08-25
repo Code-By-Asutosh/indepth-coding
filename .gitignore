@@ -13,6 +13,7 @@
 
 # Environment files
 /.env
+/.claude/settings.local.json
 
 # Angular CLI and build artefacts
 /.angular-cli.json
@@ -34,3 +35,6 @@ yarn-error.log*
 /ai-proxy/.wrangler/
 /ai-proxy/.dev.vars
 /ai-proxy/dist/
+
+# Logs
+debug.log

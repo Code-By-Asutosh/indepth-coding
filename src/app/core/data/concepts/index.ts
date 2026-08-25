@@ -71,8 +71,39 @@ import { OAUTH } from './oauth';
 import { LOGGING_FRAMEWORKS_SLF4J_LOGBACK_LOG4J2 } from './logging-frameworks-slf4j-logback-log4j2';
 import { BACKEND_DEVELOPMENT } from './backend-development';
 
+// Interview Prep
+import { PREP_STRATEGY } from './prep-strategy';
+import { COLLECTIONS_BIG_PICTURE } from './collections-big-picture';
+import { ARRAYLIST_LINKEDLIST_INTERNALS } from './arraylist-linkedlist-internals';
+import { HASHMAP_INTERNALS } from './hashmap-internals';
+import { EQUALS_HASHCODE_IN_PRACTICE } from './equals-hashcode-in-practice';
+import { SET_FAMILY_INTERNALS } from './set-family-internals';
+import { CONCURRENTHASHMAP_FAIL_FAST } from './concurrenthashmap-fail-fast';
+import { MAP_FAMILY_EXTRAS } from './map-family-extras';
+import { COLLECTIONS_SCENARIO_DRILL } from './collections-scenario-drill';
+import { THREADS_TO_THREADPOOLEXECUTOR } from './threads-to-threadpoolexecutor';
+import { COMPLETABLEFUTURE_PARALLEL_STREAMS } from './completablefuture-parallel-streams';
+import { SYNCHRONIZED_VOLATILE_ATOMICS_LOCKS } from './synchronized-volatile-atomics-locks';
+import { RACE_CONDITIONS_DEADLOCKS } from './race-conditions-deadlocks';
+import { CONCURRENCY_SCENARIO_DRILL } from './concurrency-scenario-drill';
+
 /** Every concept that has real 10-stage written content so far. */
 const WRITTEN_CONCEPTS: ConceptContent[] = [
+  PREP_STRATEGY,
+  COLLECTIONS_BIG_PICTURE,
+  ARRAYLIST_LINKEDLIST_INTERNALS,
+  HASHMAP_INTERNALS,
+  EQUALS_HASHCODE_IN_PRACTICE,
+  SET_FAMILY_INTERNALS,
+  CONCURRENTHASHMAP_FAIL_FAST,
+  MAP_FAMILY_EXTRAS,
+  COLLECTIONS_SCENARIO_DRILL,
+  THREADS_TO_THREADPOOLEXECUTOR,
+  COMPLETABLEFUTURE_PARALLEL_STREAMS,
+  SYNCHRONIZED_VOLATILE_ATOMICS_LOCKS,
+  RACE_CONDITIONS_DEADLOCKS,
+  CONCURRENCY_SCENARIO_DRILL,
+
   N_PLUS_ONE_PROBLEM,
 
   // Java Core
