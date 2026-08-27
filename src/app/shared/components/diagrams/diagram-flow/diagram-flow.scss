@@ -1,0 +1,9 @@
+:host {
+  display: block;
+}
+
+/* The measured surface must size to its content (inline-block) while allowing
+   the SVG overlay to cover it completely. */
+.dg-flow-surface {
+  isolation: isolate;
+}

@@ -1,4 +1,21 @@
 :host {
   display: block;
-  height: 100%;
+}
+
+.shelf-card {
+  &:hover,
+  &:focus-visible {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--color-brand-500) 55%, transparent);
+    box-shadow: 0 20px 44px -22px rgba(194, 148, 47, 0.45);
+
+    .term-window__bar {
+      color: var(--color-brand-300);
+    }
+  }
+}
+
+/* Warm spotlight pooling from the top edge while hovering. */
+.shelf-card__glow {
+  background: radial-gradient(ellipse 90% 60% at 50% -10%, rgba(194, 148, 47, 0.16), transparent 65%);
 }

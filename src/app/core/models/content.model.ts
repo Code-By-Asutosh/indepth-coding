@@ -32,13 +32,67 @@ export interface Category {
   tagline: string;
   /** Emoji icon shown on the landing page card + side nav. */
   icon: string;
+  /**
+   * Hidden categories keep their roadmap data but are excluded from every
+   * public surface (landing cards, footer links, stats counts). Flip back
+   * to visible by removing the flag.
+   */
+  hidden?: boolean;
   topics: Topic[];
 }
 
-/** A Mermaid diagram embedded inline where a visual genuinely clarifies faster than prose. */
+/** Visual tone of a diagram node/layer — maps to the site's status palette. */
+export type DiagramTone = 'brand' | 'accent' | 'ok' | 'warn' | 'danger' | 'muted';
+
+export interface DiagramNode {
+  id: string;
+  label: string;
+  /** One-line sub-label rendered under the label inside the node. */
+  detail?: string;
+  tone?: DiagramTone;
+  kind?: 'process' | 'decision' | 'terminal';
+}
+
+export interface DiagramEdge {
+  from: string;
+  to: string;
+  /** Short mono chip rendered on the connector, e.g. "empty" / "occupied". */
+  label?: string;
+  dashed?: boolean;
+}
+
+/**
+ * Structured, native-CSS diagram definitions — the replacement for Mermaid.
+ * Rendered by the `diagrams/` component family (flow, stack, hub, split,
+ * timeline) with pure DOM + CSS, so they're themeable, animated and
+ * accessible instead of a generated SVG blob.
+ */
+export type DiagramDefinition =
+  /** Pipeline / DAG: nodes auto-arranged into depth columns, SVG connectors. */
+  | { variant: 'flow'; direction?: 'lr' | 'tb'; nodes: DiagramNode[]; edges: DiagramEdge[] }
+  /** Vertical layer cake: JVM memory, TCP/IP stack, architecture layers… */
+  | { variant: 'stack'; layers: { id: string; label: string; detail?: string; tone?: DiagramTone }[] }
+  /** Hub-and-spoke: one center node radiating satellites. */
+  | { variant: 'hub'; hub: DiagramNode; spokes: { node: DiagramNode; edgeLabel?: string }[] }
+  /** Versus comparison: two panels and an optional verdict strip. */
+  | {
+      variant: 'split';
+      left: { title: string; items: string[] };
+      right: { title: string; items: string[] };
+      verdict?: string;
+    }
+  /** Numbered step rail (N°01…) for sequences over time. */
+  | { variant: 'timeline'; steps: { id: string; label: string; detail?: string }[] };
+
 export interface ConceptDiagram {
-  /** Mermaid diagram definition text (flowchart, classDiagram, sequenceDiagram, ...). */
-  mermaid: string;
+  /**
+   * Legacy Mermaid source. INERT: nothing renders it anymore — kept only so
+   * un-migrated concept files compile. Re-authored into `definition`
+   * topic-by-topic during the content-quality phase, then this field dies.
+   */
+  mermaid?: string;
+  /** The structured diagram actually rendered on the page. */
+  definition?: DiagramDefinition;
   caption?: string;
 }
 
@@ -139,7 +193,53 @@ export interface ConceptContent {
   /** 10. Trigger sentence - one short line to recognize it again in future. */
   triggerSentence: string;
 
+  /** Interactive step-player animation spec (mental simulation with synced code and step scrubber). */
+  stepPlayer?: StepPlayerSpec;
+
   /** Related concepts to explore next - the tree's edges going forward, keeps the site a connected web. */
   relatedConcepts?: ConceptLink[];
 }
+
+export type StepPlayerVisualType = 'memory-heap' | 'array-pointers' | 'pipeline';
+
+export interface StepPlayerMemoryBlock {
+  title: string;
+  address?: string;
+  fields: { name: string; value: string; tone?: 'brand' | 'accent' | 'ok' | 'warn' | 'danger' | 'muted' }[];
+  tone?: 'brand' | 'accent' | 'ok' | 'warn' | 'danger' | 'muted';
+}
+
+export interface StepPlayerArrayCell {
+  label: string;
+  sub?: string;
+  tone?: 'idle' | 'active' | 'compare' | 'done' | 'target' | 'meet';
+}
+
+export interface StepPlayerPointer {
+  name: string;
+  index: number;
+  tone?: 'brand' | 'cyan';
+}
+
+export interface StepPlayerFrame {
+  badge?: string;
+  caption: string;
+  codeLine?: number;
+  visual?: {
+    type: StepPlayerVisualType;
+    blocks?: StepPlayerMemoryBlock[];
+    pointers?: { from: string; to: string; label?: string }[];
+    cells?: StepPlayerArrayCell[];
+    arrayPointers?: StepPlayerPointer[];
+  };
+}
+
+export interface StepPlayerSpec {
+  title?: string;
+  scenario: string;
+  code: string[];
+  footnote?: string;
+  frames: StepPlayerFrame[];
+}
+
 

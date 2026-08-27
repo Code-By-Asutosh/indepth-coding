@@ -1,8 +1,4 @@
-<div class="app-backdrop" aria-hidden="true">
-  <span class="blob-1"></span>
-  <span class="blob-2"></span>
-  <span class="blob-3"></span>
-</div>
+<div class="app-backdrop" aria-hidden="true"></div>
 
 <app-site-header />
 
@@ -10,6 +6,10 @@
   <router-outlet />
 </main>
 
+<!-- Deferred so the footer's data imports (concept registry counts) never enter the initial bundle. -->
+@defer (on idle) {
+  <app-site-footer />
+ }
+
 <app-ai-help-fab />
 <app-username-gate />
-

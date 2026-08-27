@@ -2,3 +2,29 @@
   display: block;
   height: 100%;
 }
+
+.ic {
+  background: linear-gradient(135deg, rgba(208, 168, 68, 0.28), rgba(128, 96, 31, 0.18));
+  border: 1px solid rgba(208, 168, 68, 0.35);
+}
+
+.c-row.active-concept {
+  color: #171207 !important;
+  background: linear-gradient(90deg, var(--color-brand-400), var(--color-brand-500)) !important;
+  font-weight: 700;
+
+  .dot {
+    background: #171207 !important;
+    color: #171207 !important;
+    box-shadow: none !important;
+  }
+
+  .dot.done {
+    background: rgba(23, 18, 7, 0.2) !important;
+    color: #171207 !important;
+  }
+
+  .you-tag {
+    display: inline-block !important;
+  }
+}

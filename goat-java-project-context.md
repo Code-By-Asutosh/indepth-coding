@@ -178,53 +178,30 @@ Considerations
 
 ---
 
-## 3. The Concept Page Flow (UX/instructional design — applies to every page)
+## 3. The Concept Page Flow (Story Narration Doctrine)
 
-### Why this flow (psychology backing it)
-- **Curiosity gap (Loewenstein):** a definition is homework, an open question is a
-  hook — every page opens with a problem, never a definition.
-- **Cognitive load (Sweller):** working memory holds ~4 items; concrete scenario
-  before abstraction, or the abstraction has nothing to hang onto and falls out of
-  memory.
-- **Schema theory:** new knowledge sticks when it attaches to an existing mental
-  folder — this is why every concept needs one strong analogy as its anchor, not a
-  technical definition.
-- **Testing effect (Roediger & Karpicke):** forced recall, even briefly, beats
-  re-reading by a wide margin — every page ends with a retrieval moment, not a
-  summary.
-- **Story structure:** setup → tension → resolution → new equilibrium. A page that
-  stops at "how it works" never pays off its own opening tension — payoff is what
-  makes someone want the next concept. This is the honest version of "addiction":
-  curiosity + payoff + visible mastery.
+> **Master Guide**: See [`STORY_NARRATION_STYLE_GUIDE.md`](STORY_NARRATION_STYLE_GUIDE.md) for full rules, character arcs, and complete Medium article reference templates.
 
-### The 10 stages (fixed order, every concept, no exceptions)
+### The Philosophy & Psychology
+- **Curiosity gap (Loewenstein):** A definition is homework; an unfolding engineering dilemma is a hook. Every page opens with where the ShopSphere team stands and the immediate bug/need.
+- **Cognitive load (Sweller):** Working memory holds ~4 items; concrete scenario before abstraction.
+- **Schema theory:** New knowledge attaches to an existing mental model. Every concept uses one strong everyday analogy.
+- **Story structure:** Setup → Tension → Resolution → New Equilibrium. Payoff makes the reader eager for the next chapter.
+- **Unified Universe (ShopSphere):** Asutosh & Sushil building an e-commerce platform that grows from a laptop monolith to Docker/ECS on AWS.
 
-1. **The Hook** — a relatable pain/bug/"wait, what?" moment. 2–3 lines, zero jargon.
-   Only job: make the reader lean forward.
-2. **The Problem** — what actually breaks, or stays hard, without this concept.
-   Answers "why should I care" before "what is it."
-3. **The Aha (Core Idea)** — one plain-English sentence + one strong analogy.
-   Exactly one idea. If it takes more than one sentence, it isn't compressed enough.
-4. **Under the Hood** — the real mechanics, small numbered steps, diagram-first
-   where possible. Depth lives here, earned by stages 1–3.
-5. **In the Wild** — 2–3 real scenarios: a production situation, an interview
-   question, a system-design context.
-6. **Show Me** — smallest possible code example that proves the point, not a wall
-   of code.
-7. **The Impact** — before/after, ideally with a number (latency, memory,
-   readability, cost).
-8. **The Alternatives** — 1–2 competing approaches and when to pick them instead.
-   The layer that separates "knows the concept" from "knows when not to use it."
-9. **The Trap** — the #1 mistake people make, told like a war story. High
-   engagement and the content most likely to be forgotten without reinforcement.
-10. **Prove It** — one sharp retrieval question or "predict the output" challenge.
-    Forces active recall before the reader is allowed to feel done.
+### The Lesson Chapter Flow
+1. **Continuation Opening (`Picking up where we left off`)**: Relatable scene/dilemma in ShopSphere. Never open cold.
+2. **Story Chapters (`h2.ch`)**: Numbered narrative headings (e.g. `01 The gift-card bug`, `02 Walking from both ends`).
+3. **Embedded Code Snippets**: Small runnable snippets (2–6 lines) woven right into the story.
+4. **Memory Hook (`.hook`)**: 1 punchy invariant line with `⌘` icon.
+5. **Visual Simulation (`▶ Watch it run`)**: Embedded interactive step-player animation at the moment watching beats reading.
+6. **Honest Trade-offs**: Spoken frankly within prose (*"One honest cost worth knowing..."*), not in an isolated box.
+7. **Synthesis Finale ("Put Together" Recap)**: Terminal summary box resolving the story + next-up teaser.
+8. **War Room Appendix (After the story)**: `rapidFire` (1-breath spoken definitions) + `scenarioDrills` (interview war games).
 
-**Optional closer:**
-- **The One-Liner** — a single memorable sentence/mnemonic compressing the page.
-- **Go Deeper** — links to 2–3 connected concepts, ideally shown as a visible
-  concept graph/map. Finishing one concept visibly unlocking the next is the
-  strongest addiction mechanic in the whole flow.
+> **Master Authoring Guides**:
+> - [`STORY_NARRATION_STYLE_GUIDE.md`](STORY_NARRATION_STYLE_GUIDE.md) — Universe bible, character arcs, and 10 golden rules.
+> - [`ARTICLE_AUTHORING_CONTEXT.md`](ARTICLE_AUTHORING_CONTEXT.md) — Technical standard, code snippet requirements (4–6 per lesson), 4-diagram visual model, and Step-Player animation specs.
 
 ### Worked example — N+1 Problem
 1. **Hook** — Your API endpoint that fetches 20 orders is somehow running 21

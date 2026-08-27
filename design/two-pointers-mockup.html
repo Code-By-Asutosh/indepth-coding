@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Two Pointers — visual lesson mockup · indepth-coding</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* ---- lab tokens (same as the site) ---- */
+  :root{
+    --bg:#0b0a08; --raised:rgba(26,22,15,.72); --surface:rgba(237,230,214,.045);
+    --surface-alt:rgba(237,230,214,.075); --border:rgba(237,230,214,.1); --border-strong:rgba(237,230,214,.18);
+    --gold-300:#ddc071; --gold-400:#d0a844; --gold-500:#c2942f; --gold-200:#e9d7a2;
+    --cyan:#22d3ee; --ok:#34d399; --danger:#f87171;
+    --text:#ece7db; --muted:#a89f90;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;
+    background-image:
+      radial-gradient(ellipse 70% 42% at 50% -8%, rgba(194,148,47,.14), transparent 72%),
+      repeating-linear-gradient(0deg, transparent 0 47px, rgba(237,230,214,.03) 47px 48px),
+      repeating-linear-gradient(90deg, transparent 0 47px, rgba(237,230,214,.03) 47px 48px);}
+  .wrap{max-w:1080px;max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .eyebrow{font-family:'JetBrains Mono';font-size:.68rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .eyebrow::before{content:'$ ';color:var(--gold-400)}
+  h1{font-size:1.9rem;font-weight:900;margin:.4rem 0 .2rem}
+  h2{font-size:1.15rem;font-weight:800;margin:2.6rem 0 .4rem}
+  .sub{color:var(--muted);font-size:.95rem;line-height:1.6;max-width:44rem}
+
+  .term{background:var(--raised);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+  .term__bar{display:flex;align-items:center;gap:.6rem;padding:.5rem .85rem;border-bottom:1px solid var(--border);
+    background:rgba(237,230,214,.035);font-family:'JetBrains Mono';font-size:.68rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted)}
+  .dots{display:inline-flex;gap:.35rem}
+  .dot{width:.5rem;height:.5rem;border-radius:99px;background:var(--border-strong)}
+  .dot:first-child{background:var(--gold-500)}
+
+  /* ---- player ---- */
+  .player{display:grid;grid-template-columns:1fr;gap:0}
+  @media(min-width:900px){ .player{grid-template-columns:1.15fr .85fr}
+    .stage-col{border-right:1px solid var(--border)} }
+  .stage-col{padding:20px 20px 0}
+  .scenario{font-family:'JetBrains Mono';font-size:.72rem;color:var(--muted);margin:0 0 14px}
+  .scenario b{color:var(--gold-300);font-weight:700}
+
+  .board{position:relative;padding:8px 4px 4px}
+  .badge{position:absolute;top:-6px;right:0;font-family:'JetBrains Mono';font-size:.66rem;font-weight:700;
+    color:var(--gold-300);border:1px solid rgba(208,168,68,.45);background:rgba(194,148,47,.1);
+    border-radius:99px;padding:.25rem .7rem;transition:all .25s}
+  .cells{display:grid;gap:8px}
+  .cell{border:1px solid var(--border-strong);border-radius:10px;background:linear-gradient(180deg,rgba(237,230,214,.05),rgba(237,230,214,.015));
+    padding:14px 0 8px;text-align:center;transition:all .3s ease}
+  .cell .v{font-family:'JetBrains Mono';font-weight:700;font-size:1.25rem;display:block}
+  .cell .i{font-family:'JetBrains Mono';font-size:.6rem;color:var(--muted);display:block;margin-top:6px}
+  .cell.idle{}
+  .cell.active{border-color:var(--gold-400);box-shadow:0 0 0 1px rgba(208,168,68,.35),0 8px 22px -12px rgba(194,148,47,.55);transform:translateY(-3px)}
+  .cell.active .v{color:var(--gold-200)}
+  .cell.done{opacity:.32}
+  .cell.done .v{text-decoration:line-through}
+  .pointers{display:grid;gap:8px;margin-top:10px;min-height:52px}
+  .ptr{font-family:'JetBrains Mono';font-size:.66rem;font-weight:700;border-radius:8px;padding:.3rem 0;text-align:center;
+    border:1px dashed transparent;transition:all .3s ease}
+  .ptr.left{color:var(--gold-300);border-color:rgba(208,168,68,.5);background:rgba(194,148,47,.08)}
+  .ptr.right{color:var(--cyan);border-color:rgba(34,211,238,.4);background:rgba(34,211,238,.06)}
+  .ptr .arrow{display:block;font-size:.7rem}
+
+  .narration{display:flex;gap:.7rem;align-items:flex-start;margin:18px 20px 0;padding:12px 14px;border:1px solid var(--border);
+    border-radius:10px;background:var(--surface);font-size:.86rem;line-height:1.5;color:var(--text)}
+  .narration .pen{color:var(--gold-400)}
+  .narration .ln{font-family:'JetBrains Mono';font-size:.62rem;color:var(--bg);background:var(--gold-400);
+    border-radius:4px;padding:.1rem .45rem;margin-right:.35rem;font-weight:700;white-space:nowrap}
+
+  .controls{display:flex;align-items:center;gap:10px;padding:16px 20px 18px;margin-top:16px}
+  .ctl{width:38px;height:38px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);
+    color:var(--muted);cursor:pointer;font-size:.95rem;transition:all .2s;display:flex;align-items:center;justify-content:center}
+  .ctl:hover{color:var(--text);border-color:var(--gold-500)}
+  .ctl.play{width:46px;height:46px;border-radius:99px;background:linear-gradient(180deg,var(--gold-400),var(--gold-500));
+    color:#171207;font-weight:900;border:none;font-size:1.05rem}
+  .ctl.play:hover{filter:brightness(1.1)}
+  .scrub{flex:1;appearance:none;height:5px;border-radius:99px;background:var(--surface-alt);outline:none}
+  .scrub::-webkit-slider-thumb{appearance:none;width:15px;height:15px;border-radius:99px;background:var(--gold-400);
+    border:2px solid #171207;cursor:pointer;box-shadow:0 0 0 3px rgba(194,148,47,.25)}
+  .speed{font-family:'JetBrains Mono';font-size:.7rem;font-weight:700;color:var(--gold-300);border:1px solid rgba(208,168,68,.4);
+    background:transparent;border-radius:8px;padding:.45rem .6rem;cursor:pointer}
+  .stepcount{font-family:'JetBrains Mono';font-size:.68rem;color:var(--muted);min-width:64px;text-align:right}
+  .stepcount b{color:var(--gold-300)}
+
+  /* code panel */
+  .code-col{padding:20px;display:flex;flex-direction:column}
+  .code-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .code-title .eyebrow::before{content:'// '}
+  pre.code{margin:0;font-family:'JetBrains Mono';font-size:.8rem;line-height:1.75;overflow:auto;
+    background:#0e0c08;border:1px solid var(--border);border-radius:10px;padding:14px 0}
+  .cl{display:block;padding:0 16px;white-space:pre;color:var(--muted);border-left:2px solid transparent;transition:all .2s}
+  .cl .kw{color:var(--gold-300)} .cl .fn{color:var(--cyan)} .cl .num{color:#fbbf24}
+  .cl.on{background:rgba(194,148,47,.12);color:var(--text);border-left-color:var(--gold-400)}
+  .cl.on::before{content:'▸ ';color:var(--gold-400)}
+
+  /* storyboard strip */
+  .strip{display:grid;gap:16px;grid-template-columns:1fr}
+  @media(min-width:900px){.strip{grid-template-columns:repeat(3,1fr)}}
+  .snap .board{padding-top:14px}
+  .snap-label{font-family:'JetBrains Mono';font-size:.64rem;color:var(--muted);margin-top:10px;text-align:center}
+  .snap-label b{color:var(--gold-300)}
+
+  /* layout sketch */
+  .sketch{border:1px dashed var(--border-strong);border-radius:12px;padding:18px;display:grid;gap:10px}
+  .sk{border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-family:'JetBrains Mono';font-size:.7rem;color:var(--muted)}
+  .sk.hero{background:rgba(194,148,47,.09);border-color:rgba(208,168,68,.5);color:var(--gold-300);font-weight:700}
+  .sk .tag{float:right;color:var(--bg);background:var(--gold-400);border-radius:4px;padding:0 .4rem;font-size:.6rem;font-weight:700}
+
+  .approve{margin-top:2.5rem;border:1px solid rgba(208,168,68,.45);border-radius:12px;padding:18px 22px;
+    background:rgba(194,148,47,.07);font-size:.9rem;line-height:1.6}
+  .approve b{color:var(--gold-300)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">design mockup — not the real site yet</p>
+  <h1>Two Pointers <span class="mono" style="color:var(--gold-400);font-size:1rem">~/lab/watch-it-run</span></h1>
+  <p class="sub">This is the pilot for the visual lesson engine. Same data-driven idea as the real build:
+    every frame below is a <b>declarative snapshot</b> (cell states + pointers + caption + code line) — the player is generic.
+    Review the three frozen moments, then drive the live player. Approve, and this becomes a real Angular component
+    embedded in the full Two Pointers lesson.</p>
+
+  <!-- ============ FROZEN STORYBOARD ============ -->
+  <h2><span class="eyebrow" style="display:block;margin-bottom:8px">01 · three moments</span> The walk, frozen</h2>
+  <div class="strip" id="strip"></div>
+
+  <!-- ============ LIVE PLAYER ============ -->
+  <h2><span class="eyebrow" style="display:block;margin-bottom:8px">02 · the player</span> Drive it yourself</h2>
+  <div class="term">
+    <div class="term__bar"><span class="dots"><i class="dot"></i><i class="dot"></i><i class="dot"></i></span> watch-it-run — the opposite-ends walk</div>
+    <div class="player">
+      <div class="stage-col">
+        <p class="scenario">sorted = [3, 8, 12, 17, 21, 26, 30] · <b>target = 27</b> · does any pair sum to it?</p>
+        <div class="board">
+          <span class="badge" id="badge"></span>
+          <div class="cells" id="cells"></div>
+          <div class="pointers" id="pointers"></div>
+        </div>
+        <div class="narration"><span class="pen">✎</span><span><span class="ln mono" id="flabel"></span><span id="caption"></span></span></div>
+        <div class="controls">
+          <button class="ctl" onclick="go(0)" title="restart">⟲</button>
+          <button class="ctl" onclick="step(-1)" title="previous">◀</button>
+          <button class="ctl play" id="playBtn" onclick="togglePlay()" title="play/pause">▶</button>
+          <button class="ctl" onclick="step(1)" title="next">▶|</button>
+          <input class="scrub" id="scrub" type="range" min="0" max="9" value="0" oninput="go(+this.value)" aria-label="frame scrubber">
+          <button class="speed" onclick="cycleSpeed()" id="speedBtn">1×</button>
+          <span class="stepcount"><b id="stepNow">1</b> / <span id="stepTotal">10</span></span>
+        </div>
+      </div>
+      <div class="code-col">
+        <div class="code-title"><span class="eyebrow">pseudocode — synced</span><span class="mono" style="font-size:.62rem;color:var(--muted)">line <span id="codeLineNo">1</span></span></div>
+        <pre class="code" id="code"></pre>
+        <p class="mono" style="font-size:.62rem;color:var(--muted);margin:.7rem 0 0">7 comparisons · brute force needs 21 · that's the whole trick.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PAGE LAYOUT SKETCH ============ -->
+  <h2><span class="eyebrow" style="display:block;margin-bottom:8px">03 · where it lives</span> Lesson page layout</h2>
+  <div class="sketch">
+    <div class="sk">$ 01 · intuition <span style="float:right">the hook — "one comparison just deleted half your search space"</span></div>
+    <div class="sk">$ 02 · formal meaning &nbsp; $ 03 · why it exists</div>
+    <div class="sk">$ 04 · how it works internally <span style="float:right">5 numbered steps</span></div>
+    <div class="sk hero">▶ watch it run <span class="tag">NEW</span> <span style="float:right;color:var(--muted)">the step-player sits right here</span></div>
+    <div class="sk">$ 05 · code lab <span style="float:right">real Java pairExists() — explains what you just watched</span></div>
+    <div class="sk">$ 06 · components · $ 07 · in the wild · $ 08 · trade-offs · $ 09 · the trap</div>
+    <div class="sk">war-room: scenario drills + rapid fire · interview lens · trigger sentence</div>
+  </div>
+
+  <div class="approve">
+    <b>Approve this design</b> and I build it for real: a generic <span class="mono">StepPlayer</span> Angular component
+    (frames in → player out), the frame spec in the content model, and the complete Two Pointers lesson in the house voice —
+    live at <span class="mono">/learn/dsa/dsa-patterns/two-pointers</span>. Same engine then takes binary search,
+    sliding window, HashMap put(), Spring DI — any concept that can be framed.
+  </div>
+</div>
+
+<script>
+/* ---- declarative frames: exactly the shape the real engine will consume ---- */
+const CODE = `left = 0
+right = n - 1
+while left < right:
+    sum = arr[left] + arr[right]
+    if sum == target: return true
+    if sum < target: left++
+    else: right--
+return false`;
+
+const VALS = [3,8,12,17,21,26,30];
+const F = (caption, codeLine, active, done, left, right, badge) => ({
+  caption, codeLine, active, done,
+  left: left ?? null, right: right ?? null, badge: badge ?? ''
+});
+
+const FRAMES = [
+  F('Start at the extremes — the whole array is still in play.', 1, [], [], 0, 6, 'left=0 · right=6'),
+  F('3 + 30 = 33. Too big — and since the array is sorted, 30 can’t pair with anything smaller either. One comparison condemns it.', 4, [0,6], [], 0, 6, '33 > 27'),
+  F('30 eliminated. right steps down. Notice: left never moved, yet the search space shrank.', 7, [], [6], 0, 5, 'right −−'),
+  F('3 + 26 = 29. Still over target — 26 pairs with nothing from 3 downward either.', 4, [0,5], [6], 0, 5, '29 > 27'),
+  F('26 eliminated. The window is closing from the right, one verdict at a time.', 7, [], [5,6], 0, 4, 'right −−'),
+  F('3 + 21 = 24. Now too small — so 3 is the weak end of this pair. Push left inward.', 6, [0,4], [5,6], 0, 4, '24 < 27'),
+  F('3 eliminated. Every pair that could ever involve 3 was judged in a single sweep — that’s the O(n²) → O(n) magic.', 6, [], [0,5,6], 1, 4, 'left ++'),
+  F('8 + 21 = 29. Over again — 21 is out. Only 8 and 17 are left standing in the window.', 7, [1,4], [0,5,6], 1, 4, '29 > 27'),
+  F('8 + 17 = 25. Falls short — left marches on to give 12 its chance.', 6, [1,3], [0,4,5,6], 1, 3, '25 < 27'),
+  F('12 + 17 = 29, too big — right crosses left. Every possibility is eliminated: 7 comparisons instead of 21. Return false.', 7, [2,3], [0,1,4,5,6], 2, 2, 'crossed · return false'),
+];
+
+/* ---- generic renderer (mini version of the real StepPlayer) ---- */
+let idx = 0, playing = false, timer = 0, speed = 1;
+
+function cellHtml(v, i, fr){
+  const tone = fr.active.includes(i) ? 'active' : fr.done.includes(i) ? 'done' : 'idle';
+  return `<div class="cell ${tone}"><span class="v">${v}</span><span class="i">[${i}]</span></div>`;
+}
+function ptrHtml(label, at, cls){
+  return at===null ? `<div></div>` : `<div class="ptr ${cls}" style="grid-column:${at+1}">
+    <span class="arrow">${cls==='left'?'▲':'▲'}</span>${label}=${at}</div>`;
+}
+function render(){
+  const fr = FRAMES[idx];
+  document.getElementById('cells').innerHTML = VALS.map((v,i)=>cellHtml(v,i,fr)).join('');
+  document.getElementById('cells').style.gridTemplateColumns = `repeat(${VALS.length},1fr)`;
+  document.getElementById('pointers').innerHTML =
+    `<div style="display:grid;grid-template-columns:repeat(${VALS.length},1fr);gap:8px;width:100%">`+
+    ptrHtml('left', fr.left, 'left') + ptrHtml('right', fr.right, 'right') + `</div>`;
+  document.getElementById('badge').textContent = fr.badge;
+  document.getElementById('caption').textContent = fr.caption;
+  document.getElementById('flabel').textContent = 'line ' + fr.codeLine;
+  document.getElementById('stepNow').textContent = idx+1;
+  document.getElementById('scrub').value = idx;
+  document.getElementById('codeLineNo').textContent = fr.codeLine;
+  document.querySelectorAll('.cl').forEach((el,i)=> el.classList.toggle('on', i+1===fr.codeLine));
+}
+function renderCode(){
+  const html = CODE.split('\n').map((l,i)=>{
+    const esc = l.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+    const tok = esc
+      .replace(/\b(while|if|else|return)\b/g,'<span class="kw">$1</span>')
+      .replace(/\b(\d+)\b/g,'<span class="num">$1</span>');
+    return `<span class="cl" id="cl${i+1}">${tok}</span>`;
+  }).join('');
+  document.getElementById('code').innerHTML = html;
+}
+function go(i){ idx = Math.max(0, Math.min(FRAMES.length-1, i)); render(); }
+function step(d){ go(idx+d); stopPlay(); }
+function togglePlay(){
+  playing = !playing;
+  document.getElementById('playBtn').textContent = playing ? '⏸' : '▶';
+  if (playing) { if (idx >= FRAMES.length-1) go(0); tick(); } else clearTimeout(timer);
+}
+function tick(){
+  if (!playing) return;
+  go(idx+1);
+  if (idx >= FRAMES.length-1) { togglePlay(); return; }
+  timer = setTimeout(tick, 1700/speed);
+}
+function stopPlay(){ if (playing) togglePlay(); }
+function cycleSpeed(){
+  speed = speed === 1 ? 2 : speed === 2 ? 0.5 : 1;
+  document.getElementById('speedBtn').textContent = (speed + '×').replace('0.5','½');
+}
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight') step(1);
+  if (e.key==='ArrowLeft') step(-1);
+  if (e.key===' ') { e.preventDefault(); togglePlay(); }
+});
+
+/* ---- frozen storyboard snapshots ---- */
+function snapshot(frIdx){
+  const fr = FRAMES[frIdx];
+  return `<div class="term snap"><div class="board" style="position:relative;padding-top:16px">
+    <span class="badge">${fr.badge}</span>
+    <div class="cells" style="grid-template-columns:repeat(7,1fr)">${VALS.map((v,i)=>cellHtml(v,i,fr)).join('')}</div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-top:10px">
+      ${ptrHtml('left', fr.left, 'left')}${ptrHtml('right', fr.right, 'right')}
+    </div>
+  </div>
+  <div class="narration" style="margin:12px 14px 14px"><span class="pen">✎</span><span>${fr.caption}</span></div></div>
+  <p class="snap-label">frame ${frIdx+1} — <b>${frIdx===0?'the start':frIdx===6?'the sweep':'the crossing'}</b></p>`;
+}
+document.getElementById('strip').innerHTML = snapshot(0) + snapshot(6) + snapshot(9);
+
+renderCode();
+render();
+</script>
+</body>
+</html>

@@ -25,11 +25,7 @@
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "allowedCommonJsDependencies": [
-              "prismjs",
-              "dayjs",
-              "cytoscape-fcose",
-              "cytoscape-cose-bilkent",
-              "@braintree/sanitize-url"
+              "prismjs"
             ],
             "assets": [
               {

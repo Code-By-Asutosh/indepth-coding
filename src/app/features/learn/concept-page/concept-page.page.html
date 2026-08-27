@@ -1,209 +1,400 @@
-@if (conceptSummary(); as summary) {
-  <article class="pb-16">
-    <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[var(--color-text-muted)]">
-      <a [routerLink]="['/learn', categoryId()]" class="transition hover:text-[var(--color-brand-300)]">{{ category()?.title }}</a>
-      <span class="text-[var(--color-border)]">/</span>
-      <a [routerLink]="['/learn', categoryId()]" class="transition hover:text-[var(--color-brand-300)]">{{ topic()?.title }}</a>
-      <span class="text-[var(--color-border)]">/</span>
-      <span class="text-[var(--color-brand-400)]">{{ topicPosition().index }} of {{ topicPosition().total }}</span>
-    </div>
+@if (category(); as cat) {
+  @if (topic(); as top) {
+    @if (conceptSummary(); as concept) {
+      <!-- Reading progress: gold hairline hugging the header's bottom edge -->
+      <div class="sticky top-[57px] z-30 -mb-px h-[2px] w-full bg-transparent" aria-hidden="true">
+        <div
+          class="h-full bg-gradient-to-r from-[var(--color-brand-500)] to-[var(--color-brand-300)] transition-[width] duration-100"
+          [style.width.%]="readProgress() * 100"
+        ></div>
+      </div>
 
-    <div class="mt-3 flex flex-wrap items-start justify-between gap-4">
-      <h1 class="text-2xl font-black tracking-tight text-[var(--color-text)] sm:text-3xl">{{ summary.title }}</h1>
+      <!-- Full-bleed Concept Layout: Center Content (1fr) + Right TOC Rail (240px) -->
+      <div class="flex min-h-full w-full font-sans">
+        <!-- Main Content Area -->
+        <article class="min-w-0 flex-1 px-6 py-8 sm:px-10 md:px-14 lg:py-10">
+          <div class="mx-auto max-w-[54rem]">
+            <!-- ============ BREADCRUMBS & ACTION ============ -->
+            <div class="crumbs">
+              <span>
+                ~/learn/<a
+                  [routerLink]="['/learn', cat.id]"
+                  class="transition hover:text-[var(--color-brand-300)]"
+                  ><b>{{ cat.id }}</b></a
+                >/<b>{{ top.id }}</b>/{{ concept.id }}
+              </span>
 
-      <button
-        type="button"
-        (click)="toggleComplete()"
-        class="flex shrink-0 items-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition"
-        [class]="isComplete()
-          ? 'border-[var(--color-brand-500)] bg-[var(--color-brand-500)]/15 text-[var(--color-brand-300)]'
-          : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-brand-500)]/50 hover:text-[var(--color-text)]'"
-      >
-        {{ isComplete() ? '✅ Completed' : 'Mark as complete' }}
-      </button>
-    </div>
+              <button
+                type="button"
+                (click)="toggleComplete()"
+                class="done-btn"
+                [class.did]="isComplete()"
+                [attr.aria-pressed]="isComplete()"
+              >
+                @if (isComplete()) {
+                  ✓ done — undo?
+                } @else {
+                  <span class="text-[var(--color-brand-400)]">$</span> mark --done
+                }
+              </button>
+            </div>
 
-    <div class="mt-3 flex flex-wrap gap-2 text-xs">
-      <span class="rounded-full bg-[var(--color-surface-alt)] px-2.5 py-1 font-semibold uppercase tracking-wide text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)]">
-        {{ summary.importance }}
-      </span>
-      <span class="rounded-full bg-[var(--color-surface-alt)] px-2.5 py-1 font-semibold uppercase tracking-wide text-[var(--color-text-muted)] ring-1 ring-inset ring-[var(--color-border)]">
-        {{ summary.frequency }} interview frequency
-      </span>
-    </div>
+            <!-- ============ HERO TITLE & METADATA ============ -->
+            <h1 class="title">
+              {{ concept.title }}
+              @if (content()?.triggerSentence; as trigger) {
+                <small>// {{ trigger }}</small>
+              }
+            </h1>
 
-    @if (content(); as page) {
-      <div class="prose-content mt-10">
-        @if (page.prerequisites && page.prerequisites.length > 0) {
-          <div class="mb-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] p-4">
-            <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Learn first</p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              @for (prereq of page.prerequisites; track prereq.conceptId) {
-                <a
-                  [routerLink]="['/learn', prereq.categoryId, prereq.topicId, prereq.conceptId]"
-                  class="rounded-full border border-[var(--color-brand-500)]/40 bg-[var(--color-brand-500)]/10 px-3 py-1 text-sm font-semibold text-[var(--color-brand-300)] transition hover:bg-[var(--color-brand-500)]/20"
-                  [title]="prereq.note ?? ''"
-                >
-                  {{ prereq.title }}
+            <div class="meta">
+              <span class="hot">{{ concept.importance }}</span>
+              <span>freq: {{ concept.frequency }}</span>
+              <span>{{ content()?.topicType ?? 'concept' }}</span>
+              <span>~4-6 min</span>
+              <span>+{{ concept.importance === 'core' ? 100 : (concept.importance === 'important' ? 60 : 30) }} xp</span>
+              <span class="plain">· {{ topicPosition().index }} of {{ topicPosition().total }} in {{ top.title }}</span>
+            </div>
+
+            <!-- Mobile section chips (< xl) -->
+            @if (content()) {
+              <nav class="mt-6 flex gap-1.5 overflow-x-auto pb-1 xl:hidden" aria-label="Sections">
+                @for (section of visibleSections(); track section.id) {
+                  <a
+                    href="#{{ section.id }}"
+                    class="shrink-0 rounded-full border px-3 py-1 font-mono text-[10px] uppercase tracking-wider transition"
+                    [class]="activeSection() === section.id
+                      ? 'border-[var(--color-brand-500)]/60 text-[var(--color-brand-300)] bg-[var(--color-brand-500)]/10'
+                      : 'border-[var(--color-border)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]'"
+                  >
+                    <span class="opacity-60 mr-1">{{ sectionNo(section.id) }}</span>
+                    {{ section.label }}
+                  </a>
+                }
+              </nav>
+            }
+
+            <!-- ============ NOT WRITTEN YET ============ -->
+            @if (!content()) {
+              <div class="term-window mt-10 max-w-2xl">
+                <div class="term-window__bar">
+                  <span class="term-dots"><i class="term-dot"></i><i class="term-dot"></i><i class="term-dot"></i></span>
+                  indepth-coding~/lab
+                </div>
+                <div class="space-y-2 px-5 py-6 font-mono text-sm">
+                  <p class="text-[var(--color-text-muted)]"><span class="text-[var(--color-brand-400)]">$</span> cat concepts/{{ cat.id }}/{{ top.id }}/{{ concept.id }}.md</p>
+                  <p class="text-[var(--color-danger)]">cat: no such file — this lesson hasn't been written yet.</p>
+                  <p class="text-[var(--color-text-muted)]"><span class="text-[var(--color-brand-400)]">$</span> next<span class="cursor-blink ml-0.5 inline-block h-4 w-2 translate-y-0.5 bg-[var(--color-brand-400)]"></span></p>
+                </div>
+              </div>
+            }
+
+            <!-- ============ THE LESSON CONTENT ============ -->
+            @if (content(); as c) {
+              <!-- 00 CONTINUATION OPENING -->
+              <div #sec data-section="opening" id="opening" class="opening rise-in">
+                <div class="k">Picking up where we left off</div>
+                <p>
+                  {{ c.simpleIntuition }}
+                </p>
+              </div>
+
+              <!-- PREREQUISITES -->
+              @if (c.prerequisites?.length) {
+                <aside class="panel my-6 rounded-xl border-l-2 border-l-[var(--color-accent-400)] p-4">
+                  <p class="eyebrow eyebrow--slash">learn first</p>
+                  <ul class="mt-3 space-y-2">
+                    @for (link of c.prerequisites; track link.conceptId) {
+                      <li>
+                        <a
+                          [routerLink]="['/learn', link.categoryId, link.topicId, link.conceptId]"
+                          class="group inline-flex items-baseline gap-2 text-sm"
+                        >
+                          <span class="font-semibold text-[var(--color-accent-400)] transition group-hover:text-[var(--color-accent-400)]/80">{{ link.title }}</span>
+                          @if (link.note) {
+                            <span class="text-xs text-[var(--color-text-muted)]">— {{ link.note }}</span>
+                          }
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </aside>
+              }
+
+              <!-- 01 FORMAL MEANING & WHY IT EXISTS -->
+              <section #sec data-section="formal" id="formal" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('formal') }}</span> Formal Meaning</h2>
+                <div class="mt-3 rounded-xl border border-[var(--color-brand-500)]/25 bg-[var(--color-brand-500)]/[0.06] p-5">
+                  <p class="leading-relaxed text-[var(--color-text)]">{{ c.formalMeaning }}</p>
+                </div>
+                <p class="mt-4 leading-relaxed text-[var(--color-text-muted)]">{{ c.whyItExists }}</p>
+                @if (c.triggerSentence) {
+                  <div class="hook">{{ c.triggerSentence }}</div>
+                }
+              </section>
+
+              <!-- 02 HOW IT WORKS INTERNALLY -->
+              <section #sec data-section="mechanism" id="mechanism" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('mechanism') }}</span> How It Works Internally</h2>
+                <ol class="mt-4 space-y-3">
+                  @for (step of c.howItWorksInternally; track $index) {
+                    <li class="flex gap-3.5 leading-relaxed text-[var(--color-text)]">
+                      <span class="stat-num mt-0.5 shrink-0 text-xs text-[var(--color-brand-400)]">{{ pad2($index) }}</span>
+                      <span>{{ step }}</span>
+                    </li>
+                  }
+                </ol>
+
+                @for (diagram of definedDiagrams(); track $index) {
+                  <div class="mt-6">
+                    <app-diagram [definition]="diagram.definition!" [caption]="diagram.caption" />
+                  </div>
+                }
+              </section>
+
+              <!-- WATCH IT RUN — INTERACTIVE STEP PLAYER -->
+              @if (c.stepPlayer; as playerSpec) {
+                <section #sec data-section="player" id="player" class="scroll-mt-24 pt-4">
+                  <h2 class="ch play-h"><span class="no">▶</span> Watch It Run</h2>
+                  <app-step-player [spec]="playerSpec" />
+                </section>
+              }
+
+              <!-- CODE LAB -->
+              @if (c.codeExamples?.length) {
+                <section #sec data-section="code" id="code" class="scroll-mt-24 pt-4">
+                  <h2 class="ch play-h"><span class="no">▶</span> Code Lab</h2>
+                  <div class="mt-4 space-y-6">
+                    @for (example of c.codeExamples; track $index) {
+                      <figure>
+                        <app-code-block [language]="example.language" [code]="example.code" />
+                        <figcaption class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                          <span class="text-[var(--color-brand-400)]">//</span>
+                          {{ example.explanation }}
+                        </figcaption>
+                      </figure>
+                    }
+                  </div>
+                </section>
+              }
+
+              <!-- 03 MAIN COMPONENTS & RULES -->
+              <section #sec data-section="components" id="components" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('components') }}</span> Rules &amp; Core Parts</h2>
+                <ul class="mt-4 grid gap-3">
+                  @for (component of c.mainComponents; track $index) {
+                    <li class="panel rounded-lg p-4 text-sm leading-relaxed text-[var(--color-text)]">
+                      {{ component }}
+                    </li>
+                  }
+                </ul>
+              </section>
+
+              <!-- 04 IN THE WILD -->
+              <section #sec data-section="wild" id="wild" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('wild') }}</span> In The Wild</h2>
+                <ul class="mt-4 grid gap-3 sm:grid-cols-2">
+                  @for (example of c.realWorldExamples; track $index) {
+                    <li class="rounded-lg border border-[var(--color-border)] border-dashed p-4 text-sm leading-relaxed text-[var(--color-text-muted)]">
+                      {{ example }}
+                    </li>
+                  }
+                </ul>
+              </section>
+
+              <!-- 05 COMPLEXITY & TRADEOFFS -->
+              <section #sec data-section="tradeoffs" id="tradeoffs" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('tradeoffs') }}</span> Honest Costs &amp; Trade-offs</h2>
+                <div class="term-window mt-4">
+                  <ul class="divide-y divide-[var(--color-border)]">
+                    @for (tradeoff of c.complexityAndTradeoffs; track $index) {
+                      <li class="px-4 py-3 text-sm leading-relaxed text-[var(--color-text-muted)] first:pt-4 last:pb-4">
+                        <span class="mr-1.5 font-mono text-xs text-[var(--color-brand-400)]">↔</span>
+                        {{ tradeoff }}
+                      </li>
+                    }
+                  </ul>
+                </div>
+              </section>
+
+              <!-- 06 THE TRAP -->
+              <section #sec data-section="mistakes" id="mistakes" class="scroll-mt-24 pt-4">
+                <h2 class="ch"><span class="no">{{ sectionNo('mistakes') }}</span> The Trap</h2>
+                <div class="mt-4 space-y-4">
+                  @for (mistake of c.commonMistakes; track $index) {
+                    <div class="rounded-xl border border-[var(--color-danger)]/30 bg-[var(--color-danger)]/[0.05] p-5">
+                      @if (splitFix(mistake); as parts) {
+                        <p class="text-sm leading-relaxed text-[var(--color-text)]">{{ parts.body }}</p>
+                        @if (parts.fix; as fix) {
+                          <p class="mt-3 rounded-lg border-l-2 border-l-[var(--color-ok)] bg-[var(--color-ok)]/[0.07] px-3.5 py-2.5 text-sm leading-relaxed text-[var(--color-text)]">
+                            <span class="stat-num mr-1.5 text-xs font-bold text-[var(--color-ok)]">FIX:</span>{{ fix }}
+                          </p>
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              </section>
+
+              <!-- RECAP SUMMARY -->
+              <div class="recap" id="recap">
+                <div class="bar">
+                  <span class="term-dots"><i class="term-dot"></i><i class="term-dot"></i><i class="term-dot"></i></span>
+                  {{ concept.title }} — put together
+                </div>
+                <ul>
+                  <li><b>Core idea:</b> {{ c.formalMeaning }}</li>
+                  @for (item of c.mainComponents; track $index) {
+                    <li>{{ item }}</li>
+                  }
+                  <li><b>Key invariant:</b> {{ c.triggerSentence }}</li>
+                </ul>
+              </div>
+
+              <!-- NEXT UP TEASER -->
+              @if (nextTarget(); as nextT) {
+                <a [routerLink]="nextT.link" class="next-up group block">
+                  <div class="flex items-center gap-4">
+                    <span class="arr group-hover:translate-x-1 transition-transform">→</span>
+                    <div>
+                      <div class="t">Next: {{ nextT.title }}</div>
+                      <div class="d">Continue to the next chapter in this curriculum.</div>
+                    </div>
+                    <span class="go">$ next →</span>
+                  </div>
                 </a>
               }
+
+              <!-- WAR ROOM APPENDIX -->
+              @if (c.scenarioDrills?.length || c.rapidFire?.length || c.interviewPerspective) {
+                <section #sec data-section="warroom" id="warroom" class="war">
+                  <div class="hd">⚔ <b>war room</b> // interview-prep appendix — after the story, before the room</div>
+
+                  @if (c.interviewPerspective) {
+                    <div class="mb-4 rounded-xl border border-[var(--color-accent-400)]/25 bg-[var(--color-accent-500)]/[0.05] p-5">
+                      <p class="font-mono text-xs font-bold uppercase tracking-wider text-[var(--color-accent-400)] mb-1">interview perspective</p>
+                      <p class="leading-relaxed text-sm text-[var(--color-text)]">{{ c.interviewPerspective }}</p>
+                    </div>
+                  }
+
+                  @if (c.rapidFire?.length) {
+                    <div class="space-y-2 mb-4">
+                      @for (item of c.rapidFire; track $index) {
+                        <details class="rf">
+                          <summary>
+                            <span class="q">RF·{{ $index + 1 }}</span>
+                            <span class="min-w-0 flex-1 font-semibold text-[var(--color-text)]">{{ item.question }}</span>
+                            <span class="chev">▸</span>
+                          </summary>
+                          <div class="a">
+                            <p>{{ item.answer }}</p>
+                          </div>
+                        </details>
+                      }
+                    </div>
+                  }
+
+                  @if (c.scenarioDrills?.length) {
+                    <div class="space-y-3">
+                      @for (drill of c.scenarioDrills; track $index) {
+                        <details class="rf">
+                          <summary>
+                            <span class="q">DRILL {{ $index + 1 }}</span>
+                            <div class="min-w-0 flex-1">
+                              <span class="block text-[11px] uppercase tracking-wider text-[var(--color-text-muted)]">{{ drill.situation }}</span>
+                              <span class="block text-sm font-semibold text-[var(--color-text)]">{{ drill.question }}</span>
+                            </div>
+                            <span class="chev">▸</span>
+                          </summary>
+                          <div class="a">
+                            <p class="whitespace-pre-line">{{ drill.answer }}</p>
+                          </div>
+                        </details>
+                      }
+                    </div>
+                  }
+                </section>
+              }
+
+              <!-- GO DEEPER / RELATED CONCEPTS -->
+              @if (c.relatedConcepts?.length) {
+                <section #sec data-section="related" id="related" class="scroll-mt-24 pt-10">
+                  <h2 class="ch"><span class="no">→</span> Go Deeper</h2>
+                  <div class="mt-4 grid gap-3 sm:grid-cols-2">
+                    @for (link of c.relatedConcepts; track link.conceptId) {
+                      <a
+                        [routerLink]="['/learn', link.categoryId, link.topicId, link.conceptId]"
+                        class="panel group rounded-lg p-4 transition hover:border-[var(--color-brand-500)]/50"
+                      >
+                        <p class="flex items-center justify-between gap-2 text-sm font-bold text-[var(--color-text)] transition group-hover:text-[var(--color-brand-300)]">
+                          {{ link.title }}
+                          <span class="font-mono text-xs transition group-hover:translate-x-0.5">→</span>
+                        </p>
+                        @if (link.note) {
+                          <p class="mt-1.5 text-xs leading-relaxed text-[var(--color-text-muted)]">{{ link.note }}</p>
+                        }
+                      </a>
+                    }
+                  </div>
+                </section>
+              }
+            }
+
+            <div class="pt-14">
+              <app-prev-next-nav [prev]="prevTarget()" [next]="nextTarget()" />
             </div>
           </div>
-        }
+        </article>
 
-        <!-- 1. Simple intuition -->
-        <p class="text-lg leading-relaxed text-[var(--color-text)]">{{ page.simpleIntuition }}</p>
-
-        <!-- 2. Formal meaning - visually distinct callout -->
-        <div class="mt-8 rounded-2xl border border-[var(--color-brand-500)]/30 bg-[var(--color-brand-500)]/5 p-5 backdrop-blur-md">
-          <p class="text-lg font-semibold leading-relaxed text-[var(--color-text)]">{{ page.formalMeaning }}</p>
-        </div>
-
-        <!-- 3. Why it exists -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Why it exists</h2>
-        <p class="mt-3 leading-relaxed text-[var(--color-text-muted)]">{{ page.whyItExists }}</p>
-
-        <!-- 4. How it works internally -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">How it works internally</h2>
-        <ol class="mt-3 list-decimal space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:font-semibold marker:text-[var(--color-brand-400)]">
-          @for (step of page.howItWorksInternally; track $index) {
-            <li>{{ step }}</li>
-          }
-        </ol>
-
-        @if (page.diagrams && page.diagrams.length > 0) {
-          <div class="mt-6 space-y-6">
-            @for (diagram of page.diagrams; track $index) {
-              <app-diagram [definition]="diagram.mermaid" [caption]="diagram.caption ?? null" />
-            }
-          </div>
-        }
-
-        @if (page.codeExamples && page.codeExamples.length > 0) {
-          <div class="mt-6 space-y-4">
-            @for (example of page.codeExamples; track $index) {
-              <div>
-                <app-code-block [language]="example.language" [code]="example.code" />
-                <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ example.explanation }}</p>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- 5. Main components or rules -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Main components / rules</h2>
-        <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
-          @for (item of page.mainComponents; track $index) {
-            <li>{{ item }}</li>
-          }
-        </ul>
-
-        <!-- 6. Real-world examples -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Real-world examples</h2>
-        <ul class="mt-3 list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
-          @for (scenario of page.realWorldExamples; track $index) {
-            <li>{{ scenario }}</li>
-          }
-        </ul>
-
-        <!-- 7. Complexity / tradeoffs -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Complexity / tradeoffs</h2>
-        <div class="mt-3 rounded-2xl glass-panel p-5">
-          <ul class="list-disc space-y-2 pl-5 leading-relaxed text-[var(--color-text-muted)] marker:text-[var(--color-brand-400)]">
-            @for (item of page.complexityAndTradeoffs; track $index) {
-              <li>{{ item }}</li>
-            }
-          </ul>
-        </div>
-
-        <!-- 8. Common mistakes -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Common mistakes</h2>
-        <div class="mt-3 space-y-3">
-          @for (item of page.commonMistakes; track $index) {
-            <div class="rounded-2xl border border-red-500/30 bg-red-500/5 p-5 leading-relaxed text-[var(--color-text)] backdrop-blur-md">
-              {{ item }}
-            </div>
-          }
-        </div>
-
-        <!-- Interview-prep war-room: scenario drills with hidden model answers for self-quizzing -->
-        @if (page.scenarioDrills && page.scenarioDrills.length > 0) {
-          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Scenario drills</h2>
-          <p class="mt-1 text-sm text-[var(--color-text-muted)]">Read the situation, answer out loud first, then open the model answer.</p>
-          <div class="mt-3 space-y-3">
-            @for (drill of page.scenarioDrills; track $index) {
-              <div class="rounded-2xl border border-[var(--color-accent-500)]/25 bg-[var(--color-surface-alt)] p-5">
-                <p class="text-xs font-semibold uppercase tracking-wide text-[var(--color-text-muted)]">Situation</p>
-                <p class="mt-1 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ drill.situation }}</p>
-                <p class="mt-4 font-semibold leading-relaxed text-[var(--color-text)]">{{ drill.question }}</p>
-                <details class="mt-2 rounded-lg border border-[var(--color-brand-500)]/20 bg-[var(--color-brand-500)]/5 px-4 py-3">
-                  <summary class="cursor-pointer select-none text-sm font-semibold text-[var(--color-brand-300)] transition hover:text-[var(--color-brand-200)]">
-                    Model answer
-                  </summary>
-                  <p class="mt-3 border-t border-[var(--color-border)] pt-3 leading-relaxed text-[var(--color-text-muted)]">{{ drill.answer }}</p>
-                </details>
-              </div>
-            }
-          </div>
-        }
-
-        <!-- Bot-round armor: rapid-fire definitional Q&As to recite aloud -->
-        @if (page.rapidFire && page.rapidFire.length > 0) {
-          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Rapid fire</h2>
-          <p class="mt-1 text-sm text-[var(--color-text-muted)]">Screening bots and round-one panels love these. Answer each in one breath, then check.</p>
-          <div class="mt-3 space-y-2">
-            @for (item of page.rapidFire; track $index) {
-              <details class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-3">
-                <summary class="cursor-pointer select-none font-semibold text-[var(--color-text)] transition hover:text-[var(--color-brand-300)]">
-                  {{ item.question }}
-                </summary>
-                <p class="mt-2 leading-relaxed text-[var(--color-text-muted)]">{{ item.answer }}</p>
-              </details>
-            }
-          </div>
-        }
-
-        <!-- 9. Interview perspective -->
-        <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Interview perspective</h2>
-        <div class="mt-3 rounded-2xl border border-[var(--color-accent-500)]/30 bg-[var(--color-accent-500)]/5 p-5 leading-relaxed text-[var(--color-text)] backdrop-blur-md">
-          {{ page.interviewPerspective }}
-        </div>
-
-        <!-- 10. Trigger sentence -->
-        @if (page.triggerSentence) {
-          <p class="mt-10 text-center text-sm italic text-[var(--color-text-muted)]">"{{ page.triggerSentence }}"</p>
-        }
-
-        @if (page.relatedConcepts && page.relatedConcepts.length > 0) {
-          <h2 class="mt-10 text-xl font-bold text-[var(--color-text)]">Go deeper</h2>
-          <div class="mt-3 space-y-2">
-            @for (related of page.relatedConcepts; track related.conceptId) {
-              <a
-                [routerLink]="['/learn', related.categoryId, related.topicId, related.conceptId]"
-                class="group block rounded-lg border border-[var(--color-border)] p-3 transition hover:border-[var(--color-brand-500)]/40 hover:bg-[var(--color-surface-alt)]"
-              >
-                <p class="font-semibold text-[var(--color-text)] group-hover:text-[var(--color-brand-300)]">{{ related.title }} →</p>
-                @if (related.note) {
-                  <p class="mt-1 text-sm text-[var(--color-text-muted)]">{{ related.note }}</p>
-                }
-              </a>
-            }
-          </div>
+        <!-- ============ RIGHT TOC RAIL (240px PINNED TO RIGHT EDGE) ============ -->
+        @if (content()) {
+          <aside class="hidden w-60 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-bg-raised)] p-6 xl:block">
+            <nav class="sticky top-20 space-y-1" aria-label="On this page">
+              <p class="eyebrow mb-3">$ toc</p>
+              @for (section of visibleSections(); track section.id) {
+                <a
+                  href="#{{ section.id }}"
+                  class="toc-link -ml-2"
+                  [class.on]="activeSection() === section.id"
+                >
+                  <span class="n">{{ sectionNo(section.id) }}</span>
+                  <span>{{ section.label }}</span>
+                </a>
+              }
+            </nav>
+          </aside>
         }
       </div>
-    } @else {
-      <div class="mt-10 rounded-2xl border border-dashed border-[var(--color-border)] p-10 text-center">
-        <p class="text-4xl">🚧</p>
-        <p class="mt-3 font-semibold text-[var(--color-text)]">This concept page hasn't been written yet.</p>
-        <p class="mt-1 text-sm text-[var(--color-text-muted)]">
-          "{{ summary.title }}" is in the roadmap - the page template, navigation, and progress tracking are
-          already wired up and ready for its content.
-        </p>
-      </div>
+
+      <!-- ============ XP TOAST ============ -->
+      @if (celebration(); as burst) {
+        <div class="toast rise-in" role="status" aria-live="polite">
+          <span aria-hidden="true">⚡</span>
+          <span>+{{ burst.xp }} XP</span>
+          @if (burst.leveledUp) {
+            <span>— LEVEL UP!</span>
+          }
+        </div>
+      }
     }
+  }
+}
 
-    <app-prev-next-nav [prev]="prevTarget()" [next]="nextTarget()" />
-  </article>
-} @else {
-  <p class="text-[var(--color-text-muted)]">Concept not found.</p>
+<!-- invalid route fallback -->
+@if (!conceptSummary()) {
+  <div class="mx-auto max-w-2xl px-6 py-24">
+    <div class="term-window">
+      <div class="term-window__bar">
+        <span class="term-dots"><i class="term-dot"></i><i class="term-dot"></i><i class="term-dot"></i></span>
+        indepth-coding~/lab
+      </div>
+      <div class="space-y-2 px-5 py-6 font-mono text-sm">
+        <p class="text-[var(--color-text-muted)]"><span class="text-[var(--color-brand-400)]">$</span> cd learn/{{ categoryId() }}/{{ topicId() }}/{{ conceptId() }}</p>
+        <p class="text-[var(--color-danger)]">cd: no such concept on this shelf.</p>
+      </div>
+      <div class="border-t border-[var(--color-border)] px-5 py-3">
+        <a routerLink="/" class="font-mono text-xs text-[var(--color-brand-300)] hover:underline">$ cd ~/home</a>
+      </div>
+    </div>
+  </div>
 }

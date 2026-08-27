@@ -1,3 +1,14 @@
 :host {
   display: block;
 }
+
+/* Blinking block cursor at the end of the boot sequence. */
+.cursor-blink {
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}

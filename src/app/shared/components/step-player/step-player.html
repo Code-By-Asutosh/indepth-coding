@@ -1,0 +1,146 @@
+<div class="player">
+  <!-- Top Bar -->
+  <div class="pl-bar">
+    <span class="dots"><i></i><i></i><i></i></span>
+    <span>{{ spec().title || 'watch-it-run — mental simulation' }}</span>
+    <span class="stepno">frame {{ currentFrameIndex() + 1 }} / {{ totalFrames() }}</span>
+    <span class="live">● live</span>
+  </div>
+
+  <!-- Stage & Code Split -->
+  <div class="pl-grid">
+    <!-- Visual Stage -->
+    <div class="pl-stage">
+      @if (currentFrame()?.badge; as badge) {
+        <div class="badge">{{ badge }}</div>
+      }
+
+      <div class="scenario">
+        {{ spec().scenario }}
+      </div>
+
+      <!-- VISUAL TYPE: MEMORY & HEAP OBJECTS (OOP, JVM, Architecture) -->
+      @if (currentFrame()?.visual?.type === 'memory-heap') {
+        <div class="memory-stage">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 my-3">
+            @for (block of currentFrame()?.visual?.blocks; track block.title) {
+              <div class="mem-block" [attr.data-tone]="block.tone || 'brand'">
+                <div class="mem-head">
+                  <span class="mem-title">{{ block.title }}</span>
+                  @if (block.address) {
+                    <span class="mem-addr font-mono">{{ block.address }}</span>
+                  }
+                </div>
+                <div class="mem-body space-y-1.5 p-2.5">
+                  @for (field of block.fields; track field.name) {
+                    <div class="mem-field flex items-center justify-between text-xs font-mono">
+                      <span class="text-[var(--color-text-muted)]">{{ field.name }}</span>
+                      <span
+                        class="px-1.5 py-0.5 rounded font-semibold text-[11px]"
+                        [class.text-[var(--color-brand-300)]]="field.tone === 'brand'"
+                        [class.text-[var(--color-accent-400)]]="field.tone === 'accent'"
+                        [class.text-[var(--color-ok)]]="field.tone === 'ok'"
+                        [class.text-[var(--color-danger)]]="field.tone === 'danger'"
+                        [class.text-[var(--color-warn)]]="field.tone === 'warn'"
+                      >
+                        {{ field.value }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- VISUAL TYPE: ARRAY & POINTERS (DSA, Two Pointers, Sliding Window) -->
+      @if (currentFrame()?.visual?.type === 'array-pointers') {
+        <div class="array-stage my-4">
+          <div class="cells">
+            @for (cell of currentFrame()?.visual?.cells; track $index) {
+              <div class="cellwrap">
+                <div class="cell" [class]="cell.tone || 'idle'">
+                  <span>{{ cell.label }}</span>
+                  @if (cell.sub) {
+                    <span class="ix">{{ cell.sub }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (currentFrame()?.visual?.arrayPointers?.length) {
+            <div class="ptrs">
+              @for (ptr of currentFrame()?.visual?.arrayPointers; track ptr.name) {
+                <div
+                  class="ptr"
+                  [class.r]="ptr.tone === 'cyan'"
+                  [style.grid-column-start]="ptr.index + 1"
+                >
+                  {{ ptr.name }}
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Step Caption -->
+      <div class="caption">
+        @if (activeCodeLine() > 0) {
+          <span class="ln-chip">line {{ activeCodeLine() }}</span>
+        }
+        <span class="caption-text">{{ currentFrame()?.caption }}</span>
+      </div>
+    </div>
+
+    <!-- Synced Code Panel -->
+    <div class="pl-code">
+      <div class="hd">
+        <span>// code — synced</span>
+        @if (activeCodeLine() > 0) {
+          <span id="codeLineNo">line {{ activeCodeLine() }}</span>
+        }
+      </div>
+
+      <ol>
+        @for (line of spec().code; track $index) {
+          <li [class.on]="activeCodeLine() === ($index + 1)">
+            <span class="ln">{{ $index + 1 }}</span>
+            <code>{{ line }}</code>
+          </li>
+        }
+      </ol>
+
+      @if (spec().footnote; as foot) {
+        <div class="foot">{{ foot }}</div>
+      }
+    </div>
+  </div>
+
+  <!-- Playback Controls -->
+  <div class="controls">
+    <button type="button" class="ctl" (click)="jump(0)" title="Reset to start">⟲</button>
+    <button type="button" class="ctl" (click)="step(-1)" title="Previous frame">◀</button>
+    <button type="button" class="ctl play" (click)="togglePlay()">
+      {{ isPlaying() ? '⏸ pause' : '▶ play' }}
+    </button>
+    <button type="button" class="ctl" (click)="step(1)" title="Next frame">▶|</button>
+
+    <input
+      type="range"
+      class="scrub"
+      min="0"
+      [max]="totalFrames() - 1"
+      [value]="currentFrameIndex()"
+      (input)="jump(+$any($event.target).value)"
+      aria-label="Frame scrubber"
+    />
+
+    <button type="button" class="ctl speed" (click)="cycleSpeed()" title="Cycle speed">
+      {{ speed() }}×
+    </button>
+  </div>
+</div>
+

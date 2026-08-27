@@ -1,5 +1,5 @@
 {
-  "claudeCode.useTerminal": false,
+  "claudeCode.useTerminal": true,
   "claudeCode.preferredLocation": "sidebar",
   "claudeCode.disableLoginPrompt": true
 }

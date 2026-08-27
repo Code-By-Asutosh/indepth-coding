@@ -382,6 +382,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'frontend',
+    hidden: true,
     title: 'Frontend',
     tagline: 'Angular and TypeScript, from fundamentals to enterprise patterns.',
     icon: '🅰️',
@@ -647,6 +648,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'testing',
+    hidden: true,
     title: 'Testing',
     tagline: 'Quality engineering from unit tests to mutation testing.',
     icon: '🧪',
@@ -669,6 +671,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'observability',
+    hidden: true,
     title: 'Observability',
     tagline: 'Metrics, logs, traces, and the SLOs that tie them together.',
     icon: '📈',
@@ -809,6 +812,7 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'leadership-communication',
+    hidden: true,
     title: 'Leadership & Communication',
     tagline: 'The soft skills that turn a senior engineer into an architect.',
     icon: '🗣️',
@@ -853,6 +857,9 @@ export const CATEGORIES: Category[] = [
     ]
   }
 ];
+
+/** Categories shown anywhere on the site - hidden ones stay in this file for later. */
+export const VISIBLE_CATEGORIES: Category[] = CATEGORIES.filter((category) => !category.hidden);
 
 export function findCategory(categoryId: string): Category | undefined {
   return CATEGORIES.find((category) => category.id === categoryId);

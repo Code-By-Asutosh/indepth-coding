@@ -22,12 +22,27 @@ export class CategoryDashboardPage {
   /** Mobile/tablet drawer state - the sidebar is hidden below the lg breakpoint otherwise. */
   protected readonly mobileNavOpen = signal(false);
 
+  /** Desktop sidebar collapsed state — content page expands to full width when collapsed. */
+  protected readonly sidebarCollapsed = signal(false);
+
   protected toggleMobileNav(): void {
     this.mobileNavOpen.update((open) => !open);
   }
 
   protected closeMobileNav(): void {
     this.mobileNavOpen.set(false);
+  }
+
+  protected collapseSidebar(): void {
+    this.sidebarCollapsed.set(true);
+  }
+
+  protected openSidebar(): void {
+    this.sidebarCollapsed.set(false);
+  }
+
+  protected toggleSidebar(): void {
+    this.sidebarCollapsed.update((collapsed) => !collapsed);
   }
 
   private readonly navigationEnd = toSignal(

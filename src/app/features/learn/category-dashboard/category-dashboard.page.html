@@ -1,33 +1,52 @@
 @if (category(); as cat) {
+  <!-- Floating reopen FAB when sidebar is collapsed on desktop -->
+  @if (sidebarCollapsed()) {
+    <button
+      type="button"
+      (click)="openSidebar()"
+      class="sb-open-fab"
+      title="Open sidebar"
+      aria-label="Open sidebar"
+    >
+      »
+    </button>
+  }
+
   <!-- Mobile/tablet topbar: only shown below the lg breakpoint, where the sidebar is hidden -->
-  <div class="sticky top-[65px] z-30 flex items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]/80 px-4 py-3 backdrop-blur-lg lg:hidden">
+  <div class="sticky top-[57px] z-30 flex items-center gap-3 border-b border-[var(--color-border)] bg-[var(--color-bg)]/85 px-4 py-2.5 backdrop-blur-lg lg:hidden">
     <button
       type="button"
       (click)="toggleMobileNav()"
-      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] text-[var(--color-text)]"
+      class="sb-toggle"
       aria-label="Open topic navigation"
     >
       ☰
     </button>
-    <span class="truncate text-sm font-semibold text-[var(--color-text)]">{{ cat.icon }} {{ cat.title }}</span>
+    <span class="truncate font-mono text-xs font-semibold text-[var(--color-text)]">{{ cat.icon }} {{ cat.title }}</span>
   </div>
 
   <!-- Mobile/tablet drawer -->
   @if (mobileNavOpen()) {
-    <div class="fixed inset-0 z-40 lg:hidden">
-      <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeMobileNav()"></div>
-      <aside class="glass-panel absolute inset-y-0 left-0 w-[85%] max-w-xs overflow-y-auto">
-        <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" />
+    <div class="fixed inset-0 z-50 lg:hidden">
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" (click)="closeMobileNav()"></div>
+      <aside class="absolute inset-y-0 left-0 w-[85%] max-w-xs overflow-y-auto border-r border-[var(--color-border)] bg-[var(--color-bg-raised)] shadow-2xl">
+        <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" (collapse)="closeMobileNav()" />
       </aside>
     </div>
   }
 
-  <div class="mx-auto grid max-w-7xl grid-cols-1 gap-6 px-6 py-8 lg:grid-cols-[280px_1fr]">
-    <aside class="glass-panel hidden max-h-[calc(100vh-6rem)] rounded-2xl lg:sticky lg:top-24 lg:block">
-      <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" />
-    </aside>
+  <!-- Full-bleed app shell: Sidebar (300px) | Content (1fr) -->
+  <div class="flex min-h-[calc(100vh-3.5rem)] w-full transition-all duration-300">
+    @if (!sidebarCollapsed()) {
+      <aside class="hidden w-[300px] shrink-0 border-r border-[var(--color-border)] bg-[var(--color-bg-raised)] lg:block">
+        <div class="sticky top-[57px] h-[calc(100vh-3.5rem)] overflow-y-auto">
+          <app-side-nav [category]="cat" [activeTopicId]="activeTopicId()" (collapse)="collapseSidebar()" />
+        </div>
+      </aside>
+    }
 
-    <main class="min-w-0">
+    <!-- Content page ALWAYS remains open and fills the available area -->
+    <main class="min-w-0 flex-1">
       <router-outlet />
     </main>
   </div>

@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$ DESIGN MOCKUP — Two Pointers lesson page</title>
+<style>
+  /* --------------------------------------------------------------------
+     GOLD LAB TOKENS (same system as the approved site + player mockup)
+     -------------------------------------------------------------------- */
+  :root {
+    --bg: #0b0a08;
+    --bg-raised: #12100b;
+    --surface: rgba(237,230,214,.045);
+    --surface-alt: rgba(237,230,214,.075);
+    --raised: rgba(26,22,15,.72);
+    --border: rgba(237,230,214,.1);
+    --border-strong: rgba(237,230,214,.18);
+    --gold-300: #ddc071;
+    --gold-400: #d0a844;
+    --gold-500: #c2942f;
+    --gold-700: #80601f;
+    --cyan: #22d3ee;
+    --ok: #34d399;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --text: #ece7db;
+    --muted: #a89f90;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --sans: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); font-size: 16px; line-height: 1.65;
+    background-image:
+      radial-gradient(ellipse 70% 42% at 50% -8%, rgba(194,148,47,.14), transparent 72%),
+      repeating-linear-gradient(0deg, transparent 0 47px, rgba(237,230,214,.03) 47px 48px),
+      repeating-linear-gradient(90deg, transparent 0 47px, rgba(237,230,214,.03) 47px 48px);
+    background-attachment: fixed;
+  }
+  ::selection { background: var(--gold-500); color: #171207; }
+  ::-webkit-scrollbar { width: 9px; height: 9px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface-alt); border-radius: 8px; }
+
+  .mono { font-family: var(--mono); }
+  a { color: inherit; text-decoration: none; }
+
+  /* reading progress hairline */
+  #readbar { position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+    background: linear-gradient(90deg, var(--gold-500), var(--gold-300)); z-index: 90; }
+
+  /* ------------------------------------------------------------------ HEADER */
+  header.site {
+    position: sticky; top: 0; z-index: 50; flex-shrink: 0;
+    display: flex; align-items: center; gap: 1rem;
+    padding: .65rem 1.4rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(11,10,8,.78); backdrop-filter: blur(14px);
+  }
+  .sb-toggle { width:34px; height:32px; display:grid; place-items:center; flex-shrink:0;
+    font-family:var(--mono); font-size:1rem; color:var(--gold-300); background:var(--surface);
+    border:1px solid var(--border); border-radius:8px; cursor:pointer; transition:.18s; }
+  .sb-toggle:hover { border-color:var(--gold-500); background:rgba(194,148,47,.12); }
+  .sb-collapse { flex-shrink:0; width:24px; height:24px; margin-left:.5rem; display:grid; place-items:center;
+    font-family:var(--mono); font-size:.85rem; color:var(--muted); background:var(--surface);
+    border:1px solid var(--border); border-radius:6px; cursor:pointer; transition:.18s; }
+  .sb-collapse:hover { color:var(--gold-300); border-color:var(--gold-500); }
+  .sb-open-fab { position:fixed; left:12px; top:64px; z-index:60; display:none; place-items:center;
+    width:36px; height:36px; font-size:1rem; color:var(--gold-300); background:var(--raised);
+    border:1px solid var(--border-strong); border-radius:9px; cursor:pointer; box-shadow:0 10px 26px -10px rgba(0,0,0,.7); }
+  .sb-open-fab:hover { border-color:var(--gold-500); }
+  body.sb-off .sb-open-fab { display:grid; }
+  .brand { display: flex; align-items: center; gap: .6rem; font-family: var(--mono); font-weight: 700; font-size: .95rem; }
+  .brand .tile {
+    display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--gold-400), var(--gold-700));
+    color: #171207; font-size: .72rem; font-weight: 800;
+  }
+  .brand .path b { color: var(--gold-400); }
+  nav.top { margin-left: auto; display: flex; gap: 1.4rem; font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  nav.top span b { color: var(--gold-500); font-weight: 600; margin-right: .35em; }
+  nav.top .on { color: var(--text); }
+  .avatar { display: flex; align-items: center; gap: .55rem; font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+  .avatar i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 999px; font-style: normal;
+    background: linear-gradient(135deg, var(--gold-400), var(--gold-700)); color: #171207; font-weight: 800; }
+
+  /* ------------------------------------------------------------------ LAYOUT — full-bleed app shell, no outer gaps */
+  body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+  .layout {
+    flex: 1; min-height: 0; display: grid;
+    grid-template-columns: 300px minmax(0,1fr) 240px;
+    transition: grid-template-columns .28s ease;
+  }
+  body.sb-off .layout { grid-template-columns: 0px minmax(0,1fr) 240px; }
+  body.sb-off aside.sidebar { display: none; }
+  @media (max-width: 1200px){ .layout { grid-template-columns: 280px minmax(0,1fr); } aside.toc { display:none; } }
+  @media (max-width: 860px){
+    body { display: block; height: auto; overflow: auto; }
+    .layout { grid-template-columns: 1fr; }
+    aside.sidebar, aside.toc { display: none; }
+    main { overflow: visible; }
+  }
+
+  /* ------------------------------------------------------------------ SIDEBAR */
+  aside.sidebar { min-height: 0; display: flex; flex-direction: column;
+    border-right: 1px solid var(--border); background: var(--bg-raised); overflow: hidden; }
+  nav.sb { min-height: 0; }
+  .sb-cat { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: .8rem; }
+  .sb-cat .ic { display:grid; place-items:center; width:40px;height:40px;border-radius:11px;font-size:1.15rem;
+    background:linear-gradient(135deg, rgba(208,168,68,.28), rgba(128,96,31,.18)); border:1px solid rgba(208,168,68,.35); }
+  .sb-cat .nm { font-weight: 700; font-size: .95rem; line-height:1.2; }
+  .sb-cat .sub { font-family: var(--mono); font-size:.66rem; color: var(--muted); letter-spacing:.06em; margin-top:2px;}
+  .ring { position: relative; width: 42px; height: 42px; margin-left:auto; flex-shrink:0; }
+  .ring svg { transform: rotate(-90deg); }
+  .ring .pct { position:absolute; inset:0; display:grid; place-items:center;
+    font-family:var(--mono); font-size:.56rem; font-weight:700; color:var(--gold-300); }
+
+  .sb-switch { padding: .6rem 1.1rem; border-bottom: 1px solid var(--border); }
+  .sb-switch button {
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    font-family: var(--mono); font-size:.68rem; letter-spacing:.08em; color: var(--muted);
+    background: var(--surface); border:1px solid var(--border); border-radius:8px; padding:.45rem .7rem; cursor:pointer;
+  }
+  .sb-switch button:hover { color: var(--text); border-color: var(--border-strong); }
+
+  nav.sb { flex: 1; overflow-y: auto; padding: .55rem .55rem 1rem; }
+  .t-row { margin-top: .45rem; }
+  .t-head {
+    width:100%; display:flex; align-items:center; gap:.5rem; text-align:left;
+    font-family: var(--mono); font-size:.72rem; letter-spacing:.04em; color: var(--text);
+    background:none; border:0; border-radius:8px; padding:.5rem .55rem; cursor:pointer;
+  }
+  .t-head:hover { background: var(--surface); }
+  .t-head .arr { color: var(--gold-500); font-size:.6rem; transition: transform .18s ease; width: 1em; }
+  .t-head.closed .arr { transform: rotate(-90deg); }
+  .t-head .cnt { margin-left:auto; font-size:.62rem; color: var(--muted); }
+  .c-list { overflow:hidden; transition: grid-template-rows .22s ease; display:grid; grid-template-rows:1fr; }
+  .t-wrap.closed .c-list { grid-template-rows: 0fr; }
+  .c-list > div { min-height: 0; }
+  .c-row {
+    display:flex; align-items:center; gap:.55rem; position:relative;
+    font-size:.83rem; color:var(--muted); padding:.42rem .6rem .42rem 1.65rem; border-radius:8px;
+  }
+  .c-row:hover { color: var(--text); background: var(--surface); }
+  .c-row .dot { width:7px; height:7px; border-radius:999px; flex-shrink:0; }
+  .c-row.written .dot { background: var(--gold-500); box-shadow: 0 0 8px rgba(194,148,47,.55); }
+  .c-row.soon .dot { background: transparent; border:1px solid var(--border-strong); }
+  .c-row.soon { opacity:.55; }
+  .c-row.active { color:#171207; background: linear-gradient(90deg, var(--gold-400), var(--gold-500)); font-weight:600; }
+  .c-row.active .dot { background:#171207; box-shadow:none; }
+  .c-row.done .dot { background:transparent; position:relative; }
+  .c-row.done .dot::after { content:'✓'; position:absolute; inset:-3px 0 0 -2px; font-size:.62rem; color:var(--ok); font-weight:800; }
+  .c-row.active.done .dot::after { color:#171207; }
+  .c-row .tag { margin-left:auto; font-family:var(--mono); font-size:.56rem; letter-spacing:.06em; color:var(--cyan);
+    border:1px solid rgba(34,211,238,.35); border-radius:5px; padding:.05rem .3rem; }
+  .c-row.active .tag { color:#171207; border-color:rgba(23,18,7,.4); }
+
+  .sb-foot { border-top:1px solid var(--border); padding:.75rem 1.1rem; }
+  .sb-foot .lbl { display:flex; justify-content:space-between; font-family:var(--mono); font-size:.62rem;
+    letter-spacing:.08em; color:var(--muted); margin-bottom:.4rem; }
+  .sb-foot .bar { height:4px; border-radius:99px; background:var(--surface-alt); overflow:hidden; }
+  .sb-foot .bar i { display:block; height:100%; width:38%; background:linear-gradient(90deg,var(--gold-500),var(--gold-300)); }
+
+  /* ------------------------------------------------------------------ TOC */
+  aside.toc { overflow-y: auto; min-height: 0; border-left: 1px solid var(--border);
+    background: var(--bg-raised); padding: 1.5rem 1rem 3rem; font-family: var(--mono); font-size:.7rem; }
+  aside.toc .hd { color: var(--muted); letter-spacing:.14em; margin-bottom: .8rem; }
+  aside.toc .hd::before { content:'$ '; color: var(--gold-400); }
+  .toc a { display:flex; gap:.6rem; padding:.32rem .55rem; border-left:2px solid transparent; color:var(--muted);
+    letter-spacing:.02em; line-height:1.45; }
+  .toc a .n { color: var(--gold-700); }
+  .toc a.on { color: var(--gold-300); border-left-color: var(--gold-400); background:linear-gradient(90deg, rgba(194,148,47,.09), transparent); }
+  .toc a.on .n { color: var(--gold-400); }
+  .toc a.play .n { color: var(--cyan); }
+
+  /* ------------------------------------------------------------------ CONTENT */
+  .crumbs { display:flex; align-items:center; gap:1rem; font-family:var(--mono); font-size:.72rem; color:var(--muted); }
+  .crumbs b { color: var(--gold-400); font-weight:500; }
+  .done-btn { margin-left:auto; font-family:var(--mono); font-size:.68rem; letter-spacing:.06em; cursor:pointer;
+    color:var(--gold-300); background:rgba(194,148,47,.08); border:1px solid rgba(194,148,47,.4);
+    border-radius:8px; padding:.42rem .85rem; transition:.18s; }
+  .done-btn:hover { background:rgba(194,148,47,.16); }
+  .done-btn.did { color:#171207; background:var(--ok); border-color:var(--ok); font-weight:700; }
+
+  h1.title { margin:.7rem 0 .2rem; font-size: clamp(2rem, 4vw, 2.7rem); letter-spacing:-.02em; line-height:1.08; }
+  h1.title small { display:block; font-family:var(--mono); font-size:.78rem; font-weight:500; letter-spacing:.04em; color:var(--gold-400); margin-top:.5rem;}
+  .meta { display:flex; flex-wrap:wrap; gap:.5rem; margin:.9rem 0 0; font-family:var(--mono); font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .meta span { border:1px solid var(--border); border-radius:6px; padding:.22rem .55rem; background:var(--surface); }
+  .meta span.hot { color:var(--gold-300); border-color:rgba(194,148,47,.4); }
+
+  article { margin-top: 2.2rem; max-width: min(100%, 68rem); }
+  main { overflow-y: auto; min-height: 0; padding: 1.7rem 2.6rem 5rem; scroll-behavior: smooth; }
+  p { margin: 0 0 1.05rem; color: #d9d3c6; }
+  p b, p strong { color: var(--text); }
+  em { color: var(--gold-200,#e9d7a2); font-style: italic; }
+  code.inl { font-family:var(--mono); font-size:.84em; color:var(--gold-300); background:var(--surface-alt);
+    border:1px solid var(--border); border-radius:5px; padding:.06em .38em; white-space:nowrap; }
+
+  /* opening — continuation block */
+  .opening { position:relative; border-left:3px solid var(--gold-500); background:linear-gradient(90deg, rgba(194,148,47,.07), transparent 70%);
+    padding:.9rem 1.2rem; border-radius:0 12px 12px 0; margin-bottom:2.4rem; }
+  .opening .k { font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; color:var(--gold-400); }
+  .opening p { margin:.45rem 0 0; }
+
+  /* chapter headings — numbered like article chapters, story-titled */
+  h2.ch { display:flex; align-items:baseline; gap:.8rem; margin:2.8rem 0 1rem; font-size:1.42rem; letter-spacing:-.01em; }
+  h2.ch .no { font-family:var(--mono); font-size:.72rem; font-weight:600; color:var(--gold-400);
+    border:1px solid rgba(194,148,47,.4); border-radius:7px; padding:.18rem .5rem; transform:translateY(-2px); }
+  h2.ch.play-h .no { color:var(--cyan); border-color:rgba(34,211,238,.4); }
+
+  /* hook — the one-line memory anchor */
+  .hook { display:flex; gap:.7rem; align-items:flex-start; margin:1.3rem 0; padding:.8rem 1rem;
+    border:1px dashed rgba(194,148,47,.45); border-radius:11px; background:rgba(194,148,47,.05);
+    font-family:var(--mono); font-size:.86rem; color:var(--gold-200,#e9d7a2); }
+  .hook::before { content:'⌘'; color:var(--gold-400); }
+
+  /* code window */
+  .code-win { margin:1.2rem 0 1.4rem; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:#0e0c08; }
+  .code-win .bar { display:flex; align-items:center; gap:.6rem; padding:.45rem .85rem; border-bottom:1px solid var(--border);
+    background:var(--surface); font-family:var(--mono); font-size:.66rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  .dots { display:inline-flex; gap:.32rem; }
+  .dots i { width:8px;height:8px;border-radius:99px;background:var(--border-strong); }
+  .dots i:first-child { background:var(--gold-500); }
+  .code-win pre { margin:0; padding:.95rem 1rem; overflow-x:auto; font-family:var(--mono); font-size:.82rem; line-height:1.7; color:#cfcbc0; }
+  .kw { color:var(--gold-300); } .fn { color:var(--cyan); } .str { color:#86efac; } .num { color:var(--warn); } .cm { color:var(--muted); font-style:italic; }
+
+  /* ------------------------------------------------------------------ STEP PLAYER */
+  .player { margin:1.4rem 0 2rem; border:1px solid rgba(194,148,47,.35); border-radius:14px; overflow:hidden;
+    background:var(--raised); box-shadow:0 24px 60px -30px rgba(0,0,0,.8); }
+  .pl-bar { display:flex; align-items:center; gap:.7rem; padding:.6rem 1rem; border-bottom:1px solid var(--border);
+    background:var(--surface); font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .pl-bar .live { margin-left:auto; color:var(--cyan); }
+
+  /* stage ⇄ synced pseudocode split */
+  .pl-grid { display:grid; grid-template-columns:minmax(0,1fr); }
+  @media (min-width:900px){ .pl-grid { grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr); } }
+  .pl-stage { position:relative; padding:2.4rem 1.4rem 1.2rem; }
+  @media (min-width:900px){ .pl-stage { border-right:1px solid var(--border); } }
+  @media (max-width:899px){ .pl-stage { border-bottom:1px solid var(--border); } }
+  .scenario { font-family:var(--mono); font-size:.72rem; color:var(--muted); margin-bottom:1rem; letter-spacing:.02em; }
+  .scenario b { color:var(--warn); font-weight:600; }
+
+  .pl-code { background:#0d0b07; font-family:var(--mono); }
+  .pl-code .hd { display:flex; justify-content:space-between; padding:.75rem 1.1rem .1rem;
+    font-size:.62rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); }
+  .pl-code .hd #codeLineNo { color:var(--gold-400); }
+  .pl-code ol { list-style:none; margin:.5rem 0 .9rem; padding:.35rem 0; font-size:.8rem; line-height:2; color:#b9b4a8; }
+  .pl-code li { padding:0 1rem 0 2.9rem; position:relative; white-space:pre; transition:background .18s; }
+  .pl-code li.ind { padding-left:3.9rem; }
+  .pl-code li .ln { position:absolute; left:1rem; top:0; bottom:0; display:flex; align-items:center;
+    font-size:.62rem; color:var(--gold-700); }
+  .pl-code li.on { background:linear-gradient(90deg, rgba(194,148,47,.32), rgba(194,148,47,.04) 85%);
+    color:#f6ecc9; font-weight:700; box-shadow: inset 3px 0 0 var(--gold-400);
+    animation: lnflash .5s ease; }
+  .pl-code li.on .ln { left:.95rem; padding:0 .35rem; margin-top:.35rem; height:1.3rem;
+    color:#171207; background:var(--gold-400); border-radius:5px; font-weight:800; }
+  @keyframes lnflash { from { background: rgba(194,148,47,.6); } }
+  .pl-code .foot { padding:0 1.1rem 1.1rem; font-size:.66rem; color:var(--muted); }
+  .ln-chip { font-family:var(--mono); font-size:.6rem; font-weight:700; color:#171207; background:var(--gold-400);
+    border-radius:5px; padding:.1rem .45rem; flex-shrink:0; letter-spacing:.05em; }
+  .badge { position:absolute; top:.85rem; right:.9rem; font-family:var(--mono); font-size:.66rem; letter-spacing:.05em;
+    color:var(--gold-200,#e9d7a2); background:rgba(194,148,47,.1); border:1px solid rgba(194,148,47,.4);
+    border-radius:7px; padding:.26rem .6rem; }
+  .cells { display:flex; gap:.55rem; justify-content:center; flex-wrap:wrap; }
+  .cellwrap { display:flex; flex-direction:column; align-items:center; gap:.4rem; }
+  .cell { min-width:52px; padding:.6rem .5rem .45rem; text-align:center; border-radius:10px;
+    border:1px solid var(--border-strong); background:linear-gradient(180deg, rgba(237,230,214,.05), rgba(237,230,214,.015));
+    font-family:var(--mono); font-weight:700; font-size:1.05rem; transition:all .25s ease; }
+  .cell .ix { display:block; font-size:.58rem; font-weight:500; color:var(--muted); margin-top:.15rem; }
+  .cell.compare { border-color:var(--warn); box-shadow:0 0 14px rgba(251,191,36,.22); color:var(--warn); }
+  .cell.done { opacity:.32; }
+  .cell.meet { border-color:var(--danger); color:var(--danger); box-shadow:0 0 14px rgba(248,113,113,.25); }
+  .ptrs { display:grid; grid-template-columns:repeat(7, 52px); gap:.55rem; justify-content:center; margin-top:.9rem; min-height:46px; }
+  .ptr { grid-row:1; justify-self:center; font-family:var(--mono); font-size:.62rem; letter-spacing:.04em;
+    border:1px dashed var(--gold-400); color:var(--gold-300); background:rgba(194,148,47,.08);
+    border-radius:7px; padding:.22rem .45rem; position:relative; transition:all .25s ease; }
+  .ptr::before { content:'▲'; display:block; text-align:center; font-size:.55rem; color:var(--gold-400); }
+  .ptr.r { border-color:var(--cyan); color:var(--cyan); background:rgba(34,211,238,.07); }
+  .ptr.r::before { color:var(--cyan); }
+  .caption { display:flex; gap:.6rem; align-items:flex-start; margin:1.1rem auto 0; max-width:60ch;
+    border:1px solid var(--border); border-radius:10px; background:var(--surface); padding:.7rem .95rem; font-size:.88rem; color:#d9d3c6; }
+  .caption::before { content:'✎'; color:var(--gold-400); }
+  .controls { display:flex; align-items:center; gap:.55rem; padding:.85rem 1.1rem; border-top:1px solid var(--border); flex-wrap:wrap; }
+  .ctl { font-family:var(--mono); font-size:.72rem; color:var(--text); background:var(--surface-alt);
+    border:1px solid var(--border); border-radius:8px; padding:.4rem .7rem; cursor:pointer; }
+  .ctl:hover { border-color:var(--gold-500); color:var(--gold-300); }
+  .ctl.play { background:linear-gradient(135deg,var(--gold-400),var(--gold-600,#a17a25)); color:#171207; font-weight:700; border:0; min-width:86px; }
+  input[type=range].scrub { flex:1; min-width:140px; accent-color:var(--gold-400); height:4px; }
+  .stepno { font-family:var(--mono); font-size:.66rem; color:var(--muted); letter-spacing:.06em; }
+  .speed { min-width:52px; }
+
+  /* player + code split */
+  .sync-grid { display:grid; grid-template-columns: 1fr; }
+  @media (min-width: 1100px){ .sync-grid.has-code { grid-template-columns: 1.25fr .9fr; } .sync-grid .code-win { margin:1.4rem; } }
+
+  /* recap */
+  .recap { margin:1.6rem 0; border:1px solid var(--border); border-radius:12px; overflow:hidden; background:var(--raised); }
+  .recap .bar { display:flex; gap:.6rem; align-items:center; padding:.5rem .9rem; border-bottom:1px solid var(--border);
+    background:var(--surface); font-family:var(--mono); font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .recap ul { margin:.9rem 0 1rem; padding:0 1.2rem; list-style:none; }
+  .recap li { position:relative; padding:.3rem 0 .3rem 1.5rem; color:#d9d3c6; font-size:.93rem; }
+  .recap li::before { content:'▸'; position:absolute; left:.2rem; color:var(--gold-400); }
+
+  .next-up { display:flex; align-items:center; gap:1rem; margin:2rem 0 0; padding:1rem 1.2rem;
+    border:1px dashed var(--border-strong); border-radius:12px; }
+  .next-up .arr { font-size:1.3rem; color:var(--gold-400); }
+  .next-up .t { font-weight:700; } .next-up .d { font-size:.85rem; color:var(--muted); }
+  .next-up .go { margin-left:auto; font-family:var(--mono); font-size:.7rem; color:var(--gold-300); white-space:nowrap; }
+
+  /* war room */
+  .war { margin-top:3rem; border-top:1px solid var(--border); padding-top:1.4rem; }
+  .war .hd { display:flex; align-items:center; gap:.7rem; font-family:var(--mono); font-size:.72rem;
+    letter-spacing:.16em; text-transform:uppercase; color:var(--muted); margin-bottom:1rem; }
+  .war .hd b { color:var(--gold-400); }
+  details.rf { border:1px solid var(--border); border-radius:10px; background:var(--raised); margin-bottom:.6rem; overflow:hidden; }
+  details.rf summary { cursor:pointer; list-style:none; display:flex; align-items:center; gap:.7rem; padding:.75rem 1rem; font-size:.92rem; }
+  details.rf summary::-webkit-details-marker { display:none; }
+  details.rf summary .q { font-family:var(--mono); font-size:.62rem; color:var(--cyan); letter-spacing:.1em; flex-shrink:0; }
+  details.rf summary .chev { margin-left:auto; color:var(--gold-400); transition:transform .2s; font-size:.7rem; }
+  details.rf[open] summary .chev { transform:rotate(90deg); }
+  details.rf .a { padding:0 1rem .9rem 3.4rem; color:var(--muted); font-size:.88rem; }
+  details.rf .a b { color:var(--text); }
+
+  /* xp toast */
+  .toast { position:fixed; right:22px; bottom:22px; z-index:99; display:none; align-items:center; gap:.7rem;
+    font-family:var(--mono); font-size:.76rem; color:#171207; background:linear-gradient(135deg,var(--gold-300),var(--gold-500));
+    border-radius:12px; padding:.8rem 1.1rem; box-shadow:0 20px 50px -12px rgba(194,148,47,.55); }
+  .toast.show { display:flex; animation: pop .3s ease; }
+  @keyframes pop { from { transform:translateY(12px); opacity:0; } }
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<button class="sb-open-fab" onclick="toggleSb()" title="open sidebar">»</button>
+
+<header class="site">
+  <button class="sb-toggle" onclick="toggleSb()" title="toggle sidebar">☰</button>
+  <a class="brand" href="#"><span class="tile">&lt;/&gt;</span><span class="path">indepth-coding<b>~/lab</b></span></a>
+  <nav class="top">
+    <span class="on"><b>01</b>learn</span>
+    <span><b>02</b>practice</span>
+    <span><b>03</b>dashboard</span>
+  </nav>
+  <div class="avatar"><i>A</i><span>LVL 7 · 🔥 5D</span></div>
+</header>
+
+<div class="layout">
+
+  <!-- ============================== SIDEBAR ============================== -->
+  <aside class="sidebar">
+    <div class="sb-cat">
+      <div class="ic">🧮</div>
+      <div>
+        <div class="nm">Data Structures &amp; Algorithms</div>
+        <div class="sub">9/24 COMPLETE · ACT VI</div>
+      </div>
+      <div class="ring" title="54%">
+        <svg width="42" height="42" viewBox="0 0 42 42">
+          <circle cx="21" cy="21" r="17.5" fill="none" stroke="rgba(237,230,214,.1)" stroke-width="4"/>
+          <circle cx="21" cy="21" r="17.5" fill="none" stroke="#c2942f" stroke-width="4"
+                  stroke-dasharray="110" stroke-dashoffset="51" stroke-linecap="round"/>
+        </svg>
+        <span class="pct">54%</span>
+      </div>
+      <button class="sb-collapse" onclick="toggleSb()" title="collapse sidebar">«</button>
+    </div>
+
+    <div class="sb-switch"><button>switch category ⇅</button></div>
+
+    <nav class="sb">
+      <!-- topic: done-heavy, collapsed -->
+      <div class="t-wrap closed">
+        <div class="t-row">
+          <button class="t-head closed" onclick="tog(this)"><span class="arr">▾</span> arrays/ <span class="cnt">4/4</span></button>
+        </div>
+        <div class="c-list"><div>
+          <a class="c-row done written" href="#"><span class="dot"></span> Arrays &amp; Memory</a>
+          <a class="c-row done written" href="#"><span class="dot"></span> Two Pointers Intro</a>
+          <a class="c-row done written" href="#"><span class="dot"></span> Sliding Window Basics</a>
+          <a class="c-row done written" href="#"><span class="dot"></span> Prefix Sums</a>
+        </div></div>
+      </div>
+
+      <!-- topic: current -->
+      <div class="t-wrap">
+        <div class="t-row">
+          <button class="t-head" onclick="tog(this)"><span class="arr">▾</span> dsa-patterns/ <span class="cnt">1/5</span></button>
+        </div>
+        <div class="c-list"><div>
+          <a class="c-row done written" href="#"><span class="dot"></span> Pair Sum Foundations</a>
+          <a class="c-row active written" href="#"><span class="dot"></span> Two Pointers <span class="tag">YOU</span></a>
+          <a class="c-row written" href="#"><span class="dot"></span> Binary Search</a>
+          <a class="c-row soon" href="#"><span class="dot"></span> Fast &amp; Slow Pointers</a>
+          <a class="c-row soon" href="#"><span class="dot"></span> Merge Intervals</a>
+        </div></div>
+      </div>
+
+      <div class="t-wrap closed">
+        <div class="t-row">
+          <button class="t-head closed" onclick="tog(this)"><span class="arr">▾</span> recursion-backtracking/ <span class="cnt">0/6</span></button>
+        </div>
+        <div class="c-list"><div>
+          <a class="c-row soon" href="#"><span class="dot"></span> Recursion Fundamentals</a>
+          <a class="c-row soon" href="#"><span class="dot"></span> Subsets &amp; Permutations</a>
+        </div></div>
+      </div>
+
+      <div class="t-wrap closed">
+        <div class="t-row">
+          <button class="t-head closed" onclick="tog(this)"><span class="arr">▾</span> trees-graphs/ <span class="cnt">4/9</span></button>
+        </div>
+        <div class="c-list"><div>
+          <a class="c-row done written" href="#"><span class="dot"></span> Tree Traversals</a>
+          <a class="c-row done written" href="#"><span class="dot"></span> BFS &amp; DFS</a>
+          <a class="c-row written" href="#"><span class="dot"></span> Graph Representations</a>
+          <a class="c-row soon" href="#"><span class="dot"></span> Topological Sort</a>
+        </div></div>
+      </div>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="lbl"><span>SITESPACE PROGRESS</span><span>81/340</span></div>
+      <div class="bar"><i></i></div>
+    </div>
+  </aside>
+
+  <!-- ============================== CONTENT ============================== -->
+  <main>
+    <div class="crumbs">
+      <span>~/learn/<b>dsa</b>/<b>dsa-patterns</b>/two-pointers</span>
+      <button class="done-btn" id="doneBtn" onclick="markDone()">$ mark --done</button>
+    </div>
+
+    <h1 class="title">Two Pointers
+      <small>// every comparison deletes a whole row of possibilities</small>
+    </h1>
+    <div class="meta">
+      <span class="hot">core</span><span>freq: high</span><span>pattern</span><span>~6 min</span><span>+120 xp</span>
+    </div>
+
+    <article>
+
+      <!-- CONTINUATION OPENING -->
+      <div class="opening rise-in" id="opening">
+        <div class="k">Picking up where we left off</div>
+        <p>ShopSphere's Diwali sale went live at midnight. By 12:04, support tickets started arriving:
+        <b>"I used my ₹500 gift card on a ₹480 order and the app just spins."</b> Somewhere in checkout,
+        code was hunting for two priced items that exactly exhaust a gift card — and doing it so slowly
+        that requests were timing out. This lesson is the fifteen minutes that fix it forever.</p>
+      </div>
+
+      <!-- CH 1 -->
+      <h2 class="ch" id="ch1"><span class="no">01</span> The gift-card bug</h2>
+      <p>Here's the code Riya wrote first — and honestly, it's the code almost everyone writes first.
+      Check every pair. If any pair hits the gift-card amount exactly, win:</p>
+
+      <div class="code-win">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span> CheckoutService.java — v1, the version that timed out</div>
+        <pre><span class="cm">// for n products → n × n comparisons. At 100k products, ten billion.</span>
+<span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; prices.length; i++) {
+  <span class="kw">for</span> (<span class="kw">int</span> j = i + 1; j &lt; prices.length; j++) {
+    <span class="kw">if</span> (prices[i] + prices[j] == giftCard) <span class="kw">return true</span>;
+  }
+}
+<span class="kw">return false</span>;</pre>
+      </div>
+
+      <p>It's correct. It also compared the <em>same pairs over and over</em>, learning nothing from each answer.
+      Every "no" told us nothing about which pairs we could skip next. That's the whole disease.</p>
+      <p>But ShopSphere's catalog has one quiet superpower we weren't using: <b>prices are already sorted</b> —
+      the search results page demands it. Sorted means the cheapest item sits at one end and the priciest at the other.
+      And that arrangement has a property we're about to exploit brutally.</p>
+
+      <div class="hook">Cheapest + most expensive is the only pair where ONE comparison tells you which item is innocent — always.</div>
+
+      <!-- CH 2 -->
+      <h2 class="ch" id="ch2"><span class="no">02</span> Walking from both ends</h2>
+      <p>Put one finger on the cheapest product, one on the costliest, and ask a single question:
+      <code class="inl">sum ?= 500</code>.</p>
+      <p>If the sum is <b>too big</b>, there is exactly one guilty party: the expensive item. It's already paired with the
+      smallest possible partner and still overshot — so nothing cheaper-in-the-middle can save it. Retire it, move the right
+      finger in. If the sum is <b>too small</b>, symmetric logic retires the cheap item instead. Either way,
+      <b>one comparison permanently eliminates one full row of possibilities.</b> No second chances, no re-checking —
+      each item leaves the dance floor exactly once.</p>
+      <p>Two fingers, walking inward. That's the entire algorithm. Don't take the walk on faith though —</p>
+
+      <!-- PLAYER -->
+      <h2 class="ch play-h" id="play"><span class="no">▶</span> Watch it run</h2>
+      <p>The shelf below is sorted: <code class="inl">[3, 8, 12, 17, 21, 26, 30]</code>, gift card <code class="inl">= 27</code>.
+      Drive it yourself — then let it run.</p>
+
+      <div class="player">
+        <div class="pl-bar">
+          <span class="dots"><i></i><i></i><i></i></span> watch-it-run — the opposite-ends walk
+          <span class="stepno" id="stepno">frame 1 / 14</span>
+          <span class="live">● live</span>
+        </div>
+        <div class="pl-grid">
+          <div class="pl-stage">
+            <div class="badge" id="badge">left=0 · right=6</div>
+            <div class="scenario">sorted = [3, 8, 12, 17, 21, 26, 30] · <b>target = 27</b> · does any pair sum to it?</div>
+            <div class="cells" id="cells"></div>
+            <div class="ptrs" id="ptrs"></div>
+            <div class="caption"><span class="ln-chip" id="lineChip">line 1</span><span id="captionText"></span></div>
+          </div>
+          <div class="pl-code">
+            <div class="hd"><span>// pseudocode — synced</span><span id="codeLineNo">line 1</span></div>
+            <ol id="pseudo"></ol>
+            <div class="foot">worst case: 7 comparisons · brute force needs 21 — that's the whole trick.</div>
+          </div>
+        </div>
+        <div class="controls">
+          <button class="ctl" onclick="jump(0)">⟲</button>
+          <button class="ctl" onclick="step(-1)">◀</button>
+          <button class="ctl play" id="playBtn" onclick="togglePlay()">▶ play</button>
+          <button class="ctl" onclick="step(1)">▶|</button>
+          <input class="scrub" type="range" min="0" max="13" value="0" id="scrub" oninput="jump(+this.value)">
+          <button class="ctl speed" onclick="cycleSpeed()" id="spd">1×</button>
+        </div>
+      </div>
+
+      <!-- CH 3 -->
+      <h2 class="ch" id="ch3"><span class="no">03</span> The Java, explained by what you just watched</h2>
+      <p>Every frame you just scrubbed through maps to exactly one line below. Nothing more happens in the code
+      than happened on the shelf:</p>
+
+      <div class="code-win">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span> CheckoutService.java — v2, shipping tonight</div>
+        <pre><span class="kw">boolean</span> <span class="fn">pairExists</span>(<span class="kw">int</span>[] prices, <span class="kw">int</span> giftCard) {
+  <span class="kw">int</span> left = 0, right = prices.length - 1;   <span class="cm">// fingers on the extremes</span>
+  <span class="kw">while</span> (left &lt; right) {                      <span class="cm">// crossed ⇒ every pair was judged</span>
+    <span class="kw">int</span> sum = prices[left] + prices[right];
+    <span class="kw">if</span> (sum == giftCard) <span class="kw">return true</span>;       <span class="cm">// 🎯 gift card exhausted exactly</span>
+    <span class="kw">if</span> (sum &gt; giftCard) right--;              <span class="cm">// too rich ⇒ retire the expensive item</span>
+    <span class="kw">else</span> left++;                               <span class="cm">// too poor ⇒ retire the cheap one</span>
+  }
+  <span class="kw">return false</span>;                                <span class="cm">// walked clean through: provably no pair</span>
+}</pre>
+      </div>
+
+      <p>Notice what disappeared: the inner loop. Ten billion comparisons became at most
+      <code class="inl">n − 1</code>. At ShopSphere's Black-Friday scale, that's the difference between
+      a 4-second request and a sub-millisecond one.</p>
+
+      <!-- CH 4 -->
+      <h2 class="ch" id="ch4"><span class="no">04</span> Honest costs</h2>
+      <p>This trick has an entry fee people discover in interviews the hard way: <b>it only works on sorted data</b>.
+      ShopSphere gets sorting for free because the catalog lives sorted anyway. If your data isn't sorted,
+      you pay <code class="inl">O(n log n)</code> to sort first — still cheaper than the brute-force
+      <code class="inl">O(n²)</code>, but suddenly not free.</p>
+      <p>And when the array is <em>unsortable</em> — streaming items, or you need the actual indices of unsorted input —
+      a HashSet beats it outright: one pass, <code class="inl">have I seen 27 − x?</code>, done in O(n) with no ordering
+      required. Two Pointers wins when the data is sorted or becomes sorted cheaply; the HashSet wins when it doesn't.
+      Neither is "the best one." Senior engineers carry both.</p>
+
+      <!-- RECAP -->
+      <div class="recap" id="recap">
+        <div class="bar"><span class="dots"><i></i><i></i><i></i></span> ShopSphere checkout — put together</div>
+        <ul>
+          <li><b>Brute force</b> checked every pair and learned nothing from each failure → O(n²), timed out.</li>
+          <li><b>Sortedness</b> was the unused superpower already sitting in the catalog.</li>
+          <li><b>Opposite-ends walk:</b> too big kills the right item, too small kills the left — one comparison, one elimination.</li>
+          <li><b>Crossing pointers</b> are mathematical proof that no pair exists. 7 comparisons replaced 21.</li>
+          <li>Gift-card checkout now answers in microseconds. Ticket closed. 🎉</li>
+        </ul>
+      </div>
+
+      <div class="next-up">
+        <span class="arr">→</span>
+        <div><div class="t">Next part: Sliding Window</div>
+        <div class="d">Same two fingers — but now they walk the same direction, and grow a stretchy subarray. The longest "contiguous sale items" streak ShopSphere can advertise.</div></div>
+        <span class="go">$ next →</span>
+      </div>
+
+      <!-- WAR ROOM -->
+      <section class="war" id="warroom">
+        <div class="hd">⚔ <b>war room</b> // interview-prep appendix — after the story, before the room</div>
+
+        <details class="rf">
+          <summary><span class="q">RF·1</span> What is the two-pointer technique in one breath? <span class="chev">▸</span></summary>
+          <div class="a">Walk two indices through a sorted collection from opposite ends (or the same direction), using one comparison per step to permanently discard a whole class of candidates — turning O(n²) pair-scanning into O(n).</div>
+        </details>
+        <details class="rf">
+          <summary><span class="q">RF·2</span> Why does moving the right pointer on "too big" never skip the answer? <span class="chev">▸</span></summary>
+          <div class="a">Because it's paired with the smallest remaining value and still overshoots. Every other candidate partner is larger, so <b>every</b> pair containing the right item also overshoots. Discarding it loses nothing — that's the invariant.</div>
+        </details>
+        <details class="rf">
+          <summary><span class="q">RF·3</span> Loop condition: <b>left &lt; right</b> or <b>left ≤ right</b>? <span class="chev">▸</span></summary>
+          <div class="a">For pair-sum: <b>&lt;</b>. A pair needs two distinct elements; letting them meet would test an element paired with itself. (For "square of a sorted array"-style problems where one element can fill both slots, ≤ appears — know which contract you're in.)</div>
+        </details>
+        <details class="rf">
+          <summary><span class="q">DRILL</span> Interviewer: "Your pair-sum API serves unsorted price feeds from vendors. Does two-pointers die?" <span class="chev">▸</span></summary>
+          <div class="a">State the trade first: sorting costs O(n log n) once if the feed is static, so sort-and-walk still beats O(n²). But if the feed is a hot stream with frequent inserts, maintain a HashSet of complements instead — O(n) time, O(n) space, zero ordering assumption. Name the invariant you'd be giving up (sortedness) and what replaces it (complement membership). That escalation-path shape is the senior signal.</div>
+        </details>
+      </section>
+
+    </article>
+  </main>
+
+  <!-- ============================== TOC ============================== -->
+  <aside class="toc">
+    <div class="hd">contents</div>
+    <a href="#opening" class="on"><span class="n">00</span> picking up…</a>
+    <a href="#ch1"><span class="n">01</span> the gift-card bug</a>
+    <a href="#ch2"><span class="n">02</span> walking from both ends</a>
+    <a href="#play" class="play"><span class="n">▶</span> watch it run</a>
+    <a href="#ch3"><span class="n">03</span> the java</a>
+    <a href="#ch4"><span class="n">04</span> honest costs</a>
+    <a href="#recap"><span class="n">05</span> put together</a>
+    <a href="#warroom"><span class="n">⚔</span> war room</a>
+  </aside>
+</div>
+
+<div class="toast" id="toast">⚡ +120 XP · LVL 8 — half-way to ARCHITECT</div>
+
+<script>
+  /* ---------------- player ---------------- */
+  const PRICES = [3, 8, 12, 17, 21, 26, 30];
+  // declarative snapshots — exactly what the Angular StepPlayer will consume.
+  // `line` = 0-based row of the pseudocode panel that "just ran" for this frame.
+  const FRAMES = [
+    { l:0, r:6, cmp:[], done:[], meet:false, badge:'left=0 · right=6', line:0,
+      cap:'Start at the extremes — the whole shelf is still in play.' },
+    { l:0, r:6, cmp:[0,6], done:[], meet:false, badge:'3 + 30 = 33', line:3,
+      cap:'33 > 27. Too big — and 3 is already the SMALLEST possible partner.' },
+    { l:0, r:5, cmp:[], done:[6], meet:false, badge:'30 eliminated', line:6,
+      cap:'So 30 is out. One comparison killed every pair containing it — that\'s the O(n²) → O(n) magic.' },
+    { l:0, r:5, cmp:[0,5], done:[6], meet:false, badge:'3 + 26 = 29', line:3,
+      cap:'Still too big. Same verdict, next suspect.' },
+    { l:0, r:4, cmp:[], done:[5,6], meet:false, badge:'26 eliminated', line:6,
+      cap:'26 gone. The right finger only ever moves inward — it never re-checks.' },
+    { l:0, r:4, cmp:[0,4], done:[5,6], meet:false, badge:'3 + 21 = 24', line:3,
+      cap:'Now TOO SMALL. Even the largest survivor can\'t lift 3 to 27.' },
+    { l:1, r:4, cmp:[], done:[0,5,6], meet:false, badge:'3 eliminated', line:5,
+      cap:'3 retires with honour: one sweep judged everything it could ever pair with.' },
+    { l:1, r:4, cmp:[1,4], done:[0,5,6], meet:false, badge:'8 + 21 = 29', line:3,
+      cap:'Too big again. The rhythm settles: too rich → drop the expensive side.' },
+    { l:1, r:3, cmp:[], done:[4,5,6], meet:false, badge:'21 eliminated', line:6,
+      cap:'21 gone without ceremony.' },
+    { l:1, r:3, cmp:[1,3], done:[4,5,6], meet:false, badge:'8 + 17 = 25', line:3,
+      cap:'Too small this time → the LEFT finger must move.' },
+    { l:2, r:3, cmp:[], done:[0,1,4,5,6], meet:false, badge:'8 eliminated', line:5,
+      cap:'8 out. Notice: 12 and 17 haven\'t even been looked at yet — they don\'t need to be, yet.' },
+    { l:2, r:3, cmp:[2,3], done:[0,1,4,5,6], meet:false, badge:'12 + 17 = 29', line:3,
+      cap:'Last hope — too rich. 17 eliminated.' },
+    { l:2, r:2, cmp:[2], done:[0,1,3,4,5,6], meet:true, badge:'crossed', line:2,
+      cap:'Right crosses left. The while-condition just went false: every possible pair was judged and rejected.' },
+    { l:2, r:2, cmp:[], done:[0,1,3,4,5,6], meet:true, badge:'return false', line:7,
+      cap:'Provably no pair sums to 27 — proven in 7 comparisons instead of 21.' },
+  ];
+  // synced pseudocode panel — indented rows get class "ind"
+  const PSEUDO = [
+    ['left = 0', false],
+    ['right = n - 1', false],
+    ['while left < right:', false],
+    ['sum = arr[left] + arr[right]', true],
+    ['if sum == target: return true', true],
+    ['if sum < target: left++', true],
+    ['else: right--', true],
+    ['return false', false]
+  ];
+
+  let idx = 0, playing = false, timer = null, speedIdx = 1;
+  const SPEEDS = [1600, 950, 450];
+
+  // build the pseudocode panel once (with line numbers)
+  document.getElementById('pseudo').innerHTML = PSEUDO.map(([txt, ind], i) =>
+    `<li class="${ind ? 'ind' : ''}"><span class="ln">${i + 1}</span>${txt}</li>`).join('');
+  const codeLis = [...document.querySelectorAll('#pseudo li')];
+
+  function render() {
+    const f = FRAMES[idx];
+    document.getElementById('cells').innerHTML = PRICES.map((v, i) => {
+      const cls = f.cmp.includes(i) && !(f.meet && i === 2) ? 'compare'
+                : f.done.includes(i) ? 'done'
+                : (f.meet && i === 2) ? 'meet' : '';
+      return `<div class="cellwrap"><div class="cell ${cls}">${v}<span class="ix">[${i}]</span></div></div>`;
+    }).join('');
+    document.getElementById('ptrs').innerHTML = PRICES.map((_, i) => {
+      if (i !== f.l && i !== f.r) return '<span></span>';
+      if (f.l === f.r && i === f.l) return '<span class="ptr" style="grid-column:'+(i+1)+'">both</span>';
+      if (i === f.l) return '<span class="ptr" style="grid-column:'+(i+1)+'">left='+i+'</span>';
+      return '<span class="ptr r" style="grid-column:'+(i+1)+'">right='+i+'</span>';
+    }).join('');
+    document.getElementById('badge').textContent = f.badge;
+    document.getElementById('captionText').textContent = f.cap;
+    document.getElementById('stepno').textContent = 'frame ' + (idx+1) + ' / ' + FRAMES.length;
+    document.getElementById('scrub').value = idx;
+    codeLis.forEach((li, i) => li.classList.toggle('on', i === f.line));
+    const ln = 'line ' + (f.line + 1);
+    document.getElementById('lineChip').textContent = ln;
+    document.getElementById('codeLineNo').textContent = ln;
+  }
+  function step(d) { stop(); idx = Math.min(FRAMES.length-1, Math.max(0, idx+d)); render(); }
+  function jump(i) { stop(); idx = Math.max(0, Math.min(FRAMES.length-1, i)); render(); }
+  function togglePlay() {
+    if (playing) return stop();
+    playing = true;
+    document.getElementById('playBtn').textContent = '⏸ pause';
+    tick();
+  }
+  function tick() {
+    if (!playing) return;
+    if (idx >= FRAMES.length-1) { idx = 0; render(); }
+    else { idx++; render(); }
+    timer = setTimeout(tick, SPEEDS[speedIdx]);
+  }
+  function stop(){ playing = false; clearTimeout(timer); document.getElementById('playBtn').textContent = '▶ play'; }
+  function cycleSpeed(){ speedIdx = (speedIdx+1)%SPEEDS.length; document.getElementById('spd').textContent = ['0.5×','1×','2×'][speedIdx]; }
+  render();
+
+  /* ---------------- sidebar open/close ---------------- */
+  function toggleSb(){ document.body.classList.toggle('sb-off'); }
+
+  /* ---------------- sidebar collapse ---------------- */
+  function tog(btn){
+    btn.classList.toggle('closed');
+    btn.closest('.t-wrap').classList.toggle('closed');
+  }
+
+  /* ---------------- mark done + toast ---------------- */
+  let done = false;
+  function markDone(){
+    done = !done;
+    const b = document.getElementById('doneBtn');
+    b.classList.toggle('did', done);
+    b.textContent = done ? '✓ done · +120 xp' : '$ mark --done';
+    if (done) {
+      const t = document.getElementById('toast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3200);
+    }
+  }
+
+  /* ---------------- reading progress + scroll-spy (main panel scrolls, not body) ---------------- */
+  const mainEl = document.querySelector('main');
+  const bar = document.getElementById('readbar');
+  const tocLinks = [...document.querySelectorAll('.toc a')];
+  const targets = tocLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  mainEl.addEventListener('scroll', () => {
+    bar.style.width = (mainEl.scrollTop / (mainEl.scrollHeight - mainEl.clientHeight) * 100) + '%';
+    let cur = 0;
+    targets.forEach((el, i) => { if (el.getBoundingClientRect().top < 140) cur = i; });
+    tocLinks.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+</script>
+</body>
+</html>

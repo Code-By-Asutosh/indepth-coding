@@ -1,0 +1,16 @@
+<ol class="dg-canvas relative space-y-4 border-l border-[var(--color-border-strong)] pl-6">
+  @for (step of numbered(); track step.id; let i = $index) {
+    <li class="rise-in relative" [style.animation-delay.ms]="i * 100">
+      <span
+        class="stat-num absolute -left-[3.05rem] flex h-7 w-11 items-center justify-center rounded-md border border-[var(--color-brand-500)]/40 bg-[var(--color-bg-raised)] text-[10px] font-bold text-[var(--color-brand-300)]"
+        aria-hidden="true"
+      >
+        N°{{ step.no }}
+      </span>
+      <p class="text-sm font-bold leading-snug text-[var(--color-text)]">{{ step.label }}</p>
+      @if (step.detail) {
+        <p class="mt-1 text-xs leading-relaxed text-[var(--color-text-muted)]">{{ step.detail }}</p>
+      }
+    </li>
+  }
+</ol>

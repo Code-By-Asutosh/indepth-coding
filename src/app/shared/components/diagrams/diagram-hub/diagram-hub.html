@@ -1,0 +1,46 @@
+<div class="dg-canvas flex flex-col items-center">
+  <!-- Hub -->
+  <div class="dg-node dg-tone-brand rise-in max-w-sm text-center" [class.dg-node--decision]="hub().kind === 'decision'">
+    <p class="dg-node__label">{{ hub().label }}</p>
+    @if (hub().detail) {
+      <p class="dg-node__detail">{{ hub().detail }}</p>
+    }
+  </div>
+
+  <!-- Connector rail -->
+  <div class="flex w-full justify-center" aria-hidden="true">
+    <span class="h-5 w-px bg-[color-mix(in_srgb,var(--color-brand-300)_65%,transparent)]"></span>
+  </div>
+  <div
+    class="mx-auto h-px w-[calc(100%/var(--spoke-count)+0.75rem)] max-w-full bg-[color-mix(in_srgb,var(--color-brand-300)_45%,transparent)]"
+    aria-hidden="true"
+    [style.--spoke-count]="spokes().length"
+  ></div>
+
+  <!-- Spokes -->
+  <ul
+    class="grid w-full gap-3"
+    [style.grid-template-columns]="'repeat(auto-fit, minmax(9rem, 1fr))'"
+  >
+    @for (spoke of spokes(); track spoke.node.id; let i = $index) {
+      <li class="relative flex flex-col items-center pt-5">
+        <!-- stem down from the rail to each spoke -->
+        <span
+          class="absolute top-0 h-5 w-px bg-[color-mix(in_srgb,var(--color-brand-300)_45%,transparent)]"
+          aria-hidden="true"
+        ></span>
+        <div class="dg-node rise-in w-full {{ toneClass(spoke.node) }}" [style.animation-delay.ms]="i * 80">
+          @if (spoke.edgeLabel) {
+            <p class="mb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--color-brand-400)]">
+              {{ spoke.edgeLabel }}
+            </p>
+          }
+          <p class="dg-node__label">{{ spoke.node.label }}</p>
+          @if (spoke.node.detail) {
+            <p class="dg-node__detail">{{ spoke.node.detail }}</p>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+</div>

@@ -1,7 +1,8 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { findCategory } from '../../../core/data/categories.data';
-import { ProgressService } from '../../../core/services/progress.service';
+import { LearningStore } from '../../../core/services/learning-store.service';
+import { ConceptSummary } from '../../../core/models/content.model';
 
 @Component({
   selector: 'app-category-overview-page',
@@ -10,34 +11,51 @@ import { ProgressService } from '../../../core/services/progress.service';
   styleUrl: './category-overview.page.scss'
 })
 export class CategoryOverviewPage {
-  private readonly progressService = inject(ProgressService);
+  private readonly store = inject(LearningStore);
 
   readonly categoryId = input.required<string>();
 
   protected readonly category = computed(() => findCategory(this.categoryId()));
-  protected readonly progress = computed(() => this.progressService.categoryProgress(this.categoryId()));
+  protected readonly progress = computed(() => this.store.categoryProgress(this.categoryId()));
 
-  protected topicProgress(topicId: string, conceptIds: string[]) {
-    return this.progressService.topicProgress(this.categoryId(), topicId, conceptIds);
+  protected readonly totalConcepts = computed(
+    () => this.category()?.topics.reduce((acc, t) => acc + t.concepts.length, 0) ?? 0
+  );
+
+  protected readonly totalCoreCount = computed(
+    () => this.category()?.topics.flatMap((t) => t.concepts).filter((c) => c.importance === 'core').length ?? 0
+  );
+
+  protected readonly totalHighFreqCount = computed(
+    () => this.category()?.topics.flatMap((t) => t.concepts).filter((c) => c.frequency === 'high').length ?? 0
+  );
+
+  protected readonly ringOffset = computed(() => {
+    const p = this.progress().percent;
+    return Math.max(0, Math.min(110, 110 - (p / 100) * 110));
+  });
+
+  protected topicProgress(topicId: string) {
+    return this.store.topicProgress(this.categoryId(), topicId);
   }
 
-  protected conceptIds(concepts: { id: string }[]): string[] {
-    return concepts.map((concept) => concept.id);
+  protected coreCount(concepts: ConceptSummary[]): number {
+    return concepts.filter((concept) => concept.importance === 'core').length;
   }
 
-  protected coreCount(conceptIds: { importance: string }[]): number {
-    return conceptIds.filter((concept) => concept.importance === 'core').length;
+  protected optionalCount(concepts: ConceptSummary[]): number {
+    return concepts.filter((concept) => concept.importance === 'optional').length;
   }
 
-  protected optionalCount(conceptIds: { importance: string }[]): number {
-    return conceptIds.filter((concept) => concept.importance === 'optional').length;
-  }
-
-  protected highFrequencyCount(concepts: { frequency: string }[]): number {
+  protected highFrequencyCount(concepts: ConceptSummary[]): number {
     return concepts.filter((concept) => concept.frequency === 'high').length;
   }
 
-  protected firstConceptId(concepts: { id: string }[]): string | null {
+  protected firstConceptId(concepts: ConceptSummary[]): string | null {
     return concepts.length > 0 ? concepts[0].id : null;
+  }
+
+  protected isComplete(topicId: string, conceptId: string): boolean {
+    return this.store.isComplete(this.categoryId(), topicId, conceptId);
   }
 }

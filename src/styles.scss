@@ -1,4 +1,10 @@
-/* You can add global styles to this file, and also import other style files */
+/*
+ * Indepth Coding — global design system ("the lab").
+ *
+ * Identity: warm charcoal workspace + burnished-gold accents, JetBrains Mono
+ * as the voice of the chrome ($ prompts, // labels, stat numerals) and Inter
+ * for prose. Dark-only by design.
+ */
 @use 'tailwindcss';
 @use 'prismjs/themes/prism-tomorrow.css';
 
@@ -6,28 +12,45 @@
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
-  /* Brand palette: near-black charcoal background + premium indigo/violet accent, cyan secondary. */
-  --color-bg: #08090f;
-  --color-surface: rgba(255, 255, 255, 0.045);
-  --color-surface-alt: rgba(255, 255, 255, 0.07);
-  --color-border: rgba(255, 255, 255, 0.09);
+  /* Workspace palette: warm near-black lab bench, warm translucent surfaces. */
+  --color-bg: #0b0a08;
+  --color-bg-raised: #12100b;
+  --color-surface: rgba(237, 230, 214, 0.045);
+  --color-surface-alt: rgba(237, 230, 214, 0.075);
+  --color-surface-raised: rgba(26, 22, 15, 0.72);
+  --color-border: rgba(237, 230, 214, 0.1);
+  --color-border-strong: rgba(237, 230, 214, 0.18);
 
-  --color-brand-50: #eef2ff;
-  --color-brand-100: #e0e7ff;
-  --color-brand-200: #c7d2fe;
-  --color-brand-300: #a5b4fc;
-  --color-brand-400: #818cf8;
-  --color-brand-500: #6366f1;
-  --color-brand-600: #4f46e5;
-  --color-brand-700: #4338ca;
-  --color-brand-800: #3730a3;
-  --color-brand-900: #312e81;
+  /*
+   * Burnished-gold brand ramp.
+   *
+   * NOTE: these deliberately keep the historical `brand-*` token names so
+   * every existing template styled with `text-brand-*` / `bg-brand-*`
+   * utilities reskins to gold without touching them. New code should prefer
+   * these tokens too — they ARE the brand now.
+   */
+  --color-brand-50: #faf5e6;
+  --color-brand-100: #f3e9cd;
+  --color-brand-200: #e9d7a2;
+  --color-brand-300: #ddc071;
+  --color-brand-400: #d0a844;
+  --color-brand-500: #c2942f;
+  --color-brand-600: #a17a25;
+  --color-brand-700: #80601f;
+  --color-brand-800: #60471b;
+  --color-brand-900: #433117;
 
+  /* Cool steel-cyan secondary — links, functions, informational highlights. */
   --color-accent-400: #22d3ee;
   --color-accent-500: #06b6d4;
 
-  --color-text: #e8e9f3;
-  --color-text-muted: #9393a8;
+  /* Status signals (used sparingly, never decoratively). */
+  --color-ok: #34d399;
+  --color-warn: #fbbf24;
+  --color-danger: #f87171;
+
+  --color-text: #ece7db;
+  --color-text-muted: #a89f90;
 }
 
 html,
@@ -42,62 +65,134 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Fixed ambient gradient mesh - sits behind every page so glass panels have something to blur/refract. */
+/* ---------------------------------------------------------------------------
+ * Backdrop — fixed blueprint grid + faint top glow + vignette, behind all
+ * content. Replaces the old blurred-blob mesh; gives every page the feel of
+ * graph paper on a lab bench.
+ * ------------------------------------------------------------------------- */
 .app-backdrop {
   position: fixed;
   inset: 0;
   z-index: -50;
   overflow: hidden;
   pointer-events: none;
+  background-image:
+    radial-gradient(ellipse 70% 42% at 50% -8%, rgba(194, 148, 47, 0.14), transparent 72%),
+    repeating-linear-gradient(0deg, transparent 0 47px, rgba(237, 230, 214, 0.03) 47px 48px),
+    repeating-linear-gradient(90deg, transparent 0 47px, rgba(237, 230, 214, 0.03) 47px 48px);
 }
 
-.app-backdrop span {
+.app-backdrop::after {
+  content: '';
   position: absolute;
-  border-radius: 9999px;
-  filter: blur(120px);
-  opacity: 0.28;
+  inset: 0;
+  background: radial-gradient(ellipse 130% 110% at 50% 30%, transparent 52%, rgba(3, 2, 1, 0.6) 100%);
 }
 
-.app-backdrop .blob-1 {
-  top: -12%;
-  left: -6%;
-  height: 32rem;
-  width: 32rem;
+/* ---------------------------------------------------------------------------
+ * Surfaces
+ * ------------------------------------------------------------------------- */
+
+/* Flat lab panel — the default card. Solid raised tone, hairline border. */
+.panel {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+}
+
+/* Legacy glass surface kept working for templates not yet migrated: flatter,
+   crisper and warmer than the old heavy blur. */
+.glass-panel {
+  background: linear-gradient(180deg, rgba(237, 230, 214, 0.055), rgba(237, 230, 214, 0.02));
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    inset 0 1px 0 0 rgba(237, 230, 214, 0.05),
+    0 18px 36px -26px rgba(0, 0, 0, 0.75);
+}
+
+/* Terminal window chrome — header bar with dots + titled body. Used by hero
+   cards, practice forms, dashboard tiles, footer status strip… */
+.term-window {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.term-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(237, 230, 214, 0.035);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.term-dots {
+  display: inline-flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.term-dot {
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-border-strong);
+}
+
+.term-dot:first-child {
   background: var(--color-brand-500);
 }
 
-.app-backdrop .blob-2 {
-  top: 10%;
-  right: -10%;
-  height: 26rem;
-  width: 26rem;
-  background: var(--color-accent-500);
-  opacity: 0.18;
+/* ---------------------------------------------------------------------------
+ * Typographic chrome
+ * ------------------------------------------------------------------------- */
+
+/* Micro-label above a section: `$ why-it-exists` / `// tradeoffs` style. */
+.eyebrow {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
-.app-backdrop .blob-3 {
-  bottom: -18%;
-  left: 30%;
-  height: 30rem;
-  width: 30rem;
-  background: var(--color-brand-700);
-  opacity: 0.2;
+.eyebrow::before {
+  content: '$';
+  color: var(--color-brand-400);
 }
 
-/* Reusable glassmorphism surface: translucent, blurred, soft top highlight. */
-.glass-panel {
-  background: var(--color-surface);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid var(--color-border);
-  box-shadow:
-    inset 0 1px 0 0 rgba(255, 255, 255, 0.06),
-    0 20px 40px -28px rgba(0, 0, 0, 0.6);
+.eyebrow--slash::before {
+  content: '//';
+}
+
+/* Big tabular numeral for stats/KPIs. */
+.stat-num {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 ::selection {
   background: var(--color-brand-500);
-  color: #fff;
+  color: #171207;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-400);
+  outline-offset: 2px;
 }
 
 /* Thin, dark themed scrollbar */
@@ -114,6 +209,128 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-brand-700);
+}
+
+/* Shared entrances (opt-in per element). */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.45s ease both;
+}
+
+/* Blinking terminal cursor (hero boot sequence, coming-soon blocks). */
+.cursor-blink {
+  display: inline-block;
+  animation: cursor-blink 1s step-end infinite;
+}
+
+@keyframes cursor-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Diagram primitives — shared by the native-CSS diagrams/ component family.
+ * Global so every diagram variant stays far under the per-component style
+ * budget while looking identical.
+ * ------------------------------------------------------------------------- */
+.dg-canvas {
+  font-family: var(--font-mono);
+}
+
+/* Node chip */
+.dg-node {
+  --dg-tone: var(--color-text-muted);
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--dg-tone) 45%, transparent);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(237, 230, 214, 0.05), rgba(237, 230, 214, 0.015));
+  box-shadow: inset 0 1px 0 0 rgba(237, 230, 214, 0.05);
+  padding: 0.55rem 0.8rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    border-color: var(--dg-tone);
+    box-shadow: 0 6px 20px -12px color-mix(in srgb, var(--dg-tone) 60%, transparent);
+  }
+}
+
+/* Clipped-corner look for decision diamonds (kept rectangular for readability). */
+.dg-node--decision {
+  clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+  border-radius: 4px;
+}
+
+.dg-node__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.25;
+}
+
+.dg-node__detail {
+  margin-top: 0.25rem;
+  font-size: 0.65rem;
+  line-height: 1.35;
+  color: var(--color-text-muted);
+}
+
+/* Tone modifiers */
+.dg-tone-brand {
+  --dg-tone: var(--color-brand-400);
+}
+.dg-tone-accent {
+  --dg-tone: var(--color-accent-400);
+}
+.dg-tone-ok {
+  --dg-tone: var(--color-ok);
+}
+.dg-tone-warn {
+  --dg-tone: var(--color-warn);
+}
+.dg-tone-danger {
+  --dg-tone: var(--color-danger);
+}
+.dg-tone-muted {
+  --dg-tone: var(--color-text-muted);
+}
+
+/* Connector wires (inline SVG) */
+.dg-wire {
+  fill: none;
+  stroke: color-mix(in srgb, var(--color-brand-300) 65%, transparent);
+  stroke-width: 1.5;
+}
+
+.dg-wire--dashed {
+  stroke-dasharray: 5 4;
+  stroke: color-mix(in srgb, var(--color-text-muted) 60%, transparent);
+}
+
+.dg-arrowhead {
+  fill: color-mix(in srgb, var(--color-brand-300) 80%, transparent);
+}
+
+/* Respect users who ask for calm: one global switch covers every component. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /*
@@ -196,11 +413,11 @@ body {
   .chat-md-list code {
     font-family: var(--font-mono);
     font-size: 0.85em;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(237, 230, 214, 0.08);
     border: 1px solid var(--color-border);
     border-radius: 4px;
     padding: 0.1em 0.4em;
-    color: var(--color-accent-400);
+    color: var(--color-brand-300);
   }
 }
 
@@ -209,7 +426,7 @@ body {
   border-radius: 10px;
   overflow: hidden;
   border: 1px solid var(--color-border);
-  background: #0d0e16;
+  background: #12100a;
 }
 
 .chat-code-block__header {
@@ -217,7 +434,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0.35rem 0.7rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(237, 230, 214, 0.05);
   border-bottom: 1px solid var(--color-border);
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -240,7 +457,7 @@ body {
 }
 .chat-code-block__copy:hover {
   color: var(--color-text);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(237, 230, 214, 0.08);
 }
 
 .chat-code-block pre {
@@ -257,7 +474,7 @@ body {
 }
 
 /*
- * Prism syntax highlighting theme, re-tinted to the site's indigo/cyan
+ * Prism syntax highlighting theme, re-tinted to the site's gold/cyan
  * palette. Global (not scoped to CodeBlock) so it also colors code blocks
  * the AI chat panel injects via [innerHTML] at runtime.
  */
@@ -275,7 +492,7 @@ pre[class*='language-'] {
 
 .token.string,
 .token.char {
-  color: #86efac; // soft green, reads clearly against dark glass
+  color: #86efac; // soft terminal green, reads clearly against warm charcoal
 }
 
 .token.function {
@@ -289,7 +506,7 @@ pre[class*='language-'] {
 
 .token.number,
 .token.boolean {
-  color: #fbbf24; // warm amber accent for literals, distinct from brand color
+  color: #fbbf24; // amber literals — now native to the gold palette
 }
 
 .token.class-name {
@@ -300,5 +517,858 @@ pre[class*='language-'] {
 .token.decorator {
   color: var(--color-brand-400);
 }
+
+/* ---------------------------------------------------------------------------
+ * Learning content primitives — shared across concept pages and learning tracks
+ * ------------------------------------------------------------------------- */
+.done-btn {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  color: var(--color-brand-300);
+  background: rgba(194, 148, 47, 0.08);
+  border: 1px solid rgba(194, 148, 47, 0.4);
+  border-radius: 8px;
+  padding: 0.42rem 0.85rem;
+  transition: all 0.18s ease;
+
+  &:hover {
+    background: rgba(194, 148, 47, 0.16);
+    border-color: var(--color-brand-400);
+  }
+
+  &.did {
+    color: #171207;
+    background: var(--color-ok);
+    border-color: var(--color-ok);
+    font-weight: 700;
+  }
+}
+
+.hook {
+  display: flex;
+  gap: 0.7rem;
+  align-items: flex-start;
+  margin: 1.3rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px dashed rgba(194, 148, 47, 0.45);
+  border-radius: 11px;
+  background: rgba(194, 148, 47, 0.05);
+  font-family: var(--font-mono);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: var(--color-brand-200);
+
+  &::before {
+    content: '⌘';
+    color: var(--color-brand-400);
+    font-size: 0.95rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+}
+
+code.inl {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  color: var(--color-brand-300);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  padding: 0.08em 0.38em;
+  white-space: nowrap;
+}
+
+.recap {
+  margin: 2rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--color-surface-raised);
+
+  .bar {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+    padding: 0.5rem 0.9rem;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+  }
+
+  ul {
+    margin: 0.9rem 0;
+    padding: 0 1.2rem;
+    list-style: none;
+  }
+
+  li {
+    position: relative;
+    padding: 0.3rem 0 0.3rem 1.4rem;
+    color: #d9d3c6;
+    font-size: 0.9rem;
+    line-height: 1.6;
+
+    &::before {
+      content: '▸';
+      position: absolute;
+      left: 0.15rem;
+      color: var(--color-brand-400);
+    }
+  }
+}
+
+.next-up {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.8rem;
+  padding: 1rem 1.2rem;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 12px;
+  background: var(--color-surface);
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--color-brand-500);
+  }
+
+  .arr {
+    font-size: 1.3rem;
+    color: var(--color-brand-400);
+    flex-shrink: 0;
+  }
+
+  .t {
+    font-weight: 700;
+    font-size: 0.92rem;
+    color: var(--color-text);
+  }
+
+  .d {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+  }
+
+  .go {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--color-brand-300);
+    white-space: nowrap;
+  }
+}
+
+.war {
+  margin-top: 3rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.4rem;
+
+  .hd {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+
+    b {
+      color: var(--color-brand-400);
+    }
+  }
+}
+
+details.rf {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface-raised);
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+
+  &[open] {
+    border-color: color-mix(in srgb, var(--color-brand-500) 45%, transparent);
+
+    summary .chev {
+      transform: rotate(90deg);
+    }
+  }
+
+  summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    user-select: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-brand-400);
+      outline-offset: -2px;
+    }
+
+    .q {
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      color: var(--color-accent-400);
+      letter-spacing: 0.08em;
+      flex-shrink: 0;
+      border: 1px solid rgba(34, 211, 238, 0.35);
+      border-radius: 5px;
+      padding: 0.08rem 0.35rem;
+    }
+
+    .chev {
+      margin-left: auto;
+      color: var(--color-brand-400);
+      transition: transform 0.2s ease;
+      font-size: 0.7rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .a {
+    padding: 0.25rem 1rem 0.9rem 3.2rem;
+    color: var(--color-text-muted);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    border-top: 1px solid var(--color-border);
+    margin-top: -1px;
+    padding-top: 0.75rem;
+
+    b, strong {
+      color: var(--color-text);
+    }
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Gold Lab Typographic & Layout Essentials
+ * ------------------------------------------------------------------------- */
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+
+  b {
+    color: var(--color-brand-400);
+    font-weight: 600;
+  }
+}
+
+h1.title {
+  margin: 0.7rem 0 0.2rem;
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  letter-spacing: -0.02em;
+  line-height: 1.08;
+  font-weight: 900;
+  color: var(--color-text);
+
+  small {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-brand-400);
+    margin-top: 0.5rem;
+  }
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.9rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+
+  span {
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.22rem 0.55rem;
+    background: var(--color-surface);
+
+    &.hot {
+      color: var(--color-brand-300);
+      border-color: rgba(194, 148, 47, 0.4);
+    }
+
+    &.plain {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+  }
+}
+
+.opening {
+  position: relative;
+  border-left: 3px solid var(--color-brand-500);
+  background: linear-gradient(90deg, rgba(194, 148, 47, 0.07), transparent 70%);
+  padding: 0.9rem 1.2rem;
+  border-radius: 0 12px 12px 0;
+  margin: 1.8rem 0 2.2rem;
+
+  .k {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-brand-400);
+  }
+
+  p {
+    margin: 0.45rem 0 0;
+    color: #d9d3c6;
+    font-size: 1.05rem;
+    line-height: 1.65;
+
+    b, strong {
+      color: var(--color-text);
+    }
+  }
+}
+
+h2.ch {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 2.8rem 0 1rem;
+  font-size: 1.42rem;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+  color: var(--color-text);
+
+  .no {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-brand-400);
+    border: 1px solid rgba(194, 148, 47, 0.4);
+    border-radius: 7px;
+    padding: 0.18rem 0.5rem;
+    transform: translateY(-2px);
+  }
+
+  &.play-h .no {
+    color: var(--color-accent-400);
+    border-color: rgba(34, 211, 238, 0.4);
+  }
+}
+
+.sb-open-fab {
+  position: fixed;
+  left: 12px;
+  top: 64px;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  color: var(--color-brand-300);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border-strong);
+  border-radius: 9px;
+  cursor: pointer;
+  box-shadow: 0 10px 26px -10px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.18s;
+
+  &:hover {
+    border-color: var(--color-brand-500);
+  }
+}
+
+.sb-toggle {
+  width: 34px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  color: var(--color-brand-300);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.18s;
+
+  &:hover {
+    border-color: var(--color-brand-500);
+    background: rgba(194, 148, 47, 0.12);
+  }
+}
+
+.sb-collapse {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  margin-left: 0.5rem;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.18s;
+
+  &:hover {
+    color: var(--color-brand-300);
+    border-color: var(--color-brand-500);
+  }
+}
+
+.toc-link {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.32rem 0.55rem;
+  border-left: 2px solid transparent;
+  color: var(--color-text-muted);
+  letter-spacing: 0.02em;
+  line-height: 1.45;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+
+  .n {
+    color: var(--color-brand-700);
+  }
+
+  &.on {
+    color: var(--color-brand-300);
+    border-left-color: var(--color-brand-400);
+    background: linear-gradient(90deg, rgba(194, 148, 47, 0.09), transparent);
+
+    .n {
+      color: var(--color-brand-400);
+    }
+  }
+
+  &.play .n {
+    color: var(--color-accent-400);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Interactive Step Player Animation Engine Styles
+ * ------------------------------------------------------------------------- */
+.player {
+  margin: 1.6rem 0 2.2rem;
+  border: 1px solid rgba(194, 148, 47, 0.35);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--color-surface-raised);
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.8);
+}
+
+.pl-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+
+  .dots {
+    display: inline-flex;
+    gap: 0.32rem;
+    i {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--color-border-strong);
+      &:first-child {
+        background: var(--color-brand-500);
+      }
+    }
+  }
+
+  .stepno {
+    margin-left: auto;
+    color: var(--color-text-muted);
+  }
+
+  .live {
+    color: var(--color-accent-400);
+    font-weight: 700;
+  }
+}
+
+.pl-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+
+  @media (min-width: 960px) {
+    grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  }
+}
+
+.pl-stage {
+  position: relative;
+  padding: 2.2rem 1.4rem 1.4rem;
+
+  @media (min-width: 960px) {
+    border-right: 1px solid var(--color-border);
+  }
+
+  @media (max-width: 959px) {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .badge {
+    position: absolute;
+    top: 0.85rem;
+    right: 0.9rem;
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.05em;
+    color: var(--color-brand-200);
+    background: rgba(194, 148, 47, 0.12);
+    border: 1px solid rgba(194, 148, 47, 0.4);
+    border-radius: 7px;
+    padding: 0.25rem 0.6rem;
+  }
+
+  .scenario {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+    letter-spacing: 0.02em;
+    line-height: 1.5;
+
+    b {
+      color: #fbbf24;
+      font-weight: 600;
+    }
+  }
+}
+
+/* Memory Blocks Visual (OOP, JVM, Heap) */
+.mem-block {
+  border: 1px solid var(--color-border-strong);
+  border-radius: 10px;
+  background: var(--color-surface);
+  overflow: hidden;
+
+  &[data-tone='brand'] {
+    border-color: rgba(194, 148, 47, 0.4);
+    .mem-head {
+      background: rgba(194, 148, 47, 0.1);
+      color: var(--color-brand-300);
+    }
+  }
+
+  &[data-tone='accent'] {
+    border-color: rgba(34, 211, 238, 0.4);
+    .mem-head {
+      background: rgba(34, 211, 238, 0.1);
+      color: var(--color-accent-400);
+    }
+  }
+
+  &[data-tone='ok'] {
+    border-color: rgba(74, 222, 128, 0.4);
+    .mem-head {
+      background: rgba(74, 222, 128, 0.1);
+      color: var(--color-ok);
+    }
+  }
+
+  .mem-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .mem-addr {
+    font-size: 0.62rem;
+    opacity: 0.75;
+  }
+}
+
+/* Array Cells Visual (DSA) */
+.cells {
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cellwrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.cell {
+  min-width: 48px;
+  padding: 0.55rem 0.45rem 0.4rem;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid var(--color-border-strong);
+  background: linear-gradient(180deg, rgba(237, 230, 214, 0.05), rgba(237, 230, 214, 0.015));
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.98rem;
+  transition: all 0.25s ease;
+
+  .ix {
+    display: block;
+    font-size: 0.58rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    margin-top: 0.15rem;
+  }
+
+  &.compare {
+    border-color: #fbbf24;
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.22);
+    color: #fbbf24;
+  }
+
+  &.done {
+    opacity: 0.35;
+  }
+
+  &.target {
+    border-color: var(--color-brand-400);
+    color: var(--color-brand-300);
+    box-shadow: 0 0 14px rgba(194, 148, 47, 0.35);
+  }
+}
+
+.ptrs {
+  display: grid;
+  grid-template-columns: repeat(7, 48px);
+  gap: 0.55rem;
+  justify-content: center;
+  margin-top: 0.8rem;
+  min-height: 42px;
+}
+
+.ptr {
+  grid-row: 1;
+  justify-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  border: 1px dashed var(--color-brand-400);
+  color: var(--color-brand-300);
+  background: rgba(194, 148, 47, 0.08);
+  border-radius: 7px;
+  padding: 0.2rem 0.4rem;
+  position: relative;
+  transition: all 0.25s ease;
+
+  &::before {
+    content: '▲';
+    display: block;
+    text-align: center;
+    font-size: 0.55rem;
+    color: var(--color-brand-400);
+  }
+
+  &.r {
+    border-color: var(--color-accent-400);
+    color: var(--color-accent-400);
+    background: rgba(34, 211, 238, 0.07);
+    &::before {
+      color: var(--color-accent-400);
+    }
+  }
+}
+
+.caption {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  margin: 1.1rem auto 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  padding: 0.75rem 0.95rem;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  color: #d9d3c6;
+
+  &::before {
+    content: '✎';
+    color: var(--color-brand-400);
+    flex-shrink: 0;
+  }
+
+  .ln-chip {
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #171207;
+    background: var(--color-brand-400);
+    border-radius: 5px;
+    padding: 0.1rem 0.45rem;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+  }
+}
+
+/* Synced Code Panel */
+.pl-code {
+  background: #0d0b07;
+  font-family: var(--font-mono);
+
+  .hd {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1.1rem 0.1rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+
+    #codeLineNo {
+      color: var(--color-brand-400);
+      font-weight: 700;
+    }
+  }
+
+  ol {
+    list-style: none;
+    margin: 0.5rem 0 0.9rem;
+    padding: 0.35rem 0;
+    font-size: 0.78rem;
+    line-height: 1.95;
+    color: #b9b4a8;
+  }
+
+  li {
+    padding: 0 1rem 0 2.9rem;
+    position: relative;
+    white-space: pre-wrap;
+    word-break: break-all;
+    transition: background 0.18s;
+
+    .ln {
+      position: absolute;
+      left: 1rem;
+      top: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      font-size: 0.62rem;
+      color: var(--color-brand-700);
+    }
+
+    &.on {
+      background: linear-gradient(90deg, rgba(194, 148, 47, 0.32), rgba(194, 148, 47, 0.04) 85%);
+      color: #f6ecc9;
+      font-weight: 700;
+      box-shadow: inset 3px 0 0 var(--color-brand-400);
+
+      .ln {
+        left: 0.95rem;
+        padding: 0 0.35rem;
+        margin-top: 0.25rem;
+        height: 1.3rem;
+        color: #171207;
+        background: var(--color-brand-400);
+        border-radius: 5px;
+        font-weight: 800;
+      }
+    }
+  }
+
+  .foot {
+    padding: 0 1.1rem 1.1rem;
+    font-size: 0.66rem;
+    color: var(--color-text-muted);
+    border-top: 1px solid var(--color-border);
+    margin-top: 0.5rem;
+    padding-top: 0.6rem;
+  }
+}
+
+/* Playback Controls */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.8rem 1.1rem;
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+  background: var(--color-surface);
+
+  .ctl {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--color-text);
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 0.4rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+
+    &:hover {
+      border-color: var(--color-brand-500);
+      color: var(--color-brand-300);
+    }
+
+    &.play {
+      background: linear-gradient(135deg, var(--color-brand-400), var(--color-brand-500));
+      color: #171207;
+      font-weight: 700;
+      border: 0;
+      min-width: 86px;
+    }
+  }
+
+  input[type='range'].scrub {
+    flex: 1;
+    min-width: 140px;
+    accent-color: var(--color-brand-400);
+    height: 4px;
+  }
+
+  .speed {
+    min-width: 50px;
+  }
+}
+
 
 

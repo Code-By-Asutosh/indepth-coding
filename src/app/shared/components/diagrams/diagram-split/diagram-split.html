@@ -1,0 +1,44 @@
+<div class="dg-canvas">
+  <div class="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-stretch">
+    <!-- Left -->
+    <div class="dg-node dg-tone-muted rise-in">
+      <p class="mb-2 font-mono text-[11px] uppercase tracking-widest text-[var(--color-text-muted)]">{{ left().title }}</p>
+      <ul class="space-y-1.5">
+        @for (item of left().items; track $index) {
+          <li class="flex gap-2 text-sm leading-snug text-[var(--color-text)]">
+            <span class="mt-0.5 text-[var(--color-danger)]" aria-hidden="true">✕</span>
+            {{ item }}
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Divider -->
+    <div class="rise-in flex items-center justify-center" aria-hidden="true">
+      <span
+        class="stat-num rotate-0 rounded-md border border-[var(--color-border-strong)] px-2 py-1 text-[11px] text-[var(--color-brand-300)] sm:rotate-90"
+        >VS</span
+      >
+    </div>
+
+    <!-- Right -->
+    <div class="dg-node dg-tone-ok rise-in" [style.animation-delay.ms]="120">
+      <p class="mb-2 font-mono text-[11px] uppercase tracking-widest text-[var(--color-ok)]">{{ right().title }}</p>
+      <ul class="space-y-1.5">
+        @for (item of right().items; track $index) {
+          <li class="flex gap-2 text-sm leading-snug text-[var(--color-text)]">
+            <span class="mt-0.5 text-[var(--color-ok)]" aria-hidden="true">✓</span>
+            {{ item }}
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  @if (verdict()) {
+    <p class="term-window mt-3 px-4 py-3 font-mono text-xs leading-relaxed text-[var(--color-text-muted)]">
+      <span class="text-[var(--color-brand-400)]">$ verdict:</span>
+      {{ verdict() }}
+    </p>
+  }
+</div>

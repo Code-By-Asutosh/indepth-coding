@@ -1,46 +1,104 @@
-<article
-  class="glass-panel group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl p-6 transition duration-300 hover:-translate-y-1 hover:border-[var(--color-brand-500)]/60 hover:shadow-[0_20px_45px_-24px_rgba(99,102,241,0.5)]"
+<a
+  [routerLink]="['/learn', category().id]"
+  class="shelf-card term-window group relative block transition duration-200"
 >
-  <span
-    class="pointer-events-none absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[var(--color-brand-400)] to-[var(--color-accent-400)] transition-transform duration-300 group-hover:scale-x-100"
-  ></span>
+  <!-- spotlight glow, revealed on hover -->
+  <span class="shelf-card__glow pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true"></span>
 
-  <div>
-    <div class="flex items-center justify-between">
+  <!-- Terminal bar: live status + shelf path + catalog no -->
+  <div class="term-window__bar justify-between">
+    <span class="flex items-center gap-2">
+      <span class="relative flex h-1.5 w-1.5" aria-hidden="true">
+        <span class="absolute h-full w-full animate-ping rounded-full bg-[var(--color-ok)] opacity-60"></span>
+        <span class="relative h-1.5 w-1.5 rounded-full bg-[var(--color-ok)]"></span>
+      </span>
+      <span class="normal-case">~/learn/{{ category().id }}</span>
+    </span>
+    <span class="stat-num text-[11px] text-[var(--color-brand-400)]">N°{{ catalogNo() }}</span>
+  </div>
+
+  <div class="relative flex min-h-[13rem] flex-col p-4">
+    <!-- Identity row -->
+    <div class="flex items-start gap-3">
       <span
-        class="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--color-surface-alt)] text-2xl ring-1 ring-inset ring-[var(--color-border)] transition group-hover:ring-[var(--color-brand-500)]/50"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--color-border-strong)] bg-[var(--color-surface)] text-xl transition group-hover:border-[var(--color-brand-500)]/50"
+        aria-hidden="true"
       >
         {{ category().icon }}
       </span>
-      @if (progress().percent > 0) {
-        <span class="rounded-full bg-[var(--color-brand-500)]/15 px-2.5 py-1 text-xs font-semibold text-[var(--color-brand-300)]">
-          {{ progress().percent }}%
+      <div class="min-w-0 flex-1">
+        <h3 class="flex items-center gap-2 font-bold leading-snug text-[var(--color-text)] transition group-hover:text-[var(--color-brand-300)]">
+          {{ category().title }}
+          @if (index() === 0) {
+            <span class="shrink-0 rounded border border-[var(--color-brand-500)]/50 px-1.5 py-px font-mono text-[9px] uppercase tracking-wider text-[var(--color-brand-300)]">
+              ★ war-room
+            </span>
+          }
+        </h3>
+        <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-[var(--color-text-muted)]">
+          {{ category().tagline }}
+        </p>
+      </div>
+
+      @if (started()) {
+        <!-- progress ring -->
+        <div class="relative h-8 w-8 shrink-0" role="img" [attr.aria-label]="progress().percent + '% complete'">
+          <svg viewBox="0 0 26 26" class="h-full w-full -rotate-90">
+            <circle cx="13" cy="13" r="11" fill="none" stroke="var(--color-surface-alt)" stroke-width="3"></circle>
+            <circle
+              cx="13"
+              cy="13"
+              r="11"
+              fill="none"
+              stroke="var(--color-brand-400)"
+              stroke-width="3"
+              stroke-linecap="round"
+              [attr.stroke-dasharray]="ring().dash + ' ' + ring().circumference"
+              class="transition-all duration-500"
+            ></circle>
+          </svg>
+        </div>
+      }
+    </div>
+
+    <!-- Peek-through topic chips -->
+    <div class="mt-3.5 flex flex-wrap gap-1.5">
+      @for (topic of topicPreview(); track topic.id) {
+        <span class="rounded border border-[var(--color-border)] bg-[var(--color-surface)] px-2 py-0.5 font-mono text-[10px] text-[var(--color-text-muted)] transition group-hover:text-[var(--color-text)]">
+          {{ topic.title.toLowerCase() }}
+        </span>
+      }
+      @if (hiddenTopicCount() > 0) {
+        <span class="rounded px-1 py-0.5 font-mono text-[10px] text-[var(--color-text-muted)]/70">
+          +{{ hiddenTopicCount() }}
         </span>
       }
     </div>
 
-    <h3 class="mt-4 text-lg font-bold text-[var(--color-text)]">{{ category().title }}</h3>
-    <p class="mt-2 text-sm leading-relaxed text-[var(--color-text-muted)]">{{ category().tagline }}</p>
+    <!-- Footer: meter + meta-as-CTA -->
+    <div class="mt-auto pt-4">
+      @if (started()) {
+        <div
+          class="mb-2.5 h-1 overflow-hidden rounded-full bg-[var(--color-surface-alt)]"
+          role="progressbar"
+          [attr.aria-valuenow]="progress().percent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [attr.aria-label]="'Progress in ' + category().title"
+        >
+          <div
+            class="h-full rounded-full bg-gradient-to-r from-[var(--color-brand-600)] via-[var(--color-brand-400)] to-[var(--color-brand-200)] transition-all duration-500"
+            [style.width.%]="progress().percent"
+          ></div>
+        </div>
+      }
 
-    <p class="mt-4 text-xs font-medium text-[var(--color-text-muted)]">
-      {{ topicCount() }} topics · {{ conceptCount() }} concepts
-    </p>
-  </div>
-
-  <div class="mt-6">
-    <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-surface-alt)]">
-      <div
-        class="h-full rounded-full bg-gradient-to-r from-[var(--color-brand-400)] to-[var(--color-brand-600)] transition-all"
-        [style.width.%]="progress().percent"
-      ></div>
+      <p class="flex items-center justify-between font-mono text-[11px]">
+        <span class="text-[var(--color-text-muted)]">{{ metaLine() }}</span>
+        <span class="inline-flex items-center gap-1 font-bold text-[var(--color-text-muted)] transition-all group-hover:gap-2 group-hover:text-[var(--color-brand-300)]">
+          open <span aria-hidden="true">→</span>
+        </span>
+      </p>
     </div>
-
-    <a
-      [routerLink]="['/learn', category().id]"
-      class="mt-4 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-alt)] px-4 py-2.5 text-sm font-semibold text-[var(--color-text)] transition group-hover:border-[var(--color-brand-500)] group-hover:bg-[var(--color-brand-500)]/10 group-hover:text-[var(--color-brand-300)]"
-    >
-      {{ progress().completed > 0 ? 'Continue learning' : 'Start learning' }}
-      <span class="transition-transform group-hover:translate-x-0.5">→</span>
-    </a>
   </div>
-</article>
+</a>

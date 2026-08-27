@@ -1,0 +1,91 @@
+<footer class="mt-20 border-t border-[var(--color-border)] bg-[var(--color-bg-raised)]/60">
+  <div class="mx-auto max-w-7xl px-6 py-12">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <!-- Brand -->
+      <div>
+        <a routerLink="/" class="flex items-center gap-2.5">
+          <span
+            class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-brand-400)] to-[var(--color-brand-700)] text-sm font-black text-[#171207]"
+          >
+            &lt;/&gt;
+          </span>
+          <span class="font-mono text-base font-bold tracking-tight text-[var(--color-text)]">
+            indepth-coding<span class="text-[var(--color-brand-400)]">~/lab</span>
+          </span>
+        </a>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-[var(--color-text-muted)]">
+          Simple, but simple that covers a lot. Compressed, story-driven Java &amp; full-stack lessons you can defend
+          in an interview.
+        </p>
+      </div>
+
+      <!-- Learn -->
+      <nav aria-label="Learn categories">
+        <p class="eyebrow eyebrow--slash mb-4">learn</p>
+        <ul class="space-y-2.5">
+          @for (category of featuredCategories; track category.id) {
+            <li>
+              <a
+                [routerLink]="['/learn', category.id]"
+                class="text-sm text-[var(--color-text-muted)] transition hover:text-[var(--color-brand-300)]"
+              >
+                {{ category.icon }} {{ category.title }}
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
+
+      <!-- Build -->
+      <nav aria-label="Practice and track">
+        <p class="eyebrow eyebrow--slash mb-4">build</p>
+        <ul class="space-y-2.5">
+          <li>
+            <a routerLink="/practice" class="text-sm text-[var(--color-text-muted)] transition hover:text-[var(--color-brand-300)]">
+              ⚔️ Mock assessment
+            </a>
+          </li>
+          <li>
+            <a routerLink="/dashboard" class="text-sm text-[var(--color-text-muted)] transition hover:text-[var(--color-brand-300)]">
+              📈 Learning dashboard
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Meta -->
+      <div>
+        <p class="eyebrow eyebrow--slash mb-4">meta</p>
+        <ul class="space-y-2.5 font-mono text-xs leading-relaxed text-[var(--color-text-muted)]">
+          <li>{{ totalCategories }} categories · {{ totalTopics }} topics</li>
+          <li>{{ totalConcepts }} concepts · {{ writtenCount }} written</li>
+          <li>progress stored locally</li>
+          <li>AI answers via worker proxy</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Status strip -->
+    <div class="term-window mt-10">
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 font-mono text-xs text-[var(--color-text-muted)]">
+        <span><span class="text-[var(--color-brand-400)]">$</span> status:</span>
+        <span class="stat-num">{{ overall().completed }}/{{ overall().total }}</span>
+        <span
+          class="h-1.5 min-w-24 flex-1 overflow-hidden rounded-full bg-[var(--color-surface-alt)]"
+          role="progressbar"
+          [attr.aria-valuenow]="overall().percent"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-label="Site-wide learning progress"
+        >
+          <span
+            class="block h-full rounded-full bg-gradient-to-r from-[var(--color-brand-600)] to-[var(--color-brand-300)] transition-all"
+            [style.width.%]="overall().percent"
+          ></span>
+        </span>
+        <span class="stat-num text-[var(--color-brand-300)]">{{ overall().percent }}%</span>
+        <span class="ml-auto">© {{ year }} Indepth Coding</span>
+      </div>
+    </div>
+  </div>
+</footer>

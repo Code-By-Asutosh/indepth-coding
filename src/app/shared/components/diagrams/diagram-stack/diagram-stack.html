@@ -1,0 +1,20 @@
+<div class="dg-canvas flex flex-col gap-2" role="list">
+  @for (layer of layers(); track layer.id; let i = $index) {
+    <div
+      role="listitem"
+      class="dg-node rise-in {{ toneClass(layer.tone) }}"
+      [style.animation-delay.ms]="i * 90"
+    >
+      <div class="flex items-baseline justify-between gap-3">
+        <p class="dg-node__label">
+          <span class="mr-1.5 text-[10px] text-[var(--color-text-muted)]">L{{ i }}</span>
+          {{ layer.label }}
+        </p>
+        <span class="font-mono text-[10px] text-[var(--color-text-muted)]">{{ layers().length - i }}/{{ layers().length }}</span>
+      </div>
+      @if (layer.detail) {
+        <p class="dg-node__detail">{{ layer.detail }}</p>
+      }
+    </div>
+  }
+</div>

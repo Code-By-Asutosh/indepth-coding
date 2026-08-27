@@ -1,7 +1,8 @@
-import { Component, effect, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Category, Topic } from '../../../core/models/content.model';
-import { ProgressService } from '../../../core/services/progress.service';
+import { CATEGORIES } from '../../../core/data/categories.data';
+import { LearningStore } from '../../../core/services/learning-store.service';
 
 @Component({
   selector: 'app-side-nav',
@@ -10,14 +11,28 @@ import { ProgressService } from '../../../core/services/progress.service';
   styleUrl: './side-nav.scss'
 })
 export class SideNav {
-  private readonly progress = inject(ProgressService);
+  private readonly store = inject(LearningStore);
 
   readonly category = input.required<Category>();
   /** Topic id that should be (auto-)expanded, e.g. the one containing the active concept. */
   readonly activeTopicId = input<string | null>(null);
 
+  /** Emitted when the user clicks the collapse button. */
+  readonly collapse = output<void>();
+
   /** Topics the user has expanded. Manual toggles persist across navigation - never force-collapsed. */
   protected readonly expandedTopics = signal<Set<string>>(new Set());
+
+  /** Category switcher dropdown visibility. */
+  protected readonly categorySwitchOpen = signal(false);
+
+  protected readonly allCategories = computed(() => CATEGORIES.filter((c) => !c.hidden));
+
+  protected readonly ringOffset = computed(() => {
+    const p = this.categoryProgress().percent;
+    // Circumference for r=17.5 is 2 * PI * 17.5 = 110
+    return Math.max(0, Math.min(110, 110 - (p / 100) * 110));
+  });
 
   constructor() {
     effect(() => {
@@ -43,17 +58,24 @@ export class SideNav {
     });
   }
 
+  protected toggleCategorySwitch(): void {
+    this.categorySwitchOpen.update((v) => !v);
+  }
+
+  protected closeCategorySwitch(): void {
+    this.categorySwitchOpen.set(false);
+  }
+
   protected isComplete(topicId: string, conceptId: string): boolean {
-    return this.progress.isComplete(this.category().id, topicId, conceptId);
+    return this.store.isComplete(this.category().id, topicId, conceptId);
   }
 
   protected topicProgressLabel(topic: Topic): string {
-    const conceptIds = topic.concepts.map((concept) => concept.id);
-    const { completed, total } = this.progress.topicProgress(this.category().id, topic.id, conceptIds);
+    const { completed, total } = this.store.topicProgress(this.category().id, topic.id);
     return `${completed}/${total}`;
   }
 
   protected categoryProgress() {
-    return this.progress.categoryProgress(this.category().id);
+    return this.store.categoryProgress(this.category().id);
   }
 }
